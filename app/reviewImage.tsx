@@ -146,12 +146,17 @@ const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
   
 //Alberto -> 2/11/2025
 //API CALL  -> 2/13/2025
-  const navigateToCamera = () => {
-    // Reset photoUriState before navigating back
-    setPhotoUriState(null);
-    router.replace("camera");// Navigate back to the camera screen
-  };
-
+const navigateToCamera = () => {
+  // Reset photoUriState before navigating back
+  setPhotoUriState(null);
+  //Alberto -> 2/17/2025
+  // Navigate back to the camera screen with the procedureName
+  router.replace({
+    pathname: "camera",
+    // Pass the procedureName as a query parameter so it doesn't get lost
+    params: { procedureName },
+  });
+};
   //open bleed view
   const handleImageClick = () => {
     setIsPreview(true);
