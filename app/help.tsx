@@ -1,23 +1,102 @@
 import { router, useRouter, useLocalSearchParams } from "expo-router";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import BottomNavigation from "../components/bottomNav";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CryptoJS from 'crypto-js';
+import { getDeviceID } from '../components/deviceInfo';
 
 const helpScreen: React.FC = () => {
   const router = useRouter();
+  const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
+  const [authorizationCode, setAuthorizationCode] = useState<string | null>(null);
   const buttonHelp = [
-    {title: 'Leave Feedback or Ask Questions'},
-    {title: 'Help About Teams'},
-    {title: 'Help About Pictures'},  
-    {title: 'Help About Procedures'},
+    { title: 'Leave Feedback or Ask Questions' },
+    { title: 'Help About Teams' },
+    { title: 'Help About Pictures' },
+    { title: 'Help About Procedures' },
   ];
 
+  useEffect(() => {
+    const fetchAuthorizationCode = async () => {
+      try {
+        const code = await AsyncStorage.getItem('authorizationCode');
+        if (code) {
+          setAuthorizationCode(code);
+        }
+      } catch (error) {
+        console.error('Error fetching authorization code:', error);
+      }
+    };
+    fetchAuthorizationCode();
+  }, []);
+
+  useEffect(() => {
+    const fetchDeviceID = async () => {
+      const id = await getDeviceID();
+      setDeviceID(id);
+    };
+    fetchDeviceID();
+  }, []);
+
   const navigateToMainAccountPage = () => {
-    router.push('mainAccountPage');
+    router.push('/mainAccountPage');
   };
 
-  const handlePress = async (title: string) => {
+  const getHelp = async (topic: string) => {
+    if (!deviceID || !authorizationCode) {
+      Alert.alert('Error', 'Device ID or authorization code not available');
+      return;
+    }
+
+    try {
+      const currentDate = new Date();
+      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, '0')}/${String(
+        currentDate.getDate()
+      ).padStart(2, '0')}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, '0')}:${String(
+        currentDate.getMinutes()
+      ).padStart(2, '0')}`;
+
+      const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
+      const key = CryptoJS.SHA1(keyString).toString();
+
+      const url = `https://PrefPic.com/dev/PPService/GetHelp.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&Topic=${topic}&PrefPicVersion=1`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ Topic: topic }),
+      });
+      const responseText = await response.text();
+      console.log('Response Text:', responseText);
+
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+        Alert.alert('Error', 'Failed to parse response from server.');
+        return;
+      }
+
+      Alert.alert(
+        `Help About ${topic}`,
+        data.helpText,
+        [
+          { text: 'Ok', onPress: navigateToMainAccountPage },
+          { text: 'Back', onPress: navigateToMainAccountPage },
+        ],
+        { cancelable: false }
+      );
+    } catch (error) {
+      console.error('Error fetching help:', error);
+      Alert.alert('Error', 'Failed to fetch help from server.');
+    }
+  };
+
+  const handlePress = (title: string) => {
     let topic = '';
     if (title === 'Help About Procedures') {
       topic = 'Procedure';
@@ -28,40 +107,7 @@ const helpScreen: React.FC = () => {
     }
 
     if (topic) {
-      try {
-        const response = await fetch('https://prefpic.com/dev/PPService/GetHelp.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ Topic: topic }),
-        });
-        const responseText = await response.text(); // Get the response text
-        console.log('Response Text:', responseText); // Log the response text
-
-        // Check if the response is valid JSON
-        let data;
-        try {
-          data = JSON.parse(responseText); // Parse the response text as JSON
-        } catch (error) {
-          console.error('Error parsing JSON:', error);
-          Alert.alert('Error', 'Failed to parse response from server.');
-          return;
-        }
-
-        Alert.alert(
-          `Help About ${title.split(' ')[2]}`,
-          data.helpText,
-          [
-            { text: 'Ok', onPress: navigateToMainAccountPage },
-            { text: 'Back', onPress: navigateToMainAccountPage },
-          ],
-          { cancelable: false }
-        );
-      } catch (error) {
-        console.error('Error fetching help:', error);
-        Alert.alert('Error', 'Failed to fetch help from server.');
-      }
+      getHelp(topic);
     }
   };
 
@@ -72,8 +118,8 @@ const helpScreen: React.FC = () => {
       </View>
       <View style={styles.container}>
         {buttonHelp.map((item, index) => (
-          <TouchableOpacity 
-            key={index} 
+          <TouchableOpacity
+            key={index}
             style={styles.card}
             onPress={() => handlePress(item.title)}
           >
