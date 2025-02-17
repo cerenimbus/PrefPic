@@ -1,18 +1,23 @@
-import { Stack } from "expo-router";
+import { Stack,useSegments } from "expo-router";
 import { AuthProvider } from "./AuthContext";  // Import AuthProvider
 
 
 export default function RootLayout() {
+  const segments = useSegments();
+  console.log("Current Route:", segments);
   return (
     
     
        <AuthProvider>
 
        <Stack>
+       <Stack.Screen name="sign-in" options={{headerShown: false}} />
+       <Stack.Screen name="forgotpassword" options={{headerShown: false}} />
       <Stack.Screen name="loading" options={{ headerShown: false }} />
       <Stack.Screen name="index" options={{ title: "Home" }} />
       <Stack.Screen name="addPearls" options={{ headerShown: false }} />
       <Stack.Screen name="procedureReviewSummary" options={{ headerShown: false }} />
+      <Stack.Screen name="viewProcedure" options={{headerShown: false}} />
       <Stack.Screen name="reviewImage" options={{headerShown:false}} />
 
       <Stack.Screen name="viewEditPicture" options={{headerShown:false}}/>
@@ -21,8 +26,13 @@ export default function RootLayout() {
       <Stack.Screen name="library" options={{headerShown: false}} />           {/*library screen*/}
       <Stack.Screen name="second_library" options={{headerShown: false}} />    
       <Stack.Screen name="camera" options={{headerShown: false}} />
+
       <Stack.Screen name="viewProcedure" options={{headerShown: false}} />
       <Stack.Screen name="help" options={{headerShown: false}} />
+
+      <Stack.Screen name="createAccount" options={{headerShown: false}} />
+
+
     </Stack>
     </AuthProvider>
     
