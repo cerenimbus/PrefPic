@@ -1,17 +1,24 @@
 import { router, useRouter, useLocalSearchParams } from "expo-router";
 import React, {useState, useEffect} from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from "react-native";
 
 export default function ProcedureReviewSummary() {
-  const [procedureName, setProcedureName] = useState('');
+  const {procedureName, alwaysDo: alwaysDoParam, watchFor: watchForParam, neverDo: neverDoParam}= useLocalSearchParams();
   const router =  useRouter();
-  const {alwaysDo: alwaysDoParam, watchFor: watchForParam, neverDo: neverDoParam}= useLocalSearchParams();
-  const [alwaysDo, setAlwaysDo] = useState(alwaysDoParam || ""); 
-  const [watchFor, setWatchFor] = useState(watchForParam || "");
-  const [neverDo, setNeverDo] = useState(neverDoParam || "");
+
   const navigateToLibrary = () => {
     router.push({
       pathname: "library",
+      params: { procedureName, alwaysDo, watchFor, neverDo },
+    });
+  }
+
+  const [alwaysDo, setAlwaysDo] = useState(alwaysDoParam || "");
+  const [watchFor, setWatchFor] = useState(watchForParam || "");
+  const [neverDo, setNeverDo] = useState(neverDoParam || "");
+  const navigatetoaddpearls = () => {
+    router.push({
+      pathname: "addPearls",   
       params: { procedureName, alwaysDo, watchFor, neverDo },
     });
   }
@@ -20,7 +27,7 @@ export default function ProcedureReviewSummary() {
       setAlwaysDo(alwaysDoParam);
     }
   }, [alwaysDoParam]);
-
+  
   useEffect(() => {
     if (watchForParam) {
       setWatchFor(watchForParam);
@@ -32,7 +39,6 @@ export default function ProcedureReviewSummary() {
       setNeverDo(neverDoParam);
     }
   }, [neverDoParam]);
-
   // const navigateToLoading = () => {
   //   router.push("loading");
   // }
@@ -45,8 +51,7 @@ export default function ProcedureReviewSummary() {
 
       
       <View style={styles.titleSection}>
-        <Text style={styles.procedureName}>[Procedure Name]</Text>
-        <Text style={styles.subtitle}>Review summary</Text>
+      <Text style={styles.procedureNameText}>{procedureName}</Text>
       </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
@@ -56,7 +61,6 @@ export default function ProcedureReviewSummary() {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardTitle}>Images</Text>
-            <Text style={styles.editText}>Edit</Text>
           </View>
           <View style={styles.imagesContainer}>
             {Array.from({ length: 6 }).map((_, index) => (
@@ -92,9 +96,11 @@ export default function ProcedureReviewSummary() {
         </View>
       </ScrollView>
 
-      <TouchableOpacity style={styles.button} onPress={navigateToLibrary}>
-
-        <Text style={styles.buttonText}>Finish</Text>
+      <TouchableOpacity style={styles.button} onPress={navigatetoaddpearls}>
+        <Text style={styles.buttonText}>Edit</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.deleteButton} onPress={navigateToLibrary}>
+        <Text style={styles.FinishButtonText}>Delete</Text>
       </TouchableOpacity>
     </View>
   );
@@ -106,6 +112,26 @@ const styles = StyleSheet.create({
     backgroundColor: "#f2f6fc",
     padding: 20,
   },
+  procedureNameText: {
+    fontSize: 45,
+    marginBottom: 10,
+    textAlign: 'center',
+    fontFamily: 'Roboto',
+},
+  deleteButton:{
+    backgroundColor: "#FFFFF",
+    paddingVertical: 14,
+    borderRadius: 31,
+    alignItems: "center",
+    marginTop: 10,
+    borderColor: "375894",
+    borderWidth: 1,
+  },
+  FinishButtonText: {
+    color: "#375894"  ,
+    fontSize: 16, // Adjusted font size
+    fontWeight: "bold",
+},
   backText: {
     fontSize: 16,
     color: "#3b82f6",
@@ -143,6 +169,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: "bold",
+    alignItems: "center",
   },
   editText: {
     fontSize: 14,
