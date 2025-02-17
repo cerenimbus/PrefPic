@@ -10,6 +10,9 @@
     "web": "expo start --web"
   },
   "dependencies": {
+
+    "@expo/vector-icons": "^14.0.4",
+
     "@react-native-async-storage/async-storage": "^2.1.1",
     "@react-native-community/slider": "4.5.5",
     "@react-navigation/native": "^7.0.14",
@@ -19,7 +22,9 @@
     "expo-camera": "~16.0.15",
     "expo-checkbox": "^4.0.1",
     "expo-device": "~7.0.2",
+
     "expo-font": "~13.0.3",
+
     "expo-media-library": "~17.0.5",
     "expo-modules-core": "^2.2.2",
     "expo-router": "^4.0.17",
@@ -31,8 +36,10 @@
     "react-native-paper": "^5.13.1",
     "react-native-safe-area-context": "^5.2.0",
     "react-native-screens": "^4.6.0",
+
     "start": "^5.1.0",
     "@react-native-picker/picker": "2.9.0"
+
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

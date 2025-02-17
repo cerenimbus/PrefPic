@@ -1,14 +1,18 @@
-import { Stack } from "expo-router";
+import { Stack,useSegments } from "expo-router";
 import { AuthProvider } from "./AuthContext";  // Import AuthProvider
 
 
 export default function RootLayout() {
+  const segments = useSegments();
+  console.log("Current Route:", segments);
   return (
     
     
        <AuthProvider>
 
        <Stack>
+       <Stack.Screen name="sign-in" options={{headerShown: false}} />
+       <Stack.Screen name="forgotpassword" options={{headerShown: false}} />
       <Stack.Screen name="loading" options={{ headerShown: false }} />
       <Stack.Screen name="index" options={{ title: "Home" }} />
       <Stack.Screen name="addPearls" options={{ headerShown: false }} />
