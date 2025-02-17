@@ -10,7 +10,6 @@ import * as Device from "expo-device"; //
 import {getDeviceID} from "../components/deviceInfo";
 
 const AddProcedure: React.FC = () => {
-    // State variable to store the procedure name
   const [procedureName, setProcedureName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   //const [isAuthorized, setIsAuthorized] = useState(false);
@@ -96,7 +95,7 @@ const AddProcedure: React.FC = () => {
         
         if (resultCode === 'Success') {
           await AsyncStorage.setItem('currentProcedureSerial', procedureSerial);
-          Alert.alert('Success', message || 'Procedure created successfully');
+          //Alert.alert('Success', message || 'Procedure created successfully');
         return true;
       } else {
         Alert.alert('Error', message || 'Failed to create procedure');
@@ -127,14 +126,6 @@ const AddProcedure: React.FC = () => {
     }
   };
 
-  //Function to navigate to the "library" screen
-// const navigatetoLibrary = () => {
-//   router.push({
-//     pathname: "library", // Navigating to the "library" route
-//     params: {procedureName: procedureName},
-//   });
-//   };
-  
   const navigateToLibrary = () => {
     router.push({
       pathname: "library",
@@ -142,15 +133,6 @@ const AddProcedure: React.FC = () => {
     });
   };
     
-  // RJP - > 2/7/2025
- // Function to navigate to the "camera" screen with procedureName as a parameter
-// const navigateToReviewImage = () => {
-//   router.push({
-//     pathname: "camera", // Navigating to the "camera" route
-//     params: { procedureName: procedureName }, // Passing procedureName as a parameter 
-//   });
-// };
-
   const navigateToReviewImage = () => {
     router.push({
       pathname: "camera",
@@ -251,7 +233,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   disabledButton: {
-    backgroundColor: "#A0A0A0", // Greyed out when disabled
+    backgroundColor: "#A0A0A0",
   },
   nextButtonText: {
     color: "#FFFFFF",
@@ -262,4 +244,3 @@ const styles = StyleSheet.create({
 });
 
 export default AddProcedure;
-

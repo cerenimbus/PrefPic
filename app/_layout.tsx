@@ -21,6 +21,8 @@ export default function RootLayout() {
       <Stack.Screen name="library" options={{headerShown: false}} />           {/*library screen*/}
       <Stack.Screen name="second_library" options={{headerShown: false}} />    {/*second_library screen*/}
       <Stack.Screen name="camera" options={{headerShown: false}} />
+      <Stack.Screen name ="teamMember" options={{headerShown:false}} /> {/*02/27/2025 added by MLI*/} 
+      <Stack.Screen name ="currentTeam" options={{headerShown:false}} /> {/*02/27/2025 added by MLI*/} 
     </Stack>
     </AuthProvider>
     
