@@ -55,6 +55,7 @@ const CreateAccount = () => {
   const [isContinueEnabled, setIsContinueEnabled] = useState(false);
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 //   const [role, setRole] = useState<string>(""); // Ensure role is properly initialized
 //   const [specialty, setSpecialty] = useState<string>(""); 
 
@@ -243,11 +244,13 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
         </View>
 
         <TouchableOpacity
-            style={[styles.continueButton, !isContinueEnabled && styles.disabledButton]}
+            style={[styles.continueButton, form.specialty.trim() === "" && styles.disabledButton]}
+            // , !isContinueEnabled && styles.disabledButton
             onPress={handleCreateAccount}
-            disabled={!isContinueEnabled} // Uses `isContinueEnabled` instead of calling `isFormValid()`
+            disabled={form.specialty.trim() === "" || isLoading} // Uses `isContinueEnabled` instead of calling `isFormValid()`
             >
-            <Text style={styles.continueText}>Continue</Text>
+                <Text style={styles.continueText}>{isLoading ? "Loading..." : "Continue"}</Text>
+            {/* <Text style={styles.continueText}>Continue</Text> */}
         </TouchableOpacity>
       </View>
     </ImageBackground>

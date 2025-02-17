@@ -38,6 +38,8 @@ export default function RootLayout() {
 
       <Stack.Screen name="createAccount" options={{headerShown: false}} />
       <Stack.Screen name="completeDemo" options={{headerShown: false}} />
+      <Stack.Screen name="mainAccountPage" options={{headerShown: false}} />
+
 
 
 

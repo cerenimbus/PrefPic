@@ -7,6 +7,9 @@ const mainAccountPage: React.FC = () => {
     const router = useRouter();
     return(
         <SafeAreaView style={styles.container}>
+            <TouchableOpacity onPress={() => router.back()}>
+            <Text style={styles.backText}>←  Back</Text>
+        </TouchableOpacity>
             <View style={styles.center}>
                 <View style={styles.imageHolder}>
                     <Image 
@@ -34,6 +37,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#f2f6fc',
     },
+    backText: {
+        fontSize: 16,
+        color: "#3b82f6",
+        marginBottom: 10,
+        marginRight: 300,
+        top: -80
+      },
     input: {
         backgroundColor: "#FFFFFF",
         borderRadius: 20,
