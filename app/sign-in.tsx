@@ -48,7 +48,7 @@ export default function Signin() {
   };
 
   const navigateToCreateAccount = () => { 
-    router.push("/CreateAccount"); // Adjust the path if your CreateAccount screen is in another folder
+    router.push("/createAccount"); // Adjust the path if your CreateAccount screen is in another folder
   };
 
   // Determine if the "Sign In" button should be enabled or disabled

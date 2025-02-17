@@ -92,8 +92,12 @@ const LibraryScreen: React.FC = () => {
     });
     const navigateToMainAccountPage = () => {
         router.push('mainAccountPage');
-    };      
+    };    
+      
 };
+    const navigateToCompleteDemo = () => {
+        router.push('completeDemo');
+    };  
     // MG 02/13/2025
     // Function to call GetProcedureList API
     const getProcedureList = async () => {
@@ -246,7 +250,7 @@ const LibraryScreen: React.FC = () => {
                         </View>
                     )}
                 </View> 
-                <TouchableOpacity style={styles.finishButton} onPress={handleCodeSubmit}>
+                <TouchableOpacity style={styles.finishButton} onPress={navigateToCompleteDemo}>
                     <Text style={styles.FinishButtonText}>Finish Demo</Text>
                 </TouchableOpacity>
             </View>
