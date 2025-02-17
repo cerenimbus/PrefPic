@@ -111,6 +111,7 @@ const LibraryScreen: React.FC = () => {
             const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
             const key = CryptoJS.SHA1(keyString).toString();
     
+            
             const url = `https://PrefPic.com/dev/PPService/GetProcedureList.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&PrefPicVersion=1`;
             console.log('Fetching procedure list from URL:', url); // Debugging statement
             const response = await fetch(url);

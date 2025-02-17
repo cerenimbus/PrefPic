@@ -99,6 +99,10 @@ export default function StartScreen() {
     handleGetStarted(); // Call API when "Get Started" is clicked
   };
 
+  const navigateToCreateAccount = () => {
+    router.push('createAccount');
+};
+
   return (
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
       <View style={[styles.container]}>
@@ -133,6 +137,13 @@ export default function StartScreen() {
             disabled={!isChecked} // Prevents clicking when unchecked
           >
             <Text style={styles.GetText}>Get Started</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.getButton, { opacity: isChecked ? 1 : 0.5 }]}
+            onPress={navigateToCreateAccount}
+            disabled={!isChecked} // Prevents clicking when unchecked
+          >
+            <Text style={styles.GetText}>Create Account</Text>
           </TouchableOpacity>
         </View>
       </View>
