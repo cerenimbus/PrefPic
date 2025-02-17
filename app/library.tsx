@@ -5,9 +5,12 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { XMLParser } from 'fast-xml-parser';
+import { getDeviceID } from '../components/deviceInfo';
+
 
 
 const LibraryScreen: React.FC = () => {
+    const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
     const [selectedProcedure, setSelectedProcedure] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false); // Added state for loading
     const [authorizationCode, setAuthorizationCode] = useState<string | null>(null); // Added state for authorization code
@@ -43,6 +46,14 @@ const LibraryScreen: React.FC = () => {
         };
         fetchAuthorizationCode();
     }, []); // Added useEffect to fetch authorization code
+    useEffect(() => {
+      
+      const fetchDeviceID = async () => {
+        const id = await getDeviceID();
+        setDeviceID(id);
+      };
+        fetchDeviceID();
+      }, []);
 
     // Call GetProcedureList API when the authorization code is available
     useEffect(() => {
@@ -64,42 +75,56 @@ const LibraryScreen: React.FC = () => {
     const navigateToAddProcedure = () => {
         router.push('addProcedure');
     };
-
+      
+    // MG 02/13/2025
     // Function to call GetProcedureList API
     const getProcedureList = async () => {
         setIsLoading(true);
         try {
-            const deviceInfo = await AsyncStorage.getItem('deviceInfo');
-            if (!deviceInfo) {
+            if (!deviceID) {
+                console.log('Device ID:', deviceID);
                 throw new Error('Device information not found');
             }
-            const parsedDeviceInfo = JSON.parse(deviceInfo);
-            console.log('DeviceID:', parsedDeviceInfo.id); // Debugging statement
-            const url = `https://PrefPic.com/dev/PPService/GetProcedureList.php?DeviceID=${encodeURIComponent(parsedDeviceInfo.id)}`;
+            console.log('DeviceID:', deviceID.id); // Debugging statement
+            const currentDate = new Date();
+            const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, '0')}/${String(
+                currentDate.getDate()
+            ).padStart(2, '0')}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, '0')}:${String(
+                currentDate.getMinutes()
+            ).padStart(2, '0')}`;
+    
+            const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
+            const key = CryptoJS.SHA1(keyString).toString();
+    
+            const url = `https://PrefPic.com/dev/PPService/GetProcedureList.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&PrefPicVersion=1`;
             console.log('Fetching procedure list from URL:', url); // Debugging statement
             const response = await fetch(url);
             const data = await response.text();
             console.log('API response:', data); // Debugging statement
-
+    
             const parser = new XMLParser();
             const result = parser.parse(data);
-
-            const procedureList = result?.ProcedureList?.Procedure || [];
-            console.log('Parsed procedure list:', procedureList); // Debugging statement
-            setProcedures(procedureList.map((procedure: any) => procedure.Name));
+    
+            // Correctly extract the procedure list
+            const procedureList = result?.ResultInfo?.Selections?.Procedure || [];
+            const proceduresArray = Array.isArray(procedureList) ? procedureList : [procedureList];
+            console.log('Parsed procedure list:', proceduresArray); // Debugging statement
+    
+            // Update the procedures state
+            setProcedures(proceduresArray.map((procedure: any) => procedure.Name));
         } catch (error) {
             console.error('Error fetching procedure list:', error);
             Alert.alert('Error', 'An error occurred while fetching the procedure list');
         } finally {
             setIsLoading(false);
         }
-    }; // Added getProcedureList function
+    };// Added getProcedureList function
 
     const handleCodeSubmit = async () => {
-        const deviceInfo = await AsyncStorage.getItem('deviceInfo');
-        if (!deviceInfo || Array.isArray(deviceInfo)) return;
 
-        const parsedDeviceInfo = JSON.parse(deviceInfo);
+        if (!deviceID || Array.isArray(deviceID)) return;
+
+        const parsedDeviceInfo = JSON.parse(deviceID.id);
 
         setIsLoading(true);
 

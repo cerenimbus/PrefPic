@@ -6,28 +6,24 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as CryptoJS from "crypto-js"; // SHA-1 hashing
 import { AuthContext } from "./AuthContext"; // Import AuthContext
 import { XMLParser } from "fast-xml-parser";
-import * as Device from "expo-device"; // Import expo-device
+import { getDeviceID } from "../components/deviceInfo"; // Import getDeviceID function
 
 export default function StartScreen() {
   const [isChecked, setChecked] = useState(false);
-  const [deviceID, setDeviceID] = useState<string | null>(null);
+  const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
   const router = useRouter();
   const { saveAuthCode } = useContext(AuthContext) ?? {};
 
   // Fetch the unique device ID dynamically
   useEffect(() => {
-    const getDeviceID = async () => {
-      try {
-        const uniqueID = Device.osInternalBuildId || Device.modelId || "UnknownDevice"; // Fallback if not available
-        setDeviceID(uniqueID);
-        console.log("Device ID:", uniqueID);
-      } catch (error) {
-        console.error("Error fetching device ID:", error);
-      }
-    };
-
-    getDeviceID();
+  
+  const fetchDeviceID = async () => {
+    const id = await getDeviceID();
+    setDeviceID(id);
+  };
+    fetchDeviceID();
   }, []);
+
 
   const handleGetStarted = async () => {
     try {
@@ -45,12 +41,12 @@ export default function StartScreen() {
       ).padStart(2, '0')}`;
 
       // Generate Key using SHA1 (DeviceID + Date)
-      const keyString = `${deviceID}${formattedDate}`;
+      const keyString = `${deviceID.id}${formattedDate}`;
       const key = CryptoJS.SHA1(keyString).toString();
 
       // Construct API URL
       const url = `https://PrefPic.com/dev/PPService/AuthorizeDevice.php?DeviceID=${encodeURIComponent(
-        deviceID
+        deviceID.id  
       )}&Date=${formattedDate}&Key=${key}&PrefPicVersion=1`;
 
       console.log("API Request URL:", url);
