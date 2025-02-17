@@ -89,7 +89,10 @@ const LibraryScreen: React.FC = () => {
         router.push({
         pathname: "viewProcedure",
         params: { procedureName, alwaysDo, watchFor, neverDo },
-    });       
+    });
+    const navigateToMainAccountPage = () => {
+        router.push('mainAccountPage');
+    };      
 };
     // MG 02/13/2025
     // Function to call GetProcedureList API
@@ -192,14 +195,24 @@ const LibraryScreen: React.FC = () => {
         });
     };
 
+    const navigateToMainAccountPage = () => {
+        router.push('mainAccountPage');
+    };
+
     //function navigateToAddPearls(procedure: string): void {
         //throw new Error('Function not implemented.');
     //}
+    
+    
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.container}>
+
+                <TouchableOpacity onPress={navigateToMainAccountPage}>
+
                 <Text style={styles.title}>DR. CRAIG CLARK</Text>
+                </TouchableOpacity>
                 <Text style={styles.subtitle}>Procedures Library</Text>
                 <Text style={styles.description}>
                     On this screen you create or edit your medical procedures practices.
