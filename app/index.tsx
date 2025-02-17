@@ -13,6 +13,7 @@ export default function StartScreen() {
   const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
   const router = useRouter();
   const { saveAuthCode } = useContext(AuthContext) ?? {};
+  
 
   // Fetch the unique device ID dynamically
   useEffect(() => {
@@ -101,7 +102,14 @@ export default function StartScreen() {
 
   return (
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
+      
       <View style={[styles.container]}>
+      <Text
+      style={{ color: "blue", textDecorationLine: "underline" }}
+      onPress={() => router.push("/sign-in")}
+      >
+      Sign in
+      </Text>
         <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
         <Text style={styles.pref}>PrefPic Demo</Text>
         <Text style={styles.description}>There is no sign-in required for </Text>
