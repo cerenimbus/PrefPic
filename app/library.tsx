@@ -14,20 +14,29 @@ const LibraryScreen: React.FC = () => {
     const [selectedProcedure, setSelectedProcedure] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false); // Added state for loading
     const [authorizationCode, setAuthorizationCode] = useState<string | null>(null); // Added state for authorization code
-    const [procedures, setProcedures] = useState<string[]>([
-        "Procedure Name",
-        "Procedure Name",
-        "Procedure Name",
-        "Procedure Name",
-        "Procedure Name",
-        "Procedure Name",
-        "Procedure Name",
-        "Procedure Name",
-    ]); // Updated state for procedures
+    const [procedures, setProcedures] = useState<string[]>([]); // Updated state for procedures
+    const [alwaysDo, setAlwaysDo] = useState(""); // Added state for alwaysDo
+    const [watchFor, setWatchFor] = useState(""); // Added state for watchFor
+    const [neverDo, setNeverDo] = useState(""); // Added state for neverDo
     const router = useRouter();
     const searchParams = useLocalSearchParams();
     const procedureName = Array.isArray(searchParams.procedureName) ? searchParams.procedureName[0] : searchParams.procedureName;
 
+    useEffect(() => {
+        const alwaysDoParam = searchParams.alwaysDo;
+        const watchForParam = searchParams.watchFor;
+        const neverDoParam = searchParams.neverDo;
+        if (alwaysDoParam) {
+            setAlwaysDo(Array.isArray(alwaysDoParam) ? alwaysDoParam[0] : alwaysDoParam);
+        }
+        if (watchForParam) {
+            setWatchFor(Array.isArray(watchForParam) ? watchForParam[0] : watchForParam);
+        }
+        if (neverDoParam) {
+            setNeverDo(Array.isArray(neverDoParam) ? neverDoParam[0] : neverDoParam);
+        }
+    }, [searchParams.alwaysDo, searchParams.watchFor, searchParams.neverDo]);
+    
     // Fetch authorization code from AsyncStorage when the component mounts
     useEffect(() => {
         const fetchAuthorizationCode = async () => {
@@ -75,7 +84,13 @@ const LibraryScreen: React.FC = () => {
     const navigateToAddProcedure = () => {
         router.push('addProcedure');
     };
-      
+    
+    const navigateToviewProcedure = (procedureName: string, alwaysDo:string, watchFor:string, neverDo:string) => {
+        router.push({
+        pathname: "viewProcedure",
+        params: { procedureName, alwaysDo, watchFor, neverDo },
+    });       
+};
     // MG 02/13/2025
     // Function to call GetProcedureList API
     const getProcedureList = async () => {
@@ -169,6 +184,17 @@ const LibraryScreen: React.FC = () => {
         }
     }; // Added handleCodeSubmit function
 
+    const navigateToAddPearls = (procedureName: string) => {
+        router.push({
+            pathname: "addPearls",
+            params: { procedureName }
+        });
+    };
+
+    //function navigateToAddPearls(procedure: string): void {
+        //throw new Error('Function not implemented.');
+    //}
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.container}>
@@ -182,10 +208,10 @@ const LibraryScreen: React.FC = () => {
                     <TouchableOpacity style={styles.addButton} onPress={navigateToAddProcedure}>
                         <Text style={styles.addProcedureButtonText}>Add Procedure   +</Text>
                     </TouchableOpacity>
-                    {procedures.length > 5 ? (
-                        <ScrollView>
+                    {procedures.length >= 5 ? (
+                        <ScrollView style = {{flex: 1}}>
                             {procedures.map((procedure, index) => (
-                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={() => setSelectedProcedure(procedure)}>
+                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={() => navigateToviewProcedure(procedure, alwaysDo, watchFor, neverDo)}>
                                     <Text style={styles.procedureNameButtonText}>{procedure}</Text>
                                     <TouchableOpacity style={styles.procedureButton}>
                                         <Text style={styles.item}>{'>'}</Text>
@@ -196,7 +222,7 @@ const LibraryScreen: React.FC = () => {
                     ) : (
                         <View>
                             {procedures.map((procedure, index) => (
-                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={() => setSelectedProcedure(procedure)}>
+                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={() => navigateToviewProcedure(procedure, alwaysDo, watchFor, neverDo)}>
                                     <Text style={styles.procedureNameButtonText}>{procedure}</Text>
                                     <TouchableOpacity style={styles.procedureButton}>
                                         <Text style={styles.item}>{'>'}</Text>
@@ -205,13 +231,7 @@ const LibraryScreen: React.FC = () => {
                             ))}
                         </View>
                     )}
-                </View>
-                {selectedProcedure && (
-                    <View style={styles.newCard}>
-                        <Text>{selectedProcedure}</Text>
-                        <Text>Procedure Details</Text>
-                    </View>
-                )}
+                </View> 
                 <TouchableOpacity style={styles.finishButton} onPress={handleCodeSubmit}>
                     <Text style={styles.FinishButtonText}>Finish Demo</Text>
                 </TouchableOpacity>

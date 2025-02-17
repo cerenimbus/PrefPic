@@ -1,13 +1,20 @@
-import { router, useRouter } from "expo-router";
-import React from "react";
+import { router, useRouter, useLocalSearchParams } from "expo-router";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import { useState } from "react";
 
 export default function AddPearls() {
 
 const router = useRouter();
+const {procedureName, alwaysDo: alwaysDoParam, watchFor: watchForparam, neverDo: neverDoParam} = useLocalSearchParams();
+const [alwaysDo, setAlwaysDo] = useState(Array.isArray(alwaysDoParam) ? alwaysDoParam[0] : alwaysDoParam || "");
+const [watchFor, setWatchFor] = useState(Array.isArray(watchForparam) ? watchForparam[0] : watchForparam || "");
+const [neverDo, setNeverDo] = useState(Array.isArray(neverDoParam) ? neverDoParam[0] : neverDoParam || "");
 
 const navigateToprocedureReviewSummary = () => {
-  router.push("procedureReviewSummary");
+  router.push({
+  pathname: "procedureReviewSummary",
+  params: { procedureName,alwaysDo, watchFor, neverDo },
+});
 };
   return (
     <View style={styles.container}>
@@ -15,7 +22,6 @@ const navigateToprocedureReviewSummary = () => {
                 <Text style={styles.backText}>←  Back</Text>
               </TouchableOpacity>
       <Text style={styles.header}>Procedure Pearls</Text>
-
       {/* 
       //RHCM 
       //Always Do */}
@@ -24,7 +30,11 @@ const navigateToprocedureReviewSummary = () => {
           <View style={[styles.dot, { backgroundColor: "green" }]} />
           <Text style={styles.label}>Always Do</Text>
         </View>
-        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder="Enter details..." />
+        <TextInput 
+        style={[styles.input, { height: 120 }]} 
+        multiline placeholder="Enter details..." 
+        value={alwaysDo}
+        onChangeText={setAlwaysDo}/>
       </View>
 
       {/* 
@@ -35,7 +45,11 @@ const navigateToprocedureReviewSummary = () => {
           <View style={[styles.dot, { backgroundColor: "orange" }]} />
           <Text style={styles.label}>Watch For</Text>
         </View>
-        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder="Enter details..." />
+        <TextInput 
+        style={[styles.input, { height: 120 }]} 
+        multiline placeholder="Enter details..." 
+        value={watchFor}
+        onChangeText={setWatchFor}/>
       </View>
 
       {/* 
@@ -46,7 +60,11 @@ const navigateToprocedureReviewSummary = () => {
           <View style={[styles.dot, { backgroundColor: "red" }]} />
           <Text style={styles.label}>Never Do</Text>
         </View>
-        <TextInput style={[styles.input, { height: 120 }]} multiline placeholder="Enter details..." />
+        <TextInput 
+        style={[styles.input, { height: 120 }]} 
+        multiline placeholder="Enter details..." 
+        value={neverDo}
+        onChangeText={setNeverDo}/>
       </View>
 
       {/* 
