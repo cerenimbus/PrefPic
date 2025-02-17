@@ -28,9 +28,16 @@ export default function RootLayout() {
       <Stack.Screen name="camera" options={{headerShown: false}} />
 
       <Stack.Screen name="viewProcedure" options={{headerShown: false}} />
+      <Stack.Screen name="addTeamMember" options={{headerShown: false}} />
+      <Stack.Screen name="addTeamMemberCode" options={{headerShown: false}} />
+      <Stack.Screen name="addTeamMemberDisplay" options={{headerShown: false}} />
+
+
+      <Stack.Screen name="viewProcedure" options={{headerShown: false}} />
       <Stack.Screen name="help" options={{headerShown: false}} />
 
       <Stack.Screen name="createAccount" options={{headerShown: false}} />
+
 
 
     </Stack>

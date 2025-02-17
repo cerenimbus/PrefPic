@@ -2,6 +2,7 @@
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { router } from "expo-router";
 
 const BottomNavigation: React.FC = () => {
     const router = useRouter();
@@ -20,7 +21,8 @@ const BottomNavigation: React.FC = () => {
                 />
                 <Text style={styles.navTextActive}>Procedure</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navItem} disabled={true}>
+            <TouchableOpacity style={styles.navItem} disabled={true} //turn to false for testing 
+             onPress={() => router.push('addTeamMember')}>
                 <Image 
                     source={require('../assets/Team_grayed.png')}
                     style={styles.icon}
