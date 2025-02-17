@@ -13,6 +13,7 @@ export default function StartScreen() {
   const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
   const router = useRouter();
   const { saveAuthCode } = useContext(AuthContext) ?? {};
+  
 
   // Fetch the unique device ID dynamically
   useEffect(() => {
@@ -99,9 +100,20 @@ export default function StartScreen() {
     handleGetStarted(); // Call API when "Get Started" is clicked
   };
 
+  const navigateToCreateAccount = () => {
+    router.push('createAccount');
+};
+
   return (
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
+      
       <View style={[styles.container]}>
+      <Text
+      style={{ color: "blue", textDecorationLine: "underline" }}
+      onPress={() => router.push("/sign-in")}
+      >
+      Sign in
+      </Text>
         <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
         <Text style={styles.pref}>PrefPic Demo</Text>
         <Text style={styles.description}>There is no sign-in required for </Text>
@@ -133,6 +145,13 @@ export default function StartScreen() {
             disabled={!isChecked} // Prevents clicking when unchecked
           >
             <Text style={styles.GetText}>Get Started</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.getButton, { opacity: isChecked ? 1 : 0.5 }]}
+            onPress={navigateToCreateAccount}
+            disabled={!isChecked} // Prevents clicking when unchecked
+          >
+            <Text style={styles.GetText}>Create Account</Text>
           </TouchableOpacity>
         </View>
       </View>

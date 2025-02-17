@@ -1,13 +1,20 @@
 // components/BottomNavigation.tsx
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { router } from "expo-router";
 
 const BottomNavigation: React.FC = () => {
+    const router = useRouter();
+    const navigateToLibrary = () => {
+        router.push('library');
+    };
+    const navigateToHelp = () => {
+        router.push('help');
+    };
     return (
-        
         <View style={styles.container}>
-            <TouchableOpacity style={styles.navItem} disabled={true}>
+            <TouchableOpacity style={styles.navItem} onPress={navigateToLibrary}>
                 <Image 
                     source={require('../assets/Procedure_blue.png')}
                     style={styles.icon}
@@ -22,14 +29,14 @@ const BottomNavigation: React.FC = () => {
                 />
                 <Text style={styles.navText}>Team</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navItem} disabled={true}>
+            <TouchableOpacity style={styles.navItem} onPress={navigateToHelp}>
                 <Image 
                     source={require('../assets/Help_grayed.png')}
                     style={styles.icon}
                 />
                 <Text style={styles.navText}>Help</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navItem} disabled={true}>
+            <TouchableOpacity style={styles.navItem}>
                 <Image 
                     source={require('../assets/Feedback_grayed.png')}
                     style={styles.icon}

@@ -96,7 +96,7 @@ const AddProcedure: React.FC = () => {
         
         if (resultCode === 'Success') {
           await AsyncStorage.setItem('currentProcedureSerial', procedureSerial);
-          Alert.alert('Success', message || 'Procedure created successfully');
+          //Alert.alert('Success', message || 'Procedure created successfully');
         return true;
       } else {
         Alert.alert('Error', message || 'Failed to create procedure');
