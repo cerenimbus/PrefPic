@@ -22,7 +22,7 @@ const BottomNavigation: React.FC = () => {
                 />
                 <Text style={styles.navTextActive}>Procedure</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navItem} disabled={false} //turn to false for testing 
+            <TouchableOpacity style={styles.navItem}//turn to false for testing 
              onPress={() => router.push('addTeamMember')}>
                 <Image 
                     source={require('../assets/Team_grayed.png')}
