@@ -11,7 +11,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { XMLParser } from "fast-xml-parser";
 
 
-
 export default function ForgotPassword()  {
   const [email, setEmail] = useState("");
   const [deviceID, setDeviceID] = useState<string | null>(null);
@@ -39,6 +38,7 @@ export default function ForgotPassword()  {
     };
     fetchDeviceID();
   }, []);
+  
 
   const handleSendPassword = async () => {
     if (!isEmailValid) {
@@ -78,6 +78,7 @@ export default function ForgotPassword()  {
       const response = await fetch(url);
       const data = await response.text();
       console.log("🔹 API Response:", data);
+  
       // Parse XML response
       const parser = new XMLParser();
       const result = parser.parse(data);
