@@ -28,6 +28,29 @@ export default function Signin() {
     console.log("isChecked updated:", isChecked);
   }, [isChecked]);
 
+  useEffect(() => {
+    const checkDemoStatus = async () => {
+      const demoStatus = await AsyncStorage.getItem("status");
+      if (demoStatus === "true") {
+        router.replace("/sign-in"); // Skip demo and go to SignIn screen
+      }
+    };
+    checkDemoStatus();
+  }, []);
+  
+  useEffect(() => {
+    const checkUserType = async () => {
+      const userType = await AsyncStorage.getItem("UserType");
+  
+      if (!userType) {
+        await AsyncStorage.setItem("UserType", "Staff"); // Default to "Staff" if not set
+      }
+    };
+  
+    checkUserType();
+  }, []);
+  
+
   const navigateToIndex = () => {
     if (!validateEmail(email)) {
       Alert.alert("Invalid Email", "Must enter a validly formatted email.");
@@ -52,9 +75,12 @@ export default function Signin() {
   };
 
   const navigateToCreateAccount = () => { 
-    router.push("/CreateAccount"); // Adjust the path if your CreateAccount screen is in another folder
+    router.push("/createAccount"); // Adjust the path if your CreateAccount screen is in another folder
   };
 
+  const navigateToMainAccountPage = () => {
+    router.push("/mainAccountPage");
+  };
   // Determine if the "Sign In" button should be enabled or disabled
   const isFormValid = email && password && isChecked && validateEmail(email);
 
@@ -100,13 +126,14 @@ export default function Signin() {
       // Generate formatted date (MM/DD/YYYY-HH:mm)
       const currentDate = new Date();
       const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, '0')}/${String(currentDate.getDate()).padStart(2, '0')}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, '0')}:${String(currentDate.getMinutes()).padStart(2, '0')}`;
-
+      const demoStatus = (await AsyncStorage.getItem("Demo")) || "Active";
+      const userType = (await AsyncStorage.getItem("UserType")) || "Staff";
       // Generate Key using SHA1 (DeviceID + Date)
       const keyString = `${deviceID}${formattedDate}`;
       const key = CryptoJS.SHA1(keyString).toString();
 
       // Construct API URL
-      const url = `https://prefpic.com/dev/PPService/AuthorizeUser.php?DeviceID=${encodeURIComponent(deviceID)}&DeviceType=${encodeURIComponent(deviceType)}&DeviceModel=${encodeURIComponent(deviceModel)}&DeviceVersion=${encodeURIComponent(deviceVersion)}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(email)}&Phone=1234567890&Password=${encodeURIComponent(password)}&PrefPicVersion=10&TestFlag=0&AuthCode=${encodeURIComponent(authCode || "")}`;
+      const url = `https://prefpic.com/dev/PPService/AuthorizeUser.php?DeviceID=${encodeURIComponent(deviceID)}&DeviceType=${encodeURIComponent(deviceType)}&DeviceModel=${encodeURIComponent(deviceModel)}&DeviceVersion=${encodeURIComponent(deviceVersion)}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(email)}&Phone=1234567890&Password=${encodeURIComponent(password)}&PrefPicVersion=10&UserType=${encodeURIComponent(userType)}&Demo=${encodeURIComponent(demoStatus)}&TestFlag=0&AuthCode=${encodeURIComponent(authCode || "")}`;
 
       console.log("Request URL:", url);
 
@@ -124,7 +151,7 @@ export default function Signin() {
         const authorizationCode = resultInfo?.Auth;
         await AsyncStorage.setItem("AUTH_CODE", authorizationCode || "");
         saveAuthCode(authorizationCode || "");
-        router.push("/Project");
+        router.push("/mainAccountPage");
       } else {
         Alert.alert("Authorization Failed", resultInfo?.Message || "An unknown error occurred.");
       }
