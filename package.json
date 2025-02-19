@@ -22,9 +22,13 @@
     "expo-camera": "~16.0.15",
     "expo-checkbox": "^4.0.1",
     "expo-device": "~7.0.2",
+<<<<<<< Updated upstream
 
     "expo-font": "~13.0.3",
 
+=======
+    "expo-font": "~13.0.3",
+>>>>>>> Stashed changes
     "expo-media-library": "~17.0.5",
     "expo-modules-core": "^2.2.2",
     "expo-router": "^4.0.17",
