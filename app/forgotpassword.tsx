@@ -39,19 +39,20 @@ export default function Signin()  {
         style={styles.flexContainer}
       >
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          {/* Back Button */}
-          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-            <Text style={styles.backText}>Back</Text>
-          </TouchableOpacity>
+          
 
           {/* Forgot Password Text */}
           <View style={styles.imageTextContainer}>
             <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
             <Text style={styles.signintxt}>Forgot Password </Text>
           </View>
-
+          
           {/* Form Container */}
           <View style={styles.container}>
+            {/* Back Button */}
+          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+            <Text style={styles.backText}>Back</Text>
+          </TouchableOpacity>
             <Text style={styles.first}>Enter your email to receive</Text>
             <Text style={styles.second}>your password.</Text>
             <Text style={styles.third}>If a valid user email is provided,</Text>
@@ -175,8 +176,8 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 40,
-    left: -10,
+    top:-5,
+    left: 10,
     padding: 10,
     borderRadius: 5,
   },

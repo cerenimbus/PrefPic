@@ -194,9 +194,9 @@ export default function Signin() {
             <TouchableOpacity onPress={navigateToCreateAccount}>
               <Text style={styles.caccount}>Create an account</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={navigateToMainAccountPage}>
+            {/* <TouchableOpacity onPress={navigateToMainAccountPage}>
               <Text style={styles.caccount}>Lets Bypass to main account page</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
