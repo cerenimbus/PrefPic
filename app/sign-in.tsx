@@ -9,6 +9,9 @@ import constants from "expo-constants";
 import { getDeviceID } from "../components/deviceInfo";
 import { XMLParser } from "fast-xml-parser";
 import * as Device from "expo-device";  // Import expo-device to get device info
+import * as SplashScreen from "expo-splash-screen";
+import { useFonts, DarkerGrotesque_600SemiBold } from "@expo-google-fonts/darker-grotesque";
+
 
 export default function Signin() {
   const [email, setEmail] = useState("");
@@ -16,6 +19,7 @@ export default function Signin() {
   const [isChecked, setChecked] = useState(false);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
 
   // Use context and handle undefined fallback
   const { authCode, saveAuthCode } = useContext(AuthContext) || { authCode: null, saveAuthCode: () => {} };
@@ -102,7 +106,7 @@ export default function Signin() {
       const key = CryptoJS.SHA1(keyString).toString();
 
       // Construct API URL
-      const url = `https://PrefPic.com/dev/CCService/AuthorizeUser.php?DeviceID=${encodeURIComponent(deviceID)}&DeviceType=${encodeURIComponent(deviceType)}&DeviceModel=${encodeURIComponent(deviceModel)}&DeviceVersion=${encodeURIComponent(deviceVersion)}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(email)}&Phone=1234567890&Password=${encodeURIComponent(password)}&PrefPicVersion=10&TestFlag=0&AuthCode=${encodeURIComponent(authCode || "")}`;
+      const url = `https://prefpic.com/dev/PPService/AuthorizeUser.php?DeviceID=${encodeURIComponent(deviceID)}&DeviceType=${encodeURIComponent(deviceType)}&DeviceModel=${encodeURIComponent(deviceModel)}&DeviceVersion=${encodeURIComponent(deviceVersion)}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(email)}&Phone=1234567890&Password=${encodeURIComponent(password)}&PrefPicVersion=10&TestFlag=0&AuthCode=${encodeURIComponent(authCode || "")}`;
 
       console.log("Request URL:", url);
 
@@ -135,14 +139,15 @@ export default function Signin() {
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.flexContainer}>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          {/* Centered Image and Text */}
+
+          {/* Form Container */}
+          <View style={styles.container}>
+                      {/* Centered Image and Text */}
           <View style={styles.imageTextContainer}>
             <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
             <Text style={styles.signintxt}>Sign in</Text>
           </View>
 
-          {/* Form Container */}
-          <View style={styles.container}>
             {/* Email and Password Inputs */}
             <TextInput
               style={styles.inputemail}
@@ -188,10 +193,11 @@ export default function Signin() {
             </TouchableOpacity>
 
             {/* Create Account Link */}
-            <TouchableOpacity onPress={navigateToCreateAccount}>
+   
+          </View>
+          <TouchableOpacity onPress={navigateToCreateAccount}>
               <Text style={styles.caccount}>Create an account</Text>
             </TouchableOpacity>
-          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </ImageBackground>
@@ -210,18 +216,23 @@ const styles = StyleSheet.create({
   },
   imageTextContainer: {
     alignItems: "center",
-    marginBottom: 40,
+    marginTop: 30,
   },
   imagestyle: {
-    width: 90,
-    height: 90,
+    width: 70,
+    height: 70,
     borderRadius: 50,
   },
   signintxt: {
     fontSize: 36,
     fontWeight: "600",
-    marginTop: 10,
+    marginBottom: 10,
     textAlign: "center",
+    marginTop: 15,
+    fontFamily: "DarkerGrotesque_600SemiBold",
+
+
+
   },
   GetText: {
     color: "white",
@@ -236,11 +247,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   caccount: {
-    color: "#888888",
+    color: "black",
     textDecorationLine: "underline",
     fontSize: 12,
     textAlign: "center",
-    marginTop: 10,
+    marginTop: 105
   },
   getButton: {
     backgroundColor: "#A3A3A3", // Initially disabled color
@@ -265,14 +276,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: 294,
-    height: 300,
+    height: 470,
     justifyContent: "center",
     padding: 15,
     backgroundColor: "#FFFFFF",
     borderRadius: 10,
     alignItems: "center",
     marginBottom: 30,
-    marginTop: -35
+    marginTop: 40
   },
   inputemail: {
     height: 40,
