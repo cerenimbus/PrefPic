@@ -32,6 +32,7 @@ export default function RootLayout() {
       {/* <Stack.Screen name="addTeamMemberCode" options={{headerShown: false}} /> */}
       <Stack.Screen name="addTeamMemberDisplay" options={{headerShown: false}} />
 
+      <Stack.Screen name ="teamMember" options={{headerShown:false}} /> 
 
       {/* <Stack.Screen name="viewProcedure" options={{headerShown: false}} /> */}
       <Stack.Screen name="help" options={{headerShown: false}} />
