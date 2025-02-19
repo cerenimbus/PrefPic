@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import BottomNavigation from '../components/bottomNav';
+import BottomNavigation from '../components/bottomNavDemo';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
@@ -89,8 +89,15 @@ const LibraryScreen: React.FC = () => {
         router.push({
         pathname: "viewProcedure",
         params: { procedureName, alwaysDo, watchFor, neverDo },
-    });       
+    });
+    const navigateToMainAccountPage = () => {
+        router.push('mainAccountPage');
+    };    
+      
 };
+    const navigateToCompleteDemo = () => {
+        router.push('completeDemo');
+    };  
     // MG 02/13/2025
     // Function to call GetProcedureList API
     const getProcedureList = async () => {
@@ -192,13 +199,20 @@ const LibraryScreen: React.FC = () => {
         });
     };
 
+    const navigateToMainAccountPage = () => {
+        router.push('mainAccountPage');
+    };
+
     //function navigateToAddPearls(procedure: string): void {
         //throw new Error('Function not implemented.');
     //}
+    
+    
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.container}>
+
                 <Text style={styles.title}>DR. CRAIG CLARK</Text>
                 <Text style={styles.subtitle}>Procedures Library</Text>
                 <Text style={styles.description}>
@@ -233,7 +247,7 @@ const LibraryScreen: React.FC = () => {
                         </View>
                     )}
                 </View> 
-                <TouchableOpacity style={styles.finishButton} onPress={handleCodeSubmit}>
+                <TouchableOpacity style={styles.finishButton} onPress={navigateToCompleteDemo}>
                     <Text style={styles.FinishButtonText}>Finish Demo</Text>
                 </TouchableOpacity>
             </View>

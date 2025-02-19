@@ -52,9 +52,12 @@ export default function Signin() {
   };
 
   const navigateToCreateAccount = () => { 
-    router.push("/CreateAccount"); // Adjust the path if your CreateAccount screen is in another folder
+    router.push("/createAccount"); // Adjust the path if your CreateAccount screen is in another folder
   };
 
+  const navigateToMainAccountPage = () => {
+    router.push("/mainAccountPage");
+  };
   // Determine if the "Sign In" button should be enabled or disabled
   const isFormValid = email && password && isChecked && validateEmail(email);
 
@@ -124,7 +127,7 @@ export default function Signin() {
         const authorizationCode = resultInfo?.Auth;
         await AsyncStorage.setItem("AUTH_CODE", authorizationCode || "");
         saveAuthCode(authorizationCode || "");
-        router.push("/Project");
+        router.push("/mainAccountPage");
       } else {
         Alert.alert("Authorization Failed", resultInfo?.Message || "An unknown error occurred.");
       }
@@ -198,6 +201,7 @@ export default function Signin() {
           <TouchableOpacity onPress={navigateToCreateAccount}>
               <Text style={styles.caccount}>Create an account</Text>
             </TouchableOpacity>
+
         </ScrollView>
       </KeyboardAvoidingView>
     </ImageBackground>

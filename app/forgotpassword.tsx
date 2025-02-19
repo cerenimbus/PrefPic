@@ -111,6 +111,7 @@ export default function ForgotPassword()  {
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
 
 
+
           {/* Form Container */}
           <View style={styles.container}>
                       {/* Back Button */}
@@ -123,6 +124,14 @@ export default function ForgotPassword()  {
             <Text style={styles.signintxt}>Forgot </Text>
             <Text style={styles.signintxt1}> Password? </Text>
           </View>
+
+          
+          {/* Form Container */}
+          <View style={styles.container}>
+            {/* Back Button */}
+          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+            <Text style={styles.backText}>Back</Text>
+          </TouchableOpacity>
 
             <Text style={styles.first}>Enter your email to receive</Text>
             <Text style={styles.second}>your password.</Text>
@@ -256,8 +265,10 @@ const styles = StyleSheet.create({
   },
   backButton: { 
     position: "absolute",
+
     top: 5,
     left: 5,
+
     padding: 10,
     borderRadius: 5,
     flexDirection: "row", // Aligns icon and text horizontally

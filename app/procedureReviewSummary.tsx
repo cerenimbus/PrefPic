@@ -45,7 +45,7 @@ export default function ProcedureReviewSummary() {
 
       
       <View style={styles.titleSection}>
-        <Text style={styles.procedureName}>[Procedure Name]</Text>
+        <Text style={styles.procedureName}>{procedureName}</Text>
         <Text style={styles.subtitle}>Review summary</Text>
       </View>
 

@@ -25,6 +25,16 @@ export default function StartScreen() {
     fetchDeviceID();
   }, []);
 
+ // Check if user already completed the demo
+ useEffect(() => {
+  const checkDemoStatus = async () => {
+    const demoStatus = await AsyncStorage.getItem("status");
+    if (demoStatus === "true") {
+      router.replace("/sign-in"); // Skip demo and go to SignIn screen
+    }
+  };
+  checkDemoStatus();
+}, []);
 
   const handleGetStarted = async () => {
     try {
@@ -100,20 +110,20 @@ export default function StartScreen() {
     handleGetStarted(); // Call API when "Get Started" is clicked
   };
 
-  const navigateToCreateAccount = () => {
-    router.push('createAccount');
-};
+//   const navigateToCreateAccount = () => {
+//     router.push('createAccount');
+// };
 
   return (
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
       
       <View style={[styles.container]}>
-      <Text
+      {/* <Text
       style={{ color: "blue", textDecorationLine: "underline" }}
       onPress={() => router.push("/sign-in")}
-      >
-      Sign in
-      </Text>
+      > */}
+      {/* Sign in
+      </Text> */}
         <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
         <Text style={styles.pref}>PrefPic Demo</Text>
         <Text style={styles.description}>There is no sign-in required for </Text>
@@ -146,13 +156,13 @@ export default function StartScreen() {
           >
             <Text style={styles.GetText}>Get Started</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[styles.getButton, { opacity: isChecked ? 1 : 0.5 }]}
             onPress={navigateToCreateAccount}
             disabled={!isChecked} // Prevents clicking when unchecked
           >
             <Text style={styles.GetText}>Create Account</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </ImageBackground>
