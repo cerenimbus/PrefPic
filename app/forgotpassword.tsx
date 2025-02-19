@@ -83,6 +83,7 @@ export default function Signin()  {
               </TouchableOpacity>
             </View>
           </View>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </ImageBackground>
