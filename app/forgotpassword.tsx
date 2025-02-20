@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import CheckBox from "expo-checkbox";
 import { useRouter } from "expo-router";
-import { ArrowLeft } from "lucide-react-native";
+// import { ArrowLeft } from "lucide-react-native";
 import { getDeviceID } from "../components/deviceInfo";
 import CryptoJS from "crypto-js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -116,23 +116,15 @@ export default function ForgotPassword()  {
           <View style={styles.container}>
                       {/* Back Button */}
                       <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <ArrowLeft color="#375894" size={20} />
-           <Text style={styles.backText}>Back</Text>
+              {/* <ArrowLeft color="#375894" size={20} /> */}
+           <Text style={styles.backText}>← Back</Text>
             </TouchableOpacity>
           <View style={styles.imageTextContainer}>
             <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
             <Text style={styles.signintxt}>Forgot </Text>
             <Text style={styles.signintxt1}> Password? </Text>
           </View>
-
           
-          {/* Form Container */}
-          <View style={styles.container}>
-            {/* Back Button */}
-          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-            <Text style={styles.backText}>Back</Text>
-          </TouchableOpacity>
-
             <Text style={styles.first}>Enter your email to receive</Text>
             <Text style={styles.second}>your password.</Text>
             <Text style={styles.third}>If a valid user email is provided,</Text>

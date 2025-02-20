@@ -9,8 +9,8 @@ import constants from "expo-constants";
 import { getDeviceID } from "../components/deviceInfo";
 import { XMLParser } from "fast-xml-parser";
 import * as Device from "expo-device";  // Import expo-device to get device info
-import * as SplashScreen from "expo-splash-screen";
-import { useFonts, DarkerGrotesque_600SemiBold } from "@expo-google-fonts/darker-grotesque";
+// import * as SplashScreen from "expo-splash-screen";
+// import { useFonts, DarkerGrotesque_600SemiBold } from "@expo-google-fonts/darker-grotesque";
 
 
 export default function Signin() {
@@ -196,11 +196,11 @@ export default function Signin() {
             </TouchableOpacity>
 
             {/* Create Account Link */}
-   
-          </View>
-          <TouchableOpacity onPress={navigateToCreateAccount}>
+            <TouchableOpacity onPress={navigateToCreateAccount}>
               <Text style={styles.caccount}>Create an account</Text>
             </TouchableOpacity>
+          </View>
+          
 
         </ScrollView>
       </KeyboardAvoidingView>
@@ -251,11 +251,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   caccount: {
-    color: "black",
+    color: "#888888",
     textDecorationLine: "underline",
     fontSize: 12,
     textAlign: "center",
-    marginTop: 105
+    marginTop: 10
   },
   getButton: {
     backgroundColor: "#A3A3A3", // Initially disabled color
