@@ -156,6 +156,7 @@ export default function ForgotPassword()  {
               </TouchableOpacity>
             </View>
           </View>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </ImageBackground>
