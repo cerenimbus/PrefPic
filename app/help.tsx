@@ -6,6 +6,7 @@ import BottomNavigation from "../components/bottomNav";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { getDeviceID } from '../components/deviceInfo';
+import { XMLParser } from 'fast-xml-parser';
 
 const helpScreen: React.FC = () => {
   const router = useRouter();
@@ -63,33 +64,32 @@ const helpScreen: React.FC = () => {
 
       const url = `https://PrefPic.com/dev/PPService/GetHelp.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&Topic=${topic}&PrefPicVersion=1`;
       const response = await fetch(url, {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ Topic: topic }),
       });
       const responseText = await response.text();
       console.log('Response Text:', responseText);
 
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch (error) {
-        console.error('Error parsing JSON:', error);
-        Alert.alert('Error', 'Failed to parse response from server.');
-        return;
-      }
+      // Parse the XML response
+      const parser = new XMLParser();
+      const data = parser.parse(responseText);
+      console.log('Parsed Data:', data);
 
-      Alert.alert(
-        `Help About ${topic}`,
-        data.helpText,
-        [
-          { text: 'Ok', onPress: navigateToMainAccountPage },
-          { text: 'Back', onPress: navigateToMainAccountPage },
-        ],
-        { cancelable: false }
-      );
+      if (data.ResultInfo && data.ResultInfo.Result === 'Success') {
+        Alert.alert(
+          `Help About ${topic}`,
+          data.ResultInfo.Message,
+          [
+            { text: 'Ok', onPress: navigateToMainAccountPage },
+            { text: 'Back', onPress: navigateToMainAccountPage },
+          ],
+          { cancelable: false }
+        );
+      } else {
+        Alert.alert('Error', 'Failed to fetch help from server.');
+      }
     } catch (error) {
       console.error('Error fetching help:', error);
       Alert.alert('Error', 'Failed to fetch help from server.');

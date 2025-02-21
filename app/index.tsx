@@ -13,7 +13,8 @@ export default function StartScreen() {
   const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
   const router = useRouter();
   const { saveAuthCode } = useContext(AuthContext) ?? {};
-  
+  const [hasCheckedDemo, setHasCheckedDemo] = useState(false);
+
 
   // Fetch the unique device ID dynamically
   useEffect(() => {
@@ -28,13 +29,30 @@ export default function StartScreen() {
  // Check if user already completed the demo
  useEffect(() => {
   const checkDemoStatus = async () => {
+    if (hasCheckedDemo) return; // Avoid re-running
+
     const demoStatus = await AsyncStorage.getItem("status");
-    if (demoStatus === "true") {
-      router.replace("/sign-in"); // Skip demo and go to SignIn screen
+    if (demoStatus === "Demo" || demoStatus === "Active") {
+      router.replace("/sign-in");
+    }
+    setHasCheckedDemo(true); // Mark as checked
+  };
+
+  checkDemoStatus();
+}, [hasCheckedDemo]);
+
+useEffect(() => {
+  const checkUserType = async () => {
+    const userType = await AsyncStorage.getItem("UserType");
+
+    if (!userType) {
+      await AsyncStorage.setItem("UserType", "Staff"); // Default to "Staff" if not set
     }
   };
-  checkDemoStatus();
+
+  checkUserType();
 }, []);
+
 
   const handleGetStarted = async () => {
     try {
@@ -50,6 +68,9 @@ export default function StartScreen() {
       ).padStart(2, '0')}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, '0')}:${String(
         currentDate.getMinutes()
       ).padStart(2, '0')}`;
+
+      const demoStatus = (await AsyncStorage.getItem("Demo")) || "Active";
+      const userType = (await AsyncStorage.getItem("UserType")) || "Staff";
 
       // Generate Key using SHA1 (DeviceID + Date)
       const keyString = `${deviceID.id}${formattedDate}`;
@@ -99,7 +120,7 @@ export default function StartScreen() {
   };
 
   useEffect(() => {
-    console.log("isChecked updated:", isChecked);
+    console.log("is Checked updated:", isChecked);
   }, [isChecked]);
 
   const navigateToIndex = () => {
@@ -118,13 +139,15 @@ export default function StartScreen() {
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
       
       <View style={[styles.container]}>
-      {/* <Text
+        {/* <Text
       style={{ color: "blue", textDecorationLine: "underline" }}
       onPress={() => router.push("/sign-in")}
-      > */}
-      {/* Sign in
-      </Text> */}
+      > 
+      Sign in
+      </Text>  */}
+ 
         <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
+
         <Text style={styles.pref}>PrefPic Demo</Text>
         <Text style={styles.description}>There is no sign-in required for </Text>
         <Text> this demo version. The live </Text>
@@ -138,8 +161,9 @@ export default function StartScreen() {
               setChecked(newValue);
             }}
           />
+          <Text>I accept</Text>
           <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/terms.html")}>
-            Accept Terms
+            Terms
           </Text>
           <Text> and </Text>
           <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/privacypolicy.html")}>

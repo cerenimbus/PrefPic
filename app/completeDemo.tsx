@@ -11,7 +11,7 @@ export default function CompleteDemo() {
     // Set the status to true so the user won't go through the demo again
     const markDemoAsCompleted = async () => {
       try {
-        await AsyncStorage.setItem("status", "true");
+        await AsyncStorage.setItem("status", "Active");
         console.log("✅ Demo marked as complete");
       } catch (error) {
         console.error("Error saving demo status:", error);

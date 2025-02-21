@@ -213,10 +213,7 @@ const LibraryScreen: React.FC = () => {
         <SafeAreaView style={styles.container}>
             <View style={styles.container}>
 
-                <TouchableOpacity onPress={navigateToMainAccountPage}>
-
                 <Text style={styles.title}>DR. CRAIG CLARK</Text>
-                </TouchableOpacity>
                 <Text style={styles.subtitle}>Procedures Library</Text>
                 <Text style={styles.description}>
                     On this screen you create or edit your medical procedures practices.
