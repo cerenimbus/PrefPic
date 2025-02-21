@@ -1,7 +1,94 @@
 import { Router, useRouter,useLocalSearchParams} from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 
+
+
+export default function ViewEditPicture() {
+  const router = useRouter();
+  const [photoUriState, setPhotoUriState]= useState<string | null>(null);
+  
+  const { photoUri, procedureName } = useLocalSearchParams<{
+      photoUri: string;
+      procedureName: string;
+    }>();
+   console.log(photoUri);
+
+  useEffect(() => {
+    if(photoUri){
+      setPhotoUriState(decodeURIComponent(photoUri)+`?t=${Date.now()}`);
+    } else {
+      setPhotoUriState(null);
+  }}, [photoUri]);
+
+  const bulletPointText = `
+• Best to have x tool on the edge of table
+• Do not rearrange
+• xyz
+`;
+const navigateToCamera = () => {
+  setPhotoUriState(null);
+  router.replace({
+    pathname: "camera",
+    // Pass the procedureName as a query parameter so it doesn't get lost
+    params: { procedureName },
+  });
+}
+
+
+  return (
+    <View style={styles.container}>
+      {/* Header */}
+      <TouchableOpacity onPress={() => router.back()}>
+        <Text style={styles.backText}>← Back</Text>
+      </TouchableOpacity>
+      <Text style={styles.header}>Image for: {procedureName}</Text>
+
+      {/* Image */}
+      {/* <View style={styles.imageContainer}>
+  <Image style={styles.image} source={{ uri: photoUri }} />
+</View> */}
+
+{photoUri? (
+  <View style={styles.imageContainer}>
+    <Image 
+      source={{ uri: "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252FPrefPic-44ce48c4-0c51-4095-b0de-e0f358c7a95f/Camera/577a0011-7783-488d-b7b6-6c656dd70acb.jpg"}} 
+      style={styles.image} 
+    />
+  </View>
+) : (
+  <Text style={{ textAlign: "center", marginVertical: 20 }}>No image available</Text>
+)}
+
+        {/* Retake picture */}
+        <TouchableOpacity style={styles.retakePicture} onPress={navigateToCamera}>
+          <Text style={styles.retakePictureText}>Retake pic</Text>
+        </TouchableOpacity>
+
+      {/* Center box */}
+      <View style={styles.centerBox}>
+        <Text style={styles.description}>Description</Text>
+        <TouchableOpacity style={styles.edit} onPress={() => router.back()}>
+        <Text style={styles.edit}>Edit</Text>
+        </TouchableOpacity>
+        <Text style={styles.contents}>Back Table equipment</Text>
+        <Text style={styles.notes}>Notes</Text>
+        <Text style={styles.bulletText}>{bulletPointText}</Text>
+      </View>
+
+      {/* Buttons */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.delete} onPress={() => router.back()}>
+          <Text style={styles.deletebuttonText}>Delete</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.save} onPress={() => router.back()}>
+          <Text style={styles.buttonText}>Save</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -150,61 +237,3 @@ const styles = StyleSheet.create({
   },
 
 });
-
-export default function ViewEditPicture() {
-  const router = useRouter();
-
-
-  const { photoUri, procedureName } = useLocalSearchParams<{
-      photoUri: string;
-      procedureName: string;
-    }>();
-  
-  const bulletPointText = `
-• Best to have x tool on the edge of table
-• Do not rearrange
-• xyz
-`;
-
-  return (
-    <View style={styles.container}>
-      {/* Header */}
-      <TouchableOpacity onPress={() => router.back()}>
-        <Text style={styles.backText}>← Back</Text>
-      </TouchableOpacity>
-      <Text style={styles.header}>Image for: {procedureName}</Text>
-
-      {/* Image */}
-      <View style={styles.imageContainer}>
-        <Image style={styles.image} source={require("../assets/reviewImage/reviewImage.png")} />
-      </View>
-
-        {/* Retake picture */}
-        <TouchableOpacity style={styles.retakePicture} onPress={() => router.back()}>
-          <Text style={styles.retakePictureText}>Retake pic</Text>
-        </TouchableOpacity>
-
-      {/* Center box */}
-      <View style={styles.centerBox}>
-        <Text style={styles.description}>Description</Text>
-        <TouchableOpacity style={styles.edit} onPress={() => router.back()}>
-        <Text style={styles.edit}>Edit</Text>
-        </TouchableOpacity>
-        <Text style={styles.contents}>Back Table equipment</Text>
-        <Text style={styles.notes}>Notes</Text>
-        <Text style={styles.bulletText}>{bulletPointText}</Text>
-      </View>
-
-      {/* Buttons */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.delete} onPress={() => router.back()}>
-          <Text style={styles.deletebuttonText}>Delete</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.save} onPress={() => router.back()}>
-          <Text style={styles.buttonText}>Save</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-}

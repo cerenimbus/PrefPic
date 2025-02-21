@@ -48,7 +48,7 @@ export default function Camera() {
       // Debugging: Log the captured photo URI
       console.log("Captured photo URI: ", photoData?.uri);
      
-       //RJP -> 2/011/2025
+    //RJP -> 2/011/2025
     // Check if photoData is defined before setting the URI
     if (photoData?.uri) {
         //Alberto -> 2/011/2025

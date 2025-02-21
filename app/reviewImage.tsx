@@ -6,99 +6,7 @@ import CryptoJS from "crypto-js";
 import { getDeviceID } from '../components/deviceInfo';
 import { Modal } from "react-native";
 
-//Alberto -> 2/19/2025
-const  {width, height} = Dimensions.get("window");
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F5F8FF",
-    padding: 16,
-  },
-  backText: {
-    fontSize: 16,
-    color: "#007AFF",
-  },
-  header: {
-    fontSize: 20,
-    textAlign: "center",
-    marginVertical: 16,
-    paddingTop: 30,
-  },
-  buttonContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
-    paddingBottom: 20,
-    flexDirection: "row",
-    width: "100%",
-  },
-  nextbutton: {
-    backgroundColor: "#375894",
-    padding: 16,
-    borderRadius: 31,
-    alignItems: "center",
-    marginLeft: 10,
-    width: 120,
-    flex: 1,
-  },
-  retakebutton: {
-    backgroundColor: "#FFFFFF",
-    padding: 14,
-    borderRadius: 31,
-    alignItems: "center",
-    borderColor: "#375894",
-    width: 180,
-    borderWidth: 2,
-  },
-  retakebuttonText: {
-    color: "#375894",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  buttonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  image: {
-    width: width * 0.9, // 90% of screen width
-    height: height * 0.5, // 50% of screen height
-    marginTop: 16,
-    borderRadius: 20,
-    alignSelf: "center",
-  },
-  fullImageOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(41, 41, 41, 0.8)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  //Alberto -> 2/19/2025
-  //change the width and height of the full image to take account the screen width and height and not use postion absolute
-  fullImage: {
-    width: width * 1.1, // takes account the screen width
-    height: height * 1, // takes account the screen height
-    objectFit: "contain",
-  },
-  closeButton: {
-    alignSelf: "flex-end",/// this will put the x button above the image 
-    //position: "absolute", this will put the x button inside the image
-    top: 140,
-    right: 20,
-    backgroundColor: "rgb(255, 255, 255)",
-    borderRadius: 30,
-    padding: 8,
-    zIndex: 1001,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  closeButtonText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#000",
-  },
-});
 
 export default function ReviewImage() {
   const router = useRouter();
@@ -106,7 +14,7 @@ export default function ReviewImage() {
   const [photoUriState, setPhotoUriState] = useState<string | null>(null);
   const [isPreview, setIsPreview] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
+  const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
 
    //RJP -> 2/7/2025
   // (import) image and procedure name from add_2.tsx 
@@ -318,3 +226,96 @@ const navigateToCamera = () => {
     </View>
   );
 }
+//Alberto -> 2/19/2025
+const  {width, height} = Dimensions.get("window");
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F5F8FF",
+    padding: 16,
+  },
+  backText: {
+    fontSize: 16,
+    color: "#007AFF",
+  },
+  header: {
+    fontSize: 20,
+    textAlign: "center",
+    marginVertical: 16,
+    paddingTop: 30,
+  },
+  buttonContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+    paddingBottom: 20,
+    flexDirection: "row",
+    width: "100%",
+  },
+  nextbutton: {
+    backgroundColor: "#375894",
+    padding: 16,
+    borderRadius: 31,
+    alignItems: "center",
+    marginLeft: 10,
+    width: 120,
+    flex: 1,
+  },
+  retakebutton: {
+    backgroundColor: "#FFFFFF",
+    padding: 14,
+    borderRadius: 31,
+    alignItems: "center",
+    borderColor: "#375894",
+    width: 180,
+    borderWidth: 2,
+  },
+  retakebuttonText: {
+    color: "#375894",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  image: {
+    width: width * 0.9, // 90% of screen width
+    height: height * 0.5, // 50% of screen height
+    marginTop: 16,
+    borderRadius: 20,
+    alignSelf: "center",
+  },
+  fullImageOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(41, 41, 41, 0.8)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  //Alberto -> 2/19/2025
+  //change the width and height of the full image to take account the screen width and height and not use postion absolute
+  fullImage: {
+    width: width * 1.1, // takes account the screen width
+    height: height * 1, // takes account the screen height
+    objectFit: "contain",
+  },
+  closeButton: {
+    alignSelf: "flex-end",/// this will put the x button above the image 
+    //position: "absolute", this will put the x button inside the image
+    top: 140,
+    right: 20,
+    backgroundColor: "rgb(255, 255, 255)",
+    borderRadius: 30,
+    padding: 8,
+    zIndex: 1001,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  closeButtonText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#000",
+  },
+});

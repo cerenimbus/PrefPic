@@ -1,5 +1,5 @@
 import { Router, router, useRouter,useLocalSearchParams} from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 
 const styles = StyleSheet.create({
@@ -118,20 +118,40 @@ const styles = StyleSheet.create({
 
 export default function viewEditPicture() {
   const router = useRouter();
+  const [photoUriState, setPhotoUriState] = useState<string | null>(null);
   const { photoUri, procedureName } = useLocalSearchParams<{
     photoUri: string;
     procedureName: string;
   }>();
+ console.log(photoUri);
+
+useEffect(() => {
+    if(photoUri){
+      setPhotoUriState(decodeURIComponent(photoUri)+`?t=${Date.now()}`);
+    } else {
+      setPhotoUriState(null);
+  }}, [photoUri]);
+
+
 
   const navigateToretakePicture = () => {
     router.push({
       pathname: "retakePicture",
-      params: { procedureName, photoUri},
+      params: { procedureName, photoUri: photoUriState },
     });
   };
   const navigateToAddPearls = () => {
     router.push("addPearls");
   }
+
+  const navigateToCamera = () => {
+    router.replace({
+      pathname: "camera",
+      // Pass the procedureName as a query parameter so it doesn't get lost
+      params: { procedureName },
+    });
+  }
+  
   
   return (
     <View style={styles.container}>
@@ -164,7 +184,7 @@ export default function viewEditPicture() {
 
         {/* Buttons */}
     <View style={styles.buttonContainer}>
-      <TouchableOpacity style={styles.addPicture} onPress={() => router.back()}>
+      <TouchableOpacity style={styles.addPicture} onPress={navigateToCamera}>
           <Text style={styles.addPicturebuttonText}>Add more pictures</Text>
       </TouchableOpacity>
       
