@@ -10,16 +10,12 @@
     "web": "expo start --web"
   },
   "dependencies": {
-
     "@expo-google-fonts/darker-grotesque": "^0.2.3",
-
     "@expo/vector-icons": "^14.0.4",
     "@react-native-async-storage/async-storage": "^2.1.1",
     "@react-native-community/slider": "4.5.5",
     "@react-native-picker/picker": "2.9.0",
-
     "@react-navigation/bottom-tabs": "^7.2.0",
-
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/stack": "^7.1.1",
     "crypto-js": "^4.2.0",
@@ -28,6 +24,7 @@
     "expo-checkbox": "^4.0.1",
     "expo-device": "~7.0.2",
     "expo-font": "~13.0.3",
+    "expo-image-manipulator": "~13.0.6",
     "expo-media-library": "~17.0.5",
     "expo-modules-core": "^2.2.2",
     "expo-router": "^4.0.17",
@@ -41,20 +38,12 @@
     "react-native-gesture-handler": "^2.23.1",
     "react-native-modal": "^13.0.1",
     "react-native-paper": "^5.13.1",
-
-    "react-native-responsive-screen": "^1.4.2",
-
     "react-native-reanimated": "^3.16.7",
-
+    "react-native-responsive-screen": "^1.4.2",
     "react-native-safe-area-context": "^5.2.0",
-
     "react-native-screens": "^4.7.0",
     "react-native-vector-icons": "^10.2.0",
-    
-
-    "start": "^5.1.0",
-    "expo-image-manipulator": "~13.0.6"
-
+    "start": "^5.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
