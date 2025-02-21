@@ -14,14 +14,19 @@ const BottomNavigation: React.FC = () => {
         // router.push('mainAccountPage');
     };
 
+
+
+    ///Alberto 02/21/2024 fixed router
     const navigateToTeamMember = () => {
         router.push("/teamMember"); 
     };
-    const isTeamActive = pathname === "/teamMember";
+    const isTeamActive = pathname.startsWith("/teamMember") || pathname.startsWith("/addTeamMember");
+
     const isFeedbackActive = pathname === "/feedback";
     //const isProcedureActive = pathname === "/library";
     const isHelpActive = pathname === "/help"   ;
   const isProcedureDisabled = pathname === "/teamMember" || pathname === "/feedback";
+  const isProcedureActive = pathname === "/library"; 
 
     const navigateToHelp = () => {
         router.push('/help');
@@ -40,15 +45,18 @@ const BottomNavigation: React.FC = () => {
                     style={styles.icon}/>
                 <Text style={styles.navTextActive}>Procedure</Text>
             </TouchableOpacity> */}
-            <TouchableOpacity style={styles.navItem} onPress={navigateToLibrary}>
-                <Image 
-                    // source={require('../assets/Procedure_blue.png')}
-                    source={isProcedureDisabled ? require('../assets/Procedure_grayed.png') : require('../assets/Procedure_blue.png')}
-                    style={styles.icon}
-                />
-                {/* <Text style={styles.navTextActive}>Procedure</Text> */}
-                <Text style={isProcedureDisabled ? styles.navTextDisabled : styles.navText}>Procedure</Text>
-            </TouchableOpacity>
+           <TouchableOpacity style={styles.navItem} onPress={navigateToLibrary}>
+    <Image 
+        source={isProcedureDisabled ? require('../assets/Procedure_grayed.png') : 
+                isProcedureActive ? require('../assets/Procedure_blue.png') : 
+                require('../assets/Procedure_grayed.png')}
+        style={styles.icon}
+    />
+    <Text style={isProcedureActive ? styles.navTextActive : isProcedureDisabled ? styles.navTextDisabled : styles.navText}>
+        Procedure
+    </Text>
+</TouchableOpacity>
+
 
 
             {/* <TouchableOpacity style={styles.navItem}//turn to false for testing 
