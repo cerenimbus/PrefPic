@@ -11,15 +11,15 @@ export default function RootLayout() {
        <AuthProvider>
 
        <Stack>
-       <Stack.Screen name="sign-in" options={{headerShown: false}} />
-       <Stack.Screen name="forgotpassword" options={{headerShown: false}} />
+       
       <Stack.Screen name="loading" options={{ headerShown: false }} />
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="addPearls" options={{ headerShown: false }} />
       <Stack.Screen name="procedureReviewSummary" options={{ headerShown: false }} />
       <Stack.Screen name="viewProcedure" options={{headerShown: false}} />
       <Stack.Screen name="reviewImage" options={{headerShown:false}} />
-
+      <Stack.Screen name="sign-in" options={{headerShown: false}} />
+      <Stack.Screen name="forgotpassword" options={{headerShown: false}} />
       <Stack.Screen name="viewEditPicture" options={{headerShown:false}}/>
       <Stack.Screen name="retakePicture" options={{headerShown:false}}/>
       <Stack.Screen name="addProcedure" options={{ headerShown:false}} />

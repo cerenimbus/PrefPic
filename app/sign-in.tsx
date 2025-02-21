@@ -19,14 +19,45 @@ export default function Signin() {
   const [isChecked, setChecked] = useState(false);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [hasCheckedDemo, setHasCheckedDemo] = useState(false);
+
 
 
   // Use context and handle undefined fallback
   const { authCode, saveAuthCode } = useContext(AuthContext) || { authCode: null, saveAuthCode: () => {} };
 
   useEffect(() => {
-    console.log("isChecked updated:", isChecked);
+    console.log("is Checked updated:", isChecked);
   }, [isChecked]);
+
+
+    useEffect(() => {
+      const checkDemoStatus = async () => {
+        if (hasCheckedDemo) return; // Avoid re-running
+    
+        const demoStatus = await AsyncStorage.getItem("status");
+        if (demoStatus === "Demo" || demoStatus === "Active") {
+          router.replace("/sign-in");
+        }
+        setHasCheckedDemo(true); // Mark as checked
+      };
+    
+      checkDemoStatus();
+    }, [hasCheckedDemo]);
+  
+    useEffect(() => {
+      const checkUserType = async () => {
+        const userType = await AsyncStorage.getItem("UserType");
+    
+        if (!userType) {
+          await AsyncStorage.setItem("UserType", "Staff"); // Default to "Staff" if not set
+        }
+      };
+    
+      checkUserType();
+    }, []);
+  
+  
 
   const navigateToIndex = () => {
     if (!validateEmail(email)) {
@@ -62,6 +93,8 @@ export default function Signin() {
   const isFormValid = email && password && isChecked && validateEmail(email);
 
   const handleSignIn = async () => {
+
+    
     if (!email || !password) {
       Alert.alert("Validation Error", "Email and Password are required.");
       return;
@@ -100,10 +133,12 @@ export default function Signin() {
       // Get device ID
       const { id: deviceID } = await getDeviceID();
 
+
       // Generate formatted date (MM/DD/YYYY-HH:mm)
       const currentDate = new Date();
       const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, '0')}/${String(currentDate.getDate()).padStart(2, '0')}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, '0')}:${String(currentDate.getMinutes()).padStart(2, '0')}`;
-
+      const demoStatus = (await AsyncStorage.getItem("Demo")) || "Active";
+      const userType = (await AsyncStorage.getItem("UserType")) || "Staff";
       // Generate Key using SHA1 (DeviceID + Date)
       const keyString = `${deviceID}${formattedDate}`;
       const key = CryptoJS.SHA1(keyString).toString();
@@ -172,8 +207,9 @@ export default function Signin() {
             {/* Terms and Privacy Policy */}
             <View style={styles.checkboxContainer}>
               <CheckBox value={isChecked} onValueChange={setChecked} />
+              <Text>I accept</Text>
               <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/terms.html")}>
-                Accept Terms
+                 Terms
               </Text>
               <Text> and </Text>
               <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/privacypolicy.html")}>
@@ -199,8 +235,10 @@ export default function Signin() {
             <TouchableOpacity onPress={navigateToCreateAccount}>
               <Text style={styles.caccount}>Create an account</Text>
             </TouchableOpacity>
+
           </View>
           
+
 
         </ScrollView>
       </KeyboardAvoidingView>
