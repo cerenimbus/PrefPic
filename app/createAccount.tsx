@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Platform,
+  SafeAreaView
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Checkbox } from "react-native-paper";
@@ -215,6 +216,7 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
   
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
       <TouchableWithoutFeedback onPress={dismissKeyboard}>
         
@@ -283,7 +285,7 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                             multiline
                             placeholder="Password"
                             secureTextEntry={!showPassword}
-                            value={form.email}
+                            value={form.password}
                             onChangeText={(text) => handleInputChange("password", text)}
                             onFocus={() => handleFocus(passwordRef)}
                             onBlur={handleBlur}
@@ -350,6 +352,7 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
             </ImageBackground>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -376,9 +379,9 @@ const styles = StyleSheet.create({
   formContainer: { width: "90%", backgroundColor: "white", borderRadius: 25, alignItems: "center"},
   header: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
   input: { width: "100%", padding: 12, backgroundColor: "#F5F5F5", borderRadius: 10, marginBottom: 10 },
-  checkboxContainer: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: 10, },
-  checkboxOption: { flexDirection: "row", alignItems: "center", },
-  selectText: { fontWeight: "bold", marginRight: 10 },
+  checkboxContainer: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: 10 },
+  checkboxOption: { flexDirection: "row", alignItems: "center", marginRight: 5 },
+  selectText: { fontWeight: "bold", marginRight: 10, fontSize: 12, },
   note: { textAlign: "center", fontSize: 12, color: "gray", marginBottom: 20 },
   continueButton: { backgroundColor: "#375894", padding: 10, borderRadius: 25, width: "100%", alignItems: "center" },
   continueText: { color: "white", fontSize: 18, fontWeight: "bold" },
