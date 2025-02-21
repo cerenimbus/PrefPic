@@ -26,15 +26,15 @@ export default function StartScreen() {
   }, []);
 
  // Check if user already completed the demo
- useEffect(() => {
-  const checkDemoStatus = async () => {
-    const demoStatus = await AsyncStorage.getItem("status");
-    if (demoStatus === "true") {
-      router.replace("/sign-in"); // Skip demo and go to SignIn screen
-    }
-  };
-  checkDemoStatus();
-}, []);
+//  useEffect(() => {
+//   const checkDemoStatus = async () => {
+//     const demoStatus = await AsyncStorage.getItem("status");
+//     if (demoStatus === "true") {
+//       router.replace("/sign-in"); // Skip demo and go to SignIn screen
+//     }
+//   };
+//   checkDemoStatus();
+// }, []);
 
   const handleGetStarted = async () => {
     try {

@@ -12,12 +12,15 @@ const mainAccountPage: React.FC = () => {
   const router = useRouter();
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
   const [authorizationCode, setAuthorizationCode] = useState<string | null>(null);
+  // MG 02/21/2025
+  // added parameter for text of the API to display in text area
   const [helpText, setHelpText] = useState<string | null>(null);
   const searchParams = useLocalSearchParams(); 
-
-  const title = Array.isArray(searchParams.title) ? searchParams.title[0] : searchParams.title;
-  const firstName = Array.isArray(searchParams.firstName) ? searchParams.firstName[0] : searchParams.firstName;
-  const lastName = Array.isArray(searchParams.lastName) ? searchParams.lastName[0] : searchParams.lastName;
+// MG 02/21/2025
+// added parameters for title, firstName, and lastName
+  // const title = Array.isArray(searchParams.title) ? searchParams.title[0] : searchParams.title;
+  // const firstName = Array.isArray(searchParams.firstName) ? searchParams.firstName[0] : searchParams.firstName;
+  // const lastName = Array.isArray(searchParams.lastName) ? searchParams.lastName[0] : searchParams.lastName;
 
   useEffect(() => {
     const fetchAuthorizationCode = async () => {
@@ -115,9 +118,11 @@ const mainAccountPage: React.FC = () => {
           />
         </View>
         <View style={styles.info}>
+          {/*
           <Text style={styles.infoText}>{title}</Text>
           <Text style={styles.infoText}>{firstName}</Text>
           <Text style={{color: '#999999'}}>{lastName}</Text>
+          */}
         </View>
         <Text style={styles.input}>
           {helpText}

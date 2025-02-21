@@ -39,7 +39,7 @@ const BottomNavigation: React.FC = () => {
             <TouchableOpacity style={styles.navItem}>
                 <Image 
                     source={require('../assets/Feedback_grayed.png')}
-                    style={styles.icon}
+                    style={styles.icon} 
                 />
                 <Text style={styles.navText}>Feedback</Text>
             </TouchableOpacity>
