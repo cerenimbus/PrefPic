@@ -10,24 +10,25 @@ const BottomNavigation: React.FC = () => {
     const pathname = usePathname();
 
     const navigateToLibrary = () => {
-         router.push('library');
+        router.push('library');
         // router.push('mainAccountPage');
     };
 
     const navigateToTeamMember = () => {
-        router.push("/teamMember"); 
+        router.push("/teamMember");
     };
     const isTeamActive = pathname === "/teamMember";
+    const isTeamActive1 = pathname === "/enterTeamMember";
     const isFeedbackActive = pathname === "/feedback";
     //const isProcedureActive = pathname === "/library";
-    const isProcedureDisabled = pathname === "/teamMember" || pathname === "/feedback";
+    const isProcedureDisabled = pathname === "/teamMember" || pathname === "/feedback" || pathname === "/enterTeamMember";
 
     const navigateToHelp = () => {
         router.push('help');
     };
 
     const navigateToFeedback = () => {
-        router.push("/feedback"); 
+        router.push("/feedback");
     };
 
     return (
@@ -40,7 +41,7 @@ const BottomNavigation: React.FC = () => {
                 <Text style={styles.navTextActive}>Procedure</Text>
             </TouchableOpacity> */}
             <TouchableOpacity style={styles.navItem} onPress={navigateToLibrary}>
-                <Image 
+                <Image
                     // source={require('../assets/Procedure_blue.png')}
                     source={isProcedureDisabled ? require('../assets/Procedure_grayed.png') : require('../assets/Procedure_blue.png')}
                     style={styles.icon}
@@ -58,17 +59,17 @@ const BottomNavigation: React.FC = () => {
                 <Text style={styles.navText}>Team</Text>
             </TouchableOpacity> */}
             <TouchableOpacity style={styles.navItem} onPress={navigateToTeamMember}>
-                <Image 
+                <Image
                     // source={require('../assets/Team_grayed.png')}
-                    source={isTeamActive ? require('../assets/Team_blue.png') : require('../assets/Team_grayed.png')}
-                    style={styles.icon}/>
+                    source={isTeamActive || isTeamActive1 ? require('../assets/Team_blue.png') : require('../assets/Team_grayed.png')}
+                    style={styles.icon} />
                 {/* <Text style={styles.navText}>Team</Text> */}
                 <Text style={isTeamActive ? styles.navTextActive : styles.navText}>Team</Text>
             </TouchableOpacity>
 
 
             <TouchableOpacity style={styles.navItem} onPress={navigateToHelp}>
-                <Image 
+                <Image
                     source={require('../assets/Help_grayed.png')}
                     style={styles.icon}
                 />
@@ -82,13 +83,13 @@ const BottomNavigation: React.FC = () => {
                 <Text style={styles.navText}>Feedback</Text>
             </TouchableOpacity> */}
             <TouchableOpacity style={styles.navItem} onPress={navigateToFeedback}>
-                <Image 
+                <Image
                     source={isFeedbackActive ? require('../assets/Feedback_blue.png') : require('../assets/Feedback_grayed.png')}
-                    style={styles.icon}/>
+                    style={styles.icon} />
                 <Text style={isFeedbackActive ? styles.navTextActive : styles.navText}>Feedback</Text>
             </TouchableOpacity>
         </View>
-        
+
     );
 };
 
