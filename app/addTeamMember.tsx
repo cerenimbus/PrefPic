@@ -101,7 +101,7 @@ export default function AddTeamMember() {
         {/* Button*/}
         <TouchableOpacity
           style={styles.doneButton}
-          onPress={() => router.push("/addTeamMemberDisplay")}
+          onPress={() => router.push("/teamMember")}
         >
           <Text style={styles.doneButtonText}>Done</Text>
         </TouchableOpacity>
