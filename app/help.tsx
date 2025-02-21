@@ -212,6 +212,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'Darker Grotesque',
     padding: 10,
+    fontSize: 14,
   },
 });
 
