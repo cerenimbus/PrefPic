@@ -1,5 +1,5 @@
 import { router, useRouter, useLocalSearchParams } from "expo-router";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ImageBackground } from "react-native";
 import { useState, useEffect } from "react";
 import React from "react";
 import BottomNavigation from "../components/bottomNav";
@@ -13,10 +13,10 @@ const helpScreen: React.FC = () => {
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
   const [authorizationCode, setAuthorizationCode] = useState<string | null>(null);
   const buttonHelp = [
-    { title: 'Leave Feedback or Ask Questions' },
-    { title: 'Help About Teams' },
-    { title: 'Help About Pictures' },
-    { title: 'Help About Procedures' },
+    { title: 'Leave Feedback or Ask Questions', image: require('../assets/questions.png') },
+    { title: 'Help About Teams', image: require('../assets/Teams.png') },
+    { title: 'Help About Pictures', image: require('../assets/pictures.png') },
+    { title: 'Help About Procedures', image: require('../assets/helpAboutProcedure.png') },
   ];
 
   useEffect(() => {
@@ -42,7 +42,7 @@ const helpScreen: React.FC = () => {
   }, []);
 
   const navigateToMainAccountPage = () => {
-    router.push('mainAccountPage');
+    router.push('/mainAccountPage');
   };
 
   const getHelp = async (topic: string) => {
@@ -64,11 +64,10 @@ const helpScreen: React.FC = () => {
 
       const url = `https://PrefPic.com/dev/PPService/GetHelp.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&Topic=${topic}&PrefPicVersion=1`;
       const response = await fetch(url, {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ Topic: topic }),
       });
       const responseText = await response.text();
       console.log('Response Text:', responseText);
@@ -124,7 +123,11 @@ const helpScreen: React.FC = () => {
             style={styles.card}
             onPress={() => handlePress(item.title)}
           >
-            <Text style={styles.text}>{item.title}</Text>
+            <ImageBackground source={item.image} style={styles.imageBackground} imageStyle={styles.imageStyle}>
+              <View style={styles.textContainer}>
+                <Text style={styles.text}>{item.title}</Text>
+              </View>
+            </ImageBackground>
           </TouchableOpacity>
         ))}
       </View>
@@ -139,6 +142,16 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     marginTop: 30,
+  },
+  imageBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+  },
+  imageStyle: {
+    borderRadius: 10,
   },
   helpText: {
     fontSize: 40,
@@ -170,17 +183,25 @@ const styles = StyleSheet.create({
     width: '47%',
     height: 240,
     backgroundColor: '#2E518B',
-    padding: 20,
     margin: 4,
     borderRadius: 10,
-    alignItems: 'center',
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  textContainer: {
+    backgroundColor: 'rgba(92, 168, 209, 0.5)',
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
+    alignItems: 'center',
   },
   text: {
     color: 'white',
     textAlign: 'center',
     fontWeight: 'bold',
     fontFamily: 'Darker Grotesque',
+    padding: 10,
   },
 });
 

@@ -7,13 +7,16 @@ import * as CryptoJS from "crypto-js"; // SHA-1 hashing
 import { AuthContext } from "./AuthContext"; // Import AuthContext
 import { XMLParser } from "fast-xml-parser";
 import { getDeviceID } from "../components/deviceInfo"; // Import getDeviceID function
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function StartScreen() {
   const [isChecked, setChecked] = useState(false);
   const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
   const router = useRouter();
   const { saveAuthCode } = useContext(AuthContext) ?? {};
-  
+  const [hasCheckedDemo, setHasCheckedDemo] = useState(false);
+
 
   // Fetch the unique device ID dynamically
   useEffect(() => {
@@ -28,13 +31,30 @@ export default function StartScreen() {
  // Check if user already completed the demo
  useEffect(() => {
   const checkDemoStatus = async () => {
+    if (hasCheckedDemo) return; // Avoid re-running
+
     const demoStatus = await AsyncStorage.getItem("status");
-    if (demoStatus === "true") {
-      router.replace("/sign-in"); // Skip demo and go to SignIn screen
+    if (demoStatus === "Demo" || demoStatus === "Active") {
+      router.replace("/sign-in");
+    }
+    setHasCheckedDemo(true); // Mark as checked
+  };
+
+  checkDemoStatus();
+}, [hasCheckedDemo]);
+
+useEffect(() => {
+  const checkUserType = async () => {
+    const userType = await AsyncStorage.getItem("UserType");
+
+    if (!userType) {
+      await AsyncStorage.setItem("UserType", "Staff"); // Default to "Staff" if not set
     }
   };
-  checkDemoStatus();
+
+  checkUserType();
 }, []);
+
 
   const handleGetStarted = async () => {
     try {
@@ -50,6 +70,9 @@ export default function StartScreen() {
       ).padStart(2, '0')}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, '0')}:${String(
         currentDate.getMinutes()
       ).padStart(2, '0')}`;
+
+      const demoStatus = (await AsyncStorage.getItem("Demo")) || "Active";
+      const userType = (await AsyncStorage.getItem("UserType")) || "Staff";
 
       // Generate Key using SHA1 (DeviceID + Date)
       const keyString = `${deviceID.id}${formattedDate}`;
@@ -99,7 +122,7 @@ export default function StartScreen() {
   };
 
   useEffect(() => {
-    console.log("isChecked updated:", isChecked);
+    console.log("is Checked updated:", isChecked);
   }, [isChecked]);
 
   const navigateToIndex = () => {
@@ -115,20 +138,18 @@ export default function StartScreen() {
 // };
 
   return (
-    <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
-      
+    
+    <ImageBackground source={require("../assets/Start.jpg")} style={styles.background} >
+      <SafeAreaView style={{ flex: .7 }}>
       <View style={[styles.container]}>
-      {/* <Text
-      style={{ color: "blue", textDecorationLine: "underline" }}
-      onPress={() => router.push("/sign-in")}
-      > */}
-      {/* Sign in
-      </Text> */}
-        <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
+
+ 
+        <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} resizeMode="contain"/>
+
         <Text style={styles.pref}>PrefPic Demo</Text>
         <Text style={styles.description}>There is no sign-in required for </Text>
-        <Text> this demo version. The live </Text>
-        <Text>version is password protected. </Text>
+        <Text style= {styles.description1}> this demo version. The live </Text>
+        <Text style = {styles.description2}>version is password protected. </Text>
 
         {/* Checkbox */}
         <View style={styles.checkboxContainer}>
@@ -138,8 +159,9 @@ export default function StartScreen() {
               setChecked(newValue);
             }}
           />
+          <Text>I accept</Text>
           <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/terms.html")}>
-            Accept Terms
+            Terms
           </Text>
           <Text> and </Text>
           <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/privacypolicy.html")}>
@@ -163,8 +185,10 @@ export default function StartScreen() {
           >
             <Text style={styles.GetText}>Create Account</Text>
           </TouchableOpacity> */}
+      
         </View>
       </View>
+      </SafeAreaView>
     </ImageBackground>
   );
 }
@@ -194,17 +218,11 @@ const styles = StyleSheet.create({
     paddingRight: 45,
   },
   container: {
-    flex: 0.7,
-    justifyContent: "center",
-    alignItems: "center",
+    width: wp(85),
     backgroundColor: "#E7EFFF",
     borderRadius: 10,
-    marginTop: 15,
-    marginBottom: 15,
-    marginLeft: 28,
-    marginRight: 28,
-    height: 452,
-    width: 320,
+    padding: wp(5),
+    alignItems: "center",
   },
   background: {
     flex: 1,
@@ -219,9 +237,25 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 15,
-    textAlign: "justify",
+    textAlign: "center",
     fontWeight: "400",
     paddingTop: 20,
+    paddingLeft: 44,
+    paddingRight: 44,
+  },
+  description1: {
+    fontSize: 15,
+    textAlign: "center",
+    fontWeight: "400",
+    paddingTop: 5,
+    paddingLeft: 44,
+    paddingRight: 44,
+  },
+  description2: {
+    fontSize: 15,
+    textAlign: "center",
+    fontWeight: "400",
+    paddingTop: 5,
     paddingLeft: 44,
     paddingRight: 44,
   },
@@ -232,8 +266,9 @@ const styles = StyleSheet.create({
   imagestyle: {
     width: 75,
     height: 75,
-    borderRadius: 50,
+    borderRadius: 37.5,
     paddingTop: 61,
+    overflow: "hidden"
   },
   link: {
     color: "blue",

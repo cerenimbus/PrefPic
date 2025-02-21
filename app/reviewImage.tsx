@@ -1,9 +1,14 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, Dimensions} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CryptoJS from "crypto-js";
 import { getDeviceID } from '../components/deviceInfo';
+import { Modal } from "react-native";
+
+//Alberto -> 2/19/2025
+const  {width, height} = Dimensions.get("window");
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -57,32 +62,28 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   image: {
-    width: 330,
-    height: 490,
-    marginTop: 5,
+    width: width * 0.9, // 90% of screen width
+    height: height * 0.5, // 50% of screen height
+    marginTop: 16,
     borderRadius: 20,
-    padding: 12,
-    justifyContent: "center",
-    alignItems: "center",
+    alignSelf: "center",
   },
   fullImageOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    flex: 1,
     backgroundColor: "rgba(41, 41, 41, 0.8)",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 1000,
   },
+  //Alberto -> 2/19/2025
+  //change the width and height of the full image to take account the screen width and height and not use postion absolute
   fullImage: {
-    width: "100%",
-    height: "100%",
+    width: width * 1.1, // takes account the screen width
+    height: height * 1, // takes account the screen height
     objectFit: "contain",
   },
   closeButton: {
-    position: "absolute",
+    alignSelf: "flex-end",/// this will put the x button above the image 
+    //position: "absolute", this will put the x button inside the image
     top: 140,
     right: 20,
     backgroundColor: "rgb(255, 255, 255)",
@@ -288,13 +289,16 @@ const navigateToCamera = () => {
       {/* fix photoUri to show only one image on display or full image -> RJP 02/11/2025*/}
 
       {isPreview && (
-        <View style={styles.fullImageOverlay}>
-          <TouchableOpacity onPress={handleClosePreview} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>X</Text>
-          </TouchableOpacity>
-          <Image style={styles.fullImage} source={photoUriState ? { uri: photoUriState } : undefined} />
-        </View>
-      )}
+  <Modal visible={isPreview} transparent={true} animationType="fade">
+    <View style={{ flex: 1, backgroundColor: "rgba(41, 41, 41, 0.8)", justifyContent: "center", alignItems: "center" }}>
+      <TouchableOpacity onPress={handleClosePreview} style={styles.closeButton}>
+        <Text style={styles.closeButtonText}>X</Text>
+      </TouchableOpacity>
+      <Image style={styles.fullImage} source={photoUriState ? { uri: photoUriState } : undefined} />
+    </View>
+  </Modal>
+)}
+
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.retakebutton} onPress={navigateToCamera}>
