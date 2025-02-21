@@ -249,11 +249,11 @@ const TeamMembersScreen: React.FC = () => {
         //   </TouchableOpacity>
         // </View> */
 
-          <TouchableOpacity style={styles.addButton} onPress={handleAddMember}>
-            <Text style={styles.addButtonText} >Add</Text>
-            <Text style={styles.plusIcon}>+</Text>
-          </TouchableOpacity>
-        </View>
+        //   <TouchableOpacity style={styles.addButton} onPress={handleAddMember}>
+        //     <Text style={styles.addButtonText} >Add</Text>
+        //     <Text style={styles.plusIcon}>+</Text>
+        //   </TouchableOpacity>
+        // </View>
 
 
         /* <View style={styles.membersList}> */
