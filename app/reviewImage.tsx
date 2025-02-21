@@ -248,7 +248,10 @@ const navigateToCamera = () => {
   
       if (response.ok) {
         Alert.alert("Success!", "Image uploaded successfully.");
-        router.push("viewEditPicture");
+        router.push({
+          pathname: "viewEditPicture",
+          params: { photoUri, procedureName },
+        });
       } else {
         const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Upload failed.";
         Alert.alert("Upload Failed", errorMessage);

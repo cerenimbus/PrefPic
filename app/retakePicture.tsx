@@ -1,4 +1,4 @@
-import { Router, useRouter } from "expo-router";
+import { Router, useRouter,useLocalSearchParams} from "expo-router";
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
 
   retakePicture:{
     position: "absolute",  
-    bottom: 380,  
+    bottom: 470,  
     left: "50%",  
     transform: [{ translateX: -75 }], 
     padding: 14,
@@ -154,6 +154,12 @@ const styles = StyleSheet.create({
 export default function ViewEditPicture() {
   const router = useRouter();
 
+
+  const { photoUri, procedureName } = useLocalSearchParams<{
+      photoUri: string;
+      procedureName: string;
+    }>();
+  
   const bulletPointText = `
 • Best to have x tool on the edge of table
 • Do not rearrange
@@ -166,7 +172,7 @@ export default function ViewEditPicture() {
       <TouchableOpacity onPress={() => router.back()}>
         <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
-      <Text style={styles.header}>Image for: [Procedure Name]</Text>
+      <Text style={styles.header}>Image for: {procedureName}</Text>
 
       {/* Image */}
       <View style={styles.imageContainer}>

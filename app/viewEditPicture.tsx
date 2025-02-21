@@ -1,4 +1,4 @@
-import { Router, router, useRouter } from "expo-router";
+import { Router, router, useRouter,useLocalSearchParams} from "expo-router";
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 
@@ -114,16 +114,24 @@ const styles = StyleSheet.create({
   
 });
 
-const navigateToretakePicture = () => {
-  router.push("retakePicture");
-}
-const navigateToAddPearls = () => {
-  router.push("addPearls");
-}
+
 
 export default function viewEditPicture() {
   const router = useRouter();
+  const { photoUri, procedureName } = useLocalSearchParams<{
+    photoUri: string;
+    procedureName: string;
+  }>();
 
+  const navigateToretakePicture = () => {
+    router.push({
+      pathname: "retakePicture",
+      params: { procedureName, photoUri},
+    });
+  };
+  const navigateToAddPearls = () => {
+    router.push("addPearls");
+  }
   
   return (
     <View style={styles.container}>
@@ -132,22 +140,27 @@ export default function viewEditPicture() {
         <Text style={styles.backText}>←  Back</Text>
       </TouchableOpacity>
       <Text style={styles.header}>View / Edit Picture(s)</Text>
-      <Text style={styles.procedure}>[Procedure Name]</Text>
+      <Text style={styles.procedure}>{procedureName}</Text>
       <Text style={styles.tapOnPic}>Tap on picture to view/edit</Text>
 
 
         {/* Center box */}
-      <View style={styles.centerBox}>
-      <View style={styles.boxContainer}>
-      {[...Array(5)].map((_, index) => (
-      <View key={index} style={styles.smallBox}>
-          <TouchableOpacity onPress={navigateToretakePicture}>
-      <Text style={styles.plusSign}>+</Text>
+        <View style={styles.centerBox}>
+  <View style={styles.boxContainer}>
+    {[...Array(5)].map((_, index) => (
+      <TouchableOpacity key={index} style={styles.smallBox} onPress={navigateToretakePicture}>
+        {photoUri ? (
+          <Image 
+            source={{ uri: photoUri }} 
+            style={{ width: 80, height: 150, borderRadius: 5 }} 
+          />
+        ) : (
+          <Text style={styles.plusSign}>+</Text>
+        )}
       </TouchableOpacity>
-      </View>
-      ))}
-      </View>
-      </View>
+    ))}
+  </View>
+</View>
 
         {/* Buttons */}
     <View style={styles.buttonContainer}>
