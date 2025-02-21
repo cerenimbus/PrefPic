@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { XMLParser } from 'fast-xml-parser';
 import { getDeviceID } from '../components/deviceInfo';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface FormData {
   name: string;
@@ -121,7 +122,7 @@ const feedbackScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.formWrapper}>
           <TouchableOpacity 
@@ -199,7 +200,7 @@ const feedbackScreen: React.FC = () => {
         </View>
       </ScrollView>
       <BottomNavigation />
-    </View>
+    </SafeAreaView>
   );
 };
 
