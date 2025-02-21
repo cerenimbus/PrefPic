@@ -139,12 +139,12 @@ useEffect(() => {
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
       
       <View style={[styles.container]}>
-        <Text
+        {/* <Text
       style={{ color: "blue", textDecorationLine: "underline" }}
       onPress={() => router.push("/sign-in")}
       > 
       Sign in
-      </Text> 
+      </Text>  */}
  
         <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
 

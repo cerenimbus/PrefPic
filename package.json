@@ -36,7 +36,8 @@
     "react-native-paper": "^5.13.1",
     "react-native-safe-area-context": "^5.2.0",
     "react-native-screens": "^4.6.0",
-    "start": "^5.1.0"
+    "start": "^5.1.0",
+    "expo-image-manipulator": "~13.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
