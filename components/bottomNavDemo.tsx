@@ -12,9 +12,11 @@ const BottomNavigation: React.FC = () => {
     const navigateToHelp = () => {
         router.push('help');
     };
+
+    ///Alberto 02/21/2024 added disabled to the navigation
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.navItem} onPress={navigateToLibrary}>
+            <TouchableOpacity style={styles.navItem} onPress={navigateToLibrary} disabled={true}>
                 <Image 
                     source={require('../assets/Procedure_blue.png')}
                     style={styles.icon}
@@ -29,14 +31,14 @@ const BottomNavigation: React.FC = () => {
                 />
                 <Text style={styles.navText}>Team</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navItem} onPress={navigateToHelp}>
+            <TouchableOpacity style={styles.navItem} onPress={navigateToHelp} disabled={true}>
                 <Image 
                     source={require('../assets/Help_grayed.png')}
                     style={styles.icon}
                 />
                 <Text style={styles.navText}>Help</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navItem}>
+            <TouchableOpacity style={styles.navItem} disabled={true}>
                 <Image 
                     source={require('../assets/Feedback_grayed.png')}
                     style={styles.icon}
