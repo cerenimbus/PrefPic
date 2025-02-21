@@ -103,6 +103,7 @@ const TeamMembersScreen: React.FC = () => {
   };
 
   const handleAddMember = () => {
+   router.push("/addTeamMember")
     if (!isAddingMember) {
       setIsAddingMember(true);
       return;
@@ -154,7 +155,7 @@ const TeamMembersScreen: React.FC = () => {
           )}
           
           <TouchableOpacity style={styles.addButton} onPress={handleAddMember}>
-            <Text style={styles.addButtonText}>Add</Text>
+            <Text style={styles.addButtonText} >Add</Text>
             <Text style={styles.plusIcon}>+</Text>
           </TouchableOpacity>
         </View>

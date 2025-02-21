@@ -31,19 +31,19 @@ export default function Signin() {
   }, [isChecked]);
 
 
-    useEffect(() => {
-      const checkDemoStatus = async () => {
-        if (hasCheckedDemo) return; // Avoid re-running
+    // useEffect(() => {
+    //   const checkDemoStatus = async () => {
+    //     if (hasCheckedDemo) return; // Avoid re-running
     
-        const demoStatus = await AsyncStorage.getItem("status");
-        if (demoStatus === "Demo" || demoStatus === "Active") {
-          router.replace("/sign-in");
-        }
-        setHasCheckedDemo(true); // Mark as checked
-      };
+    //     const demoStatus = await AsyncStorage.getItem("status");
+    //     if (demoStatus === "Demo" || demoStatus === "Active") {
+    //       router.replace("/sign-in");
+    //     }
+    //     setHasCheckedDemo(true); // Mark as checked
+    //   };
     
-      checkDemoStatus();
-    }, [hasCheckedDemo]);
+    //   checkDemoStatus();
+    // }, [hasCheckedDemo]);
   
     useEffect(() => {
       const checkUserType = async () => {

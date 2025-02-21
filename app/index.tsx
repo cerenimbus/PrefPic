@@ -142,6 +142,7 @@ useEffect(() => {
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background} >
       <SafeAreaView style={{ flex: .7 }}>
       <View style={[styles.container]}>
+
  
         <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} resizeMode="contain"/>
 
