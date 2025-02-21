@@ -42,7 +42,7 @@ const helpScreen: React.FC = () => {
   }, []);
 
   const navigateToMainAccountPage = () => {
-    router.push('mainAccountPage');
+    router.push('/mainAccountPage');
   };
 
   const getHelp = async (topic: string) => {
@@ -64,11 +64,10 @@ const helpScreen: React.FC = () => {
 
       const url = `https://PrefPic.com/dev/PPService/GetHelp.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&Topic=${topic}&PrefPicVersion=1`;
       const response = await fetch(url, {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ Topic: topic }),
       });
       const responseText = await response.text();
       console.log('Response Text:', responseText);
