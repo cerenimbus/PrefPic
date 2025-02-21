@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Device from "expo-device"; //
 //import DeviceInfo from "react-native-device-info";//
 import {getDeviceID} from "../components/deviceInfo";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const AddProcedure: React.FC = () => {
     // State variable to store the procedure name
@@ -159,7 +160,7 @@ const AddProcedure: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={navigateToLibrary}>
         <Text style={styles.backTextArrow}>← </Text>
         <Text style={styles.backText}>Cancel</Text>
@@ -183,7 +184,7 @@ const AddProcedure: React.FC = () => {
       >
         <Text style={styles.nextButtonText}>{isLoading ? "Loading..." : "Next"}</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
