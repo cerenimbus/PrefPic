@@ -77,98 +77,109 @@ const navigateToCamera = () => {
   };
   //ALBERTO -> 2/11/2025
   ///API CALL 
-  const navigateToReviewSummary = async (fileUri: string, fileType: string) => {
+
+
+const navigateToReviewSummary = async (fileUri: string, fileType: string) => {
     try {
-      console.log("🔹 Starting API call...");
-  
-      // Retrieve procedureSerial from AsyncStorage
-      const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
-      if (!procedureSerial) {
-        Alert.alert("Error", "Procedure not found. Please create a procedure first.");
-        return;
-      }
-      console.log("🔹 Procedure Serial:", procedureSerial);
-  
-      // Retrieve deviceID from AsyncStorage
-    
-      if (!deviceID) {
-        Alert.alert("Error", "Device ID not found.");
-        return;
-      }
-      console.log("🔹 Device ID:", deviceID);
-  
-      // Retrieve authorizationCode from AsyncStorage
-      const authorizationCode = await AsyncStorage.getItem("authorizationCode");
-      if (!authorizationCode) {
-        Alert.alert("Authorization Error", "Please log in again.");
-        return;
-      }
-      console.log("🔹 Authorization Code:", authorizationCode);
-  
-      // Generate formatted date and key
-      const currentDate = new Date();
-      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
-        currentDate.getDate()
-      ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
-        currentDate.getMinutes()
-      ).padStart(2, "0")}`;
-      
-      
-      const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
-      console.log("🔹 Key String:", keyString);
-      const key = CryptoJS.SHA1(keyString).toString();
-      console.log("🔹 Generated Key:", key);
-  
-      // Create FormData
-      const formData = new FormData();
-      formData.append("DeviceID", encodeURIComponent(deviceID.id));
-      formData.append("Date", formattedDate);
-      formData.append("Key", key);
-      formData.append("AC", authorizationCode);
-      formData.append("PrefPicVersion", "1");
-      formData.append("Procedure", procedureSerial); // Use procedureSerial here
-      formData.append("Type", fileType);
-      formData.append("Media", {
-        uri: fileUri,
-        type: fileType,
-        name: `upload.${fileType.split("/")[1] || "jpg"}`,
-      } as any);
-  
-      // Make the API call
-      // const url = `https://prefpic.com/dev/PPService/CreatePicture.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&PrefPicVersion=1&Name=${encodeURIComponent(procedureSerial)}`;
-      const url = "https://prefpic.com/dev/PPService/CreatePicture.php";
-      const response = await fetch(url, {
-        method: "POST",
-        body: formData,
-        headers: {
-          'Accept': 'application/json',
-              'Content-Type': 'multipart/form-data',
-        },
-      });
-  
-      // Handle response
-      
+        console.log("🔹 Starting API call...");
 
-      const data = await response.text();
-      console.log("🔹 API Response Body:", data);
-      console.log("🔹 API Response Status:", response.status);
+        // Retrieve procedureSerial from AsyncStorage
+        const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
+        if (!procedureSerial) {
+            Alert.alert("Error", "Procedure not found. Please create a procedure first.");
+            return;
+        }
+        console.log("🔹 Procedure Serial:", procedureSerial);
 
-  
-      if (response.ok) {
-        Alert.alert("Success!", "Image uploaded successfully.");
-        router.push({
-          pathname: "viewEditPicture",
-          params: { photoUri, procedureName },
+        // Retrieve deviceID from AsyncStorage
+        if (!deviceID) {
+            Alert.alert("Error", "Device ID not found.");
+            return;
+        }
+        console.log("🔹 Device ID:", deviceID);
+
+        // Retrieve authorizationCode from AsyncStorage
+        const authorizationCode = await AsyncStorage.getItem("authorizationCode");
+        if (!authorizationCode) {
+            Alert.alert("Authorization Error", "Please log in again.");
+            return;
+        }
+        console.log("🔹 Authorization Code:", authorizationCode);
+
+        // Generate formatted date and key
+        const currentDate = new Date();
+        const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
+            currentDate.getDate()
+        ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
+            currentDate.getMinutes()
+        ).padStart(2, "0")}`;
+
+        const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
+        console.log("🔹 Key String:", keyString);
+        const key = CryptoJS.SHA1(keyString).toString();
+        console.log("🔹 Generated Key:", key);
+
+        // Create FormData
+        const formData = new FormData();
+        formData.append("DeviceID", encodeURIComponent(deviceID.id));
+        formData.append("Date", formattedDate);
+        formData.append("Key", key);
+        formData.append("AC", authorizationCode);
+        formData.append("PrefPicVersion", "1");
+        formData.append("Procedure", procedureSerial);
+        formData.append("Type", fileType);
+        formData.append("Media", {
+            uri: fileUri,
+            type: fileType,
+            name: `upload.${fileType.split("/")[1] || "jpg"}`,
+        } as any);
+
+        // Make the API call
+        const url = "https://prefpic.com/dev/PPService/CreatePicture.php";
+        const response = await fetch(url, {
+            method: "POST",
+            body: formData,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'multipart/form-data',
+            },
         });
-      } else {
-        const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Upload failed.";
-        Alert.alert("Upload Failed", errorMessage);
-      }
+
+        // Handle response
+        const data = await response.text();
+        console.log("🔹 API Response Body:", data);
+        console.log("🔹 API Response Status:", response.status);
+
+        if (response.ok) {
+            Alert.alert("Success!", "Image uploaded successfully.");
+
+            // 🔹 Store the image in AsyncStorage
+            const storedImages = await AsyncStorage.getItem("capturedImages");
+            const imageList = storedImages ? JSON.parse(storedImages) : [];
+
+            // Append the new image
+            imageList.push(fileUri);
+
+            // Store updated list (limit to 5 images)
+            await AsyncStorage.setItem("capturedImages", JSON.stringify(imageList.slice(0, 5)));
+
+            console.log("🔹 Updated Images List:", imageList);
+
+            // Navigate to viewEditPicture WITHOUT passing photoUri in params
+            router.push({
+                pathname: "viewEditPicture",
+                params: { procedureName },
+            });
+
+        } else {
+            const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Upload failed.";
+            Alert.alert("Upload Failed", errorMessage);
+        }
     } catch (error) {
-      console.error("🔹 Error during picture upload:", error);
-      Alert.alert("Upload Failed", "An error occurred during picture upload.");
+        console.error("🔹 Error during picture upload:", error);
+        Alert.alert("Upload Failed", "An error occurred during picture upload.");
     }
-  };
+};
 
   return (
     <View style={styles.container}>

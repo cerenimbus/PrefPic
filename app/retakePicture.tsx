@@ -16,7 +16,9 @@ export default function ViewEditPicture() {
 
   useEffect(() => {
     if(photoUri){
-      setPhotoUriState(decodeURIComponent(photoUri)+`?t=${Date.now()}`);
+      const cleanedUri = decodeURIComponent(photoUri);
+      console.log("Cleaned URI:", cleanedUri);
+      setPhotoUriState(cleanedUri);
     } else {
       setPhotoUriState(null);
   }}, [photoUri]);
@@ -26,6 +28,8 @@ export default function ViewEditPicture() {
 • Do not rearrange
 • xyz
 `;
+
+
 const navigateToCamera = () => {
   setPhotoUriState(null);
   router.replace({
@@ -49,16 +53,12 @@ const navigateToCamera = () => {
   <Image style={styles.image} source={{ uri: photoUri }} />
 </View> */}
 
-{photoUri? (
-  <View style={styles.imageContainer}>
-    <Image 
-      source={{ uri: "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252FPrefPic-44ce48c4-0c51-4095-b0de-e0f358c7a95f/Camera/577a0011-7783-488d-b7b6-6c656dd70acb.jpg"}} 
-      style={styles.image} 
-    />
-  </View>
+{photoUriState ? (
+  <Image source={{ uri: photoUriState || undefined }} style={styles.image} />
 ) : (
   <Text style={{ textAlign: "center", marginVertical: 20 }}>No image available</Text>
 )}
+
 
         {/* Retake picture */}
         <TouchableOpacity style={styles.retakePicture} onPress={navigateToCamera}>

@@ -1,6 +1,7 @@
-import { Router, router, useRouter,useLocalSearchParams} from "expo-router";
-import React, { useEffect, useState } from "react";
+import { router, useLocalSearchParams, useRouter } from "expo-router";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const styles = StyleSheet.create({
   container: {
@@ -110,89 +111,101 @@ const styles = StyleSheet.create({
     color: "#375894", 
     fontWeight: "bold",
   },
-
+  image: { width: "100%", height: "100%", resizeMode: "cover" },
+  imagePreview: { width: 80, height: 80, borderRadius: 10 },
   
 });
 
-
-
-export default function viewEditPicture() {
+export default function ViewEditPicture() {
   const router = useRouter();
-  const [photoUriState, setPhotoUriState] = useState<string | null>(null);
-  const { photoUri, procedureName } = useLocalSearchParams<{
-    photoUri: string;
-    procedureName: string;
-  }>();
- console.log(photoUri);
+  const params = useLocalSearchParams();
+  const [images, setImages] = useState<string[]>([]);
 
-useEffect(() => {
-    if(photoUri){
-      setPhotoUriState(decodeURIComponent(photoUri)+`?t=${Date.now()}`);
-    } else {
-      setPhotoUriState(null);
-  }}, [photoUri]);
+  useEffect(() => {
+    const loadImages = async () => {
+      try {
+        const storedImages = await AsyncStorage.getItem("capturedImages");
+        if (storedImages) {
+          setImages(JSON.parse(storedImages));
+        }
+      } catch (error) {
+        console.error("🔹 Error loading images:", error);
+      }
+    };
+  
+    loadImages();
+  }, []);
 
+  useEffect(() => {
+    if (params.photoUri) {
+      setImages(prevImages => {
+        const updatedImages = [...prevImages, params.photoUri as string];
+        return updatedImages.slice(0, 5); // Limit to 5 images
+      });
+    }
+  }, [params.photoUri]);
 
-
-  const navigateToretakePicture = () => {
+  const navigateToRetakePicture = (index: number) => {
     router.push({
-      pathname: "retakePicture",
-      params: { procedureName, photoUri: photoUriState },
+      pathname: "camera",
+      params: { imageIndex: index },
     });
   };
+
   const navigateToAddPearls = () => {
     router.push("addPearls");
-  }
+  };
 
-  const navigateToCamera = () => {
-    router.replace({
-      pathname: "camera",
-      // Pass the procedureName as a query parameter so it doesn't get lost
-      params: { procedureName },
-    });
-  }
-  
-  
+  const handleImagePress = (index: number) => {
+    if (images[index]) {
+      router.push({
+        pathname: "retakePicture",
+        params: { photoUri: images[index], imageIndex: index },
+      });
+    } else {
+      navigateToRetakePicture(index);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* Header */}
       <TouchableOpacity onPress={() => router.back()}>
-        <Text style={styles.backText}>←  Back</Text>
+        <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
       <Text style={styles.header}>View / Edit Picture(s)</Text>
-      <Text style={styles.procedure}>{procedureName}</Text>
+      <Text style={styles.procedure}>[procedureName]</Text>
       <Text style={styles.tapOnPic}>Tap on picture to view/edit</Text>
 
-
-        {/* Center box */}
-        <View style={styles.centerBox}>
-  <View style={styles.boxContainer}>
-    {[...Array(5)].map((_, index) => (
-      <TouchableOpacity key={index} style={styles.smallBox} onPress={navigateToretakePicture}>
-        {photoUri ? (
-          <Image 
-            source={{ uri: photoUri }} 
-            style={{ width: 80, height: 150, borderRadius: 5 }} 
-          />
-        ) : (
-          <Text style={styles.plusSign}>+</Text>
-        )}
-      </TouchableOpacity>
-    ))}
-  </View>
-</View>
-
-        {/* Buttons */}
-    <View style={styles.buttonContainer}>
-      <TouchableOpacity style={styles.addPicture} onPress={navigateToCamera}>
-          <Text style={styles.addPicturebuttonText}>Add more pictures</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity style={styles.nextbutton} onPress={navigateToAddPearls}>
-          <Text style={styles.buttonText}>Next</Text>
-      </TouchableOpacity>
+      <View style={styles.centerBox}>
+        <View style={styles.boxContainer}>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <TouchableOpacity key={index} style={styles.smallBox} onPress={() => handleImagePress(index)}>
+              {images[index] ? (
+                <Image source={{ uri: images[index] }} style={styles.image} />
+              ) : (
+                <Text style={styles.plusSign}>+</Text>
+              )}
+            </TouchableOpacity>
+          ))}
         </View>
-    </View>
+      </View>
 
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.addPicture}
+          onPress={() => {
+            if (images.length < 5) {
+              navigateToRetakePicture(images.length);
+            }
+          }}
+        >
+          <Text style={styles.addPicturebuttonText}>Add more pictures</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.nextbutton} onPress={navigateToAddPearls}>
+          <Text style={styles.buttonText}>Next</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
