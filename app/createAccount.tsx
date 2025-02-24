@@ -217,9 +217,10 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
     ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
       currentDate.getMinutes()
     ).padStart(2, "0")}`;
-// const devidID2 = "ab02345lasl23rlksjl234";
-// const date2 = "11/22/2013-23:00";
-    const keyString = `${deviceID}${formattedDate}`;
+    
+    const newdevice = "";
+    const newdate = "";
+    const keyString = `${deviceID.id}${formattedDate}`;
     const key = CryptoJS.SHA1(keyString).toString();
 
     const url = `https://PrefPic.com/dev/PPService/CreateAccount.php?DeviceID=${encodeURIComponent(deviceID.id)}&DeviceType=${encodeURIComponent(deviceID.type)}&DeviceModel=${encodeURIComponent(
@@ -244,7 +245,7 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
 
       if (data.includes("<Result>Success</Result>")) {
         Alert.alert("Success", "A confirmation email has been sent to you.", [
-          { text: "OK", onPress: () => router.push("/signin") },
+          { text: "OK", onPress: () => router.push("mainAccountPage") },
         ]);
       } else {
         Alert.alert("Error", "Failed to create account.");

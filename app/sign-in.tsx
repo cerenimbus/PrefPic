@@ -85,7 +85,10 @@ export default function Signin() {
   const navigateToCreateAccount = () => { 
     router.push("/createAccount"); // Adjust the path if your CreateAccount screen is in another folder
   };
-
+  
+  const navigateToTeamAccount = () => { 
+    router.push("/teamMember"); // Adjust the path if your CreateAccount screen is in another folder
+  };
   const navigateToMainAccountPage = () => {
     router.push("/mainAccountPage");
   };
@@ -235,6 +238,9 @@ export default function Signin() {
             <TouchableOpacity onPress={navigateToCreateAccount}>
               <Text style={styles.caccount}>Create an account</Text>
             </TouchableOpacity>
+            {/* <TouchableOpacity onPress={navigateToTeamAccount}>
+              <Text style={styles.caccount}>Team</Text>
+            </TouchableOpacity> */}
 
           </View>
           
