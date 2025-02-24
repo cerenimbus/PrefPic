@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import CheckBox from "expo-checkbox";
 import { useRouter } from "expo-router";
-import { ArrowLeft } from "lucide-react-native";
+// import { ArrowLeft } from "lucide-react-native";
 import { getDeviceID } from "../components/deviceInfo";
 import CryptoJS from "crypto-js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -111,27 +111,18 @@ export default function ForgotPassword()  {
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
 
 
-
           {/* Form Container */}
           <View style={styles.container}>
                       {/* Back Button */}
                       <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <ArrowLeft color="#375894" size={20} />
-           <Text style={styles.backText}>Back</Text>
+              {/* <ArrowLeft color="#375894" size={20} /> */}
+           <Text style={styles.backText}>← Back</Text>
             </TouchableOpacity>
           <View style={styles.imageTextContainer}>
             <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
             <Text style={styles.signintxt}>Forgot </Text>
             <Text style={styles.signintxt1}> Password? </Text>
           </View>
-
-          
-          {/* Form Container */}
-          <View style={styles.container}>
-            {/* Back Button */}
-          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-            <Text style={styles.backText}>Back</Text>
-          </TouchableOpacity>
 
             <Text style={styles.first}>Enter your email to receive</Text>
             <Text style={styles.second}>your password.</Text>
@@ -163,7 +154,6 @@ export default function ForgotPassword()  {
                 <Text style={styles.GetText}>Send Password</Text>
               </TouchableOpacity>
             </View>
-          </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -266,10 +256,8 @@ const styles = StyleSheet.create({
   },
   backButton: { 
     position: "absolute",
-
     top: 5,
     left: 5,
-
     padding: 10,
     borderRadius: 5,
     flexDirection: "row", // Aligns icon and text horizontally

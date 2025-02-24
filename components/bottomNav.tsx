@@ -14,8 +14,24 @@ const BottomNavigation: React.FC = () => {
         // router.push('mainAccountPage');
     };
 
+
+
+
+    ///Alberto 02/21/2024 fixed router
+    const navigateToTeamMember = () => {
+        router.push("/teamMember"); 
+    };
+    const isTeamActive = pathname.startsWith("/teamMember") || pathname.startsWith("/addTeamMember");
+
+    const isFeedbackActive = pathname === "/feedback";
+    //const isProcedureActive = pathname === "/library";
+    const isHelpActive = pathname === "/help"   ;
+  const isProcedureDisabled = pathname === "/teamMember" || pathname === "/feedback";
+  const isProcedureActive = pathname === "/library"; 
+
+
     const navigateToHelp = () => {
-        router.push('help');
+        router.push('/help');
     };
     const navigateToTeamMember = () => {
         router.push("teamMember"); 
@@ -43,6 +59,7 @@ const BottomNavigation: React.FC = () => {
                     style={styles.icon}/>
                 <Text style={styles.navTextActive}>Procedure</Text>
             </TouchableOpacity> */}
+
             <TouchableOpacity style={styles.navItem} onPress={navigateToLibrary}>
                 <Image 
                     // source={require('../assets/Procedure_blue.png')}
@@ -52,6 +69,8 @@ const BottomNavigation: React.FC = () => {
                 {/* <Text style={styles.navTextActive}>Procedure</Text> */}
                 <Text style={isProcedureActive ? styles.navTextActive: styles.navText}>Procedure</Text>
             </TouchableOpacity>
+
+
 
 
             {/* <TouchableOpacity style={styles.navItem}//turn to false for testing 
@@ -66,14 +85,16 @@ const BottomNavigation: React.FC = () => {
                     // source={require('../assets/Team_grayed.png')}
                     source={isTeamActive ? require('../assets/Team_blue.png') : require('../assets/Team_grayed.png')}
                     style={styles.icon}/>
-                {/* <Text style={styles.navText}>Team</Text> */}
+             
                 <Text style={isTeamActive ? styles.navTextActive : styles.navText}>Team</Text>
             </TouchableOpacity>
 
 
             <TouchableOpacity style={styles.navItem} onPress={navigateToHelp}>
                 <Image 
-                    source={isHelpActive ? require('../assets/Help_blue.png') : require('../assets/Help_grayed.png')}
+
+                   source={isHelpActive ? require('../assets/Help_blue.png') : require('../assets/Help_grayed.png')}
+
                     style={styles.icon}
                 />
                 <Text style={isHelpActive ? styles.navTextActive : styles.navText}>Help</Text>

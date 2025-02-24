@@ -14,6 +14,7 @@ const BottomNavigation: React.FC = () => {
     const navigateToHelp = () => {
         router.push('help');
     };
+
     const navigateToTeamMember = () => {
         router.push('teamMember');
     };
@@ -34,6 +35,7 @@ const BottomNavigation: React.FC = () => {
             MG 02/21/2025
             Procedure Icon */}
             <TouchableOpacity style={styles.navItem} onPress={navigateToLibrary}>
+
                 <Image 
                     source={isProcedureActive ? require('../assets/Procedure_blue.png') : require('../assets/Procedure_grayed.png')}
                     style={styles.icon}
@@ -50,20 +52,24 @@ const BottomNavigation: React.FC = () => {
                 />
                 <Text style={isTeamActive ? styles.navTextActive: styles.navText}>Team</Text>
             </TouchableOpacity>
+
             {/* 
             MG 02/21/2025
             Help Icon */}
             <TouchableOpacity style={styles.navItem} onPress={navigateToHelp}>
+
                 <Image 
                     source={isHelpActive ? require('../assets/Help_blue.png') : require('../assets/Help_grayed.png')}
                     style={styles.icon}
                 />
                 <Text style={isHelpActive ? styles.navTextActive: styles.navText}>Help</Text>
             </TouchableOpacity>
+
             {/* 
             MG 02/21/2025
             Feedback Icon */}
             <TouchableOpacity style={styles.navItem} onPress={navigateToFeedback}>
+
                 <Image 
                     source={isFeedbackActive ? require('../assets/Feedback_blue.png') : require('../assets/Feedback_grayed.png')}
                     style={styles.icon}

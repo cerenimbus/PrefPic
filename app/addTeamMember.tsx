@@ -10,6 +10,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   backText: {
+    marginTop: 40,
     fontSize: 16,
     color: "#007AFF",
   },
@@ -101,7 +102,7 @@ export default function AddTeamMember() {
         {/* Button*/}
         <TouchableOpacity
           style={styles.doneButton}
-          onPress={() => router.push("/addTeamMemberDisplay")}
+          onPress={() => router.push("/enterTeamMember")}
         >
           <Text style={styles.doneButtonText}>Done</Text>
         </TouchableOpacity>
