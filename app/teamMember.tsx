@@ -248,7 +248,8 @@ const TeamMembersScreen: React.FC = () => {
         //     <Text style={styles.plusIcon}>+</Text>
         //   </TouchableOpacity>
         // </View> */
-        // <View>
+
+
         //   <TouchableOpacity style={styles.addButton} onPress={handleAddMember}>
         //     <Text style={styles.addButtonText} >Add</Text>
         //     <Text style={styles.plusIcon}>+</Text>

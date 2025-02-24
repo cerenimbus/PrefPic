@@ -123,13 +123,17 @@ const feedbackScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>Feedback</Text>
+      <Text style={styles.description}>
+        Let us know what could improve the PrefPic app.
+      </Text>
       <ScrollView style={styles.scrollView}>
         <View style={styles.formWrapper}>
-          <TouchableOpacity 
+          {/* <TouchableOpacity 
             style={styles.backButton} onPress={() => router.back()}>
             <Text style={styles.backTextArrow}>←</Text>
             <Text style={styles.backText}>Back</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TextInput
             style={styles.inputName}
@@ -274,8 +278,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   textArea: {
-    height: 120,
+    height: 185,
     textAlignVertical: 'top',
+    marginTop: -15,
   },
   checkboxContainer: {
     marginBottom: 16,
@@ -305,8 +310,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   checkboxLabel: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#374151',
+    fontFamily: "Manrope",
   },
   submitButton: {
     backgroundColor: '#375894',
@@ -323,6 +329,24 @@ const styles = StyleSheet.create({
   },
   submitButtonDisabled: {
     backgroundColor: '#999999',
+  },
+  title: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 35,
+    marginBottom: 5,
+    fontFamily: "Darker Grotesque",
+  },
+  description: {
+    textAlign: 'center',
+    fontSize: 20,
+    marginBottom: 20,
+    fontFamily: "Darker Grotesque",
+    gap: 15,
+    marginLeft: 34,
+    marginRight: 30,
+    marginTop: -5,
   },
 });
 
