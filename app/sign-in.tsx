@@ -144,8 +144,7 @@ export default function Signin() {
       const key = CryptoJS.SHA1(keyString).toString();
 
       // Construct API URL
-      const url = `https://prefpic.com/dev/PPService/AuthorizeUser.php?DeviceID=${encodeURIComponent(deviceID)}&DeviceType=${encodeURIComponent(deviceType)}&DeviceModel=${encodeURIComponent(deviceModel)}&DeviceVersion=${encodeURIComponent(deviceVersion)}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}&PrefPicVersion=10&TestFlag=0`;
-
+      const url = `https://prefpic.com/dev/PPService/AuthorizeUser.php?DeviceID=${encodeURIComponent(deviceID)}&DeviceType=${encodeURIComponent(deviceType)}&DeviceModel=${encodeURIComponent(deviceModel)}&DeviceVersion=${encodeURIComponent(deviceVersion)}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}&PrefPicVersion=10&TestFlag=0&AuthCode=${encodeURIComponent(authCode || "")}`;
       console.log("Request URL:", url);
 
       // Call API
