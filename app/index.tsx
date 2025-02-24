@@ -146,12 +146,16 @@ useEffect(() => {
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background} >
       <SafeAreaView style={{ flex: .7 }}>
       <View style={[styles.container]}>
+      <TouchableOpacity onPress={() => router.push("/startpage")}>
+  <Text style={{ fontSize: 18, color: "blue", textDecorationLine: "underline" }}>
+    Start
+  </Text>
+  </TouchableOpacity>
         <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} resizeMode="contain"/>
 
         <Text style={styles.pref}>PrefPic Demo</Text>
-        <Text style={styles.description}>There is no sign-in required for </Text>
-        <Text style= {styles.description1}> this demo version. The live </Text>
-        <Text style = {styles.description2}>version is password protected. </Text>
+        <Text style={styles.description}>There is no sign-in required for this demo version. The live version is password protected. </Text>
+
 
         {/* Checkbox */}
         <View style={styles.checkboxContainer}>
