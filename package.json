@@ -43,10 +43,10 @@
     "react-native-safe-area-context": "^5.2.0",
 
     "react-native-screens": "^4.7.0",
-    "expo-image-manipulator": "~13.0.6"
+  
 
     "react-native-vector-icons": "^10.2.0",
-    "start": "^5.1.0",
+    "start": "^5.1.0"
 
   },
   "devDependencies": {

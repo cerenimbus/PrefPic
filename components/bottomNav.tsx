@@ -22,9 +22,9 @@ const BottomNavigation: React.FC = () => {
         router.push("/teamMember");
     };
 
-    const isTeamActive = pathname === "/teamMember";
+    // const isTeamActive = pathname === "/teamMember";
     const isTeamActive1 = pathname === "/enterTeamMember";
-    const isFeedbackActive = pathname === "/feedback";
+    // const isFeedbackActive = pathname === "/feedback";
     //const isProcedureActive = pathname === "/library";
     const isProcedureDisabled = pathname === "/teamMember" || pathname === "/feedback" || pathname === "/enterTeamMember";
 
@@ -32,9 +32,9 @@ const BottomNavigation: React.FC = () => {
     const navigateToHelp = () => {
         router.push('/help');
     };
-    const navigateToTeamMember = () => {
-        router.push("teamMember"); 
-    };
+    // const navigateToTeamMember = () => {
+    //     router.push("teamMember"); 
+    // };
     const navigateToFeedback = () => {
 
         router.push("feedback"); 
