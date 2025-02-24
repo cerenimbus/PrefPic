@@ -40,7 +40,7 @@ const BottomNavigation: React.FC = () => {
         router.push("feedback"); 
 
     };
-
+    const ismainAccountPageActive = pathname === "/mainAccountPage"
     const isTeamActive = pathname === "/teamMember";
     const isFeedbackActive = pathname === "/feedback";
     const isHelpActive = pathname === "/help";
@@ -97,7 +97,7 @@ const BottomNavigation: React.FC = () => {
 
                 <Image 
 
-                   source={isHelpActive ? require('../assets/Help_blue.png') : require('../assets/Help_grayed.png')}
+                   source={isHelpActive || ismainAccountPageActive ? require('../assets/Help_blue.png') : require('../assets/Help_grayed.png')}
 
                     style={styles.icon}
                 />

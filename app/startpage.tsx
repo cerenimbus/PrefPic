@@ -32,6 +32,7 @@ export default function StartScreen() {
   
 
 
+  
  // Check if user already completed the demo
  useFocusEffect(
   React.useCallback(() => {

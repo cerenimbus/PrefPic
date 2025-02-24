@@ -15,10 +15,15 @@ export default function start(){
   const [userType, setUserType] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
 
-  useEffect(() => {
+ useEffect(() => {
+    const checkPhysicianStatus = async () => {
+      const status = await AsyncStorage.getItem("status");
+      setPhysicianStatus(status); // No more TypeScript error
     const setTestAuthCode = async () => {
       await AsyncStorage.setItem("AUTH_CODE", "123456"); // Test value
     };
+  
+    checkPhysicianStatus();
     setTestAuthCode();
   }, []);
   
@@ -56,6 +61,7 @@ export default function start(){
     fetchUserData();
   }, [authCode]);
 
+
   const handlePhysicianPress = () => {
     if (!authCode) {
       router.push("/start");
@@ -86,7 +92,13 @@ export default function start(){
                     </TouchableOpacity>
                  </View>
                  <View>
-                    <TouchableOpacity style={styles.getButton2} onPress={() => router.push("/startpage")}
+                    <TouchableOpacity 
+                    style={styles.getButton2} 
+                    onPress={() => 
+                      {
+                        AsyncStorage.setItem("isSurgicalStaff", "true");
+                        router.push("/startpage");
+                      }}
                 >
                         <Text style = {styles.text2}>Surgical Staff</Text>
                     </TouchableOpacity>

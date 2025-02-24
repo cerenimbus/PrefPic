@@ -59,7 +59,7 @@ const mainAccountPage: React.FC = () => {
   };
 
   const getHelp = async () => {
-    const topic = 'Instructions';
+    const topic = 'Instruction';
     console.log('Device ID:', deviceID); // Log the device ID
     console.log('Authorization Code:', authorizationCode); // Log the authorization code
 
@@ -95,7 +95,7 @@ const mainAccountPage: React.FC = () => {
       console.log('Parsed Data:', data);
 
       if (data.ResultInfo && data.ResultInfo.Result === 'Success') {
-        setHelpText(data.ResultInfo.Message);
+        setHelpText(data.ResultInfo.Help);
       } else {
         Alert.alert('Error', 'Failed to fetch help from server.');
       }
