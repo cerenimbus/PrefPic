@@ -149,7 +149,15 @@ export default function ViewEditPicture() {
   const navigateToRetakePicture = (index: number) => {
     router.push({
       pathname: "camera",
-      params: { imageIndex: index },
+      params: { imageIndex: index, procedureName},
+    });
+  };
+
+
+  const navigateToCamera = () => {
+    router.push({
+      pathname: "camera",
+      params: {  procedureName},
     });
   };
 
@@ -239,16 +247,97 @@ export default function ViewEditPicture() {
     if (images[index]) {
       router.push({
         pathname: "retakePicture",
-        params: { photoUri: images[index], imageIndex: index },
+        params: { photoUri: images[index], imageIndex: index, procedureName },
       });
     } else {
       navigateToRetakePicture(index);
     }
   };
 
+  const handleAddMorePictures = async () => {
+    try {
+      console.log("🔹 Starting API call before adding more pictures...");
+  
+      // Retrieve procedureSerial
+      const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
+      if (!procedureSerial) {
+        Alert.alert("Error", "Procedure not found. Please create a procedure first.");
+        return;
+      }
+  
+      // Retrieve deviceID
+      if (!deviceID) {
+        Alert.alert("Error", "Device ID not found.");
+        return;
+      }
+  
+      // Retrieve authorizationCode
+      const authorizationCode = await AsyncStorage.getItem("authorizationCode");
+      if (!authorizationCode) {
+        Alert.alert("Authorization Error", "Please log in again.");
+        return;
+      }
+  
+      // Generate formatted date and key
+      const currentDate = new Date();
+      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
+        currentDate.getDate()
+      ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
+        currentDate.getMinutes()
+      ).padStart(2, "0")}`;
+  
+      const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
+      const key = CryptoJS.SHA1(keyString).toString();
+  
+      // API URL & Payload
+      const url = "https://prefpic.com/dev/PPService/UpdatePictureText.php";
+      const formData = new FormData();
+      formData.append("DeviceID", deviceID.id);
+      formData.append("Date", formattedDate);
+      formData.append("Key", key);
+      formData.append("AC", authorizationCode);
+      formData.append("PrefPicVersion", "1");
+      formData.append("Picture", procedureSerial);
+      formData.append("Name", procedureName);
+      formData.append("Note", "Updated picture text");
+  
+      // Make the API call
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+        },
+      });
+  
+      const data = await response.text();
+      console.log("🔹 API Response Body:", data);
+      console.log("🔹 API Response Status:", response.status);
+  
+      if (response.ok) {
+        console.log("🔹 API call successful. Navigating to camera...");
+        router.push({
+          pathname: "camera",
+          params: { procedureName },
+        });
+      } else {
+        const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
+        Alert.alert("Update Failed", errorMessage);
+      }
+    } catch (error) {
+      console.error("🔹 Error during API call:", error);
+      Alert.alert("Update Failed", "An error occurred during the update.");
+    }
+  };
+  
+
+
+
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.back()}>
+      <TouchableOpacity onPress={() => navigateToCamera()}>
         <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
       <Text style={styles.header}>View / Edit Picture(s)</Text>
@@ -270,7 +359,7 @@ export default function ViewEditPicture() {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.addPicture}
           onPress={() => {
             if (images.length < 5) {
@@ -279,7 +368,23 @@ export default function ViewEditPicture() {
           }}
         >
           <Text style={styles.addPicturebuttonText}>Add more pictures</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+
+      {/* Alberto - > 2/24/2025 */}
+         <TouchableOpacity
+          style={styles.addPicture}
+          onPress={async () => {
+            if (images.length < 5) {
+              await handleAddMorePictures(); // Call the API before navigating
+              navigateToRetakePicture(images.length);
+            } else {
+              Alert.alert("Limit Reached", "You can only add up to 5 pictures.");
+            }
+          }}
+        >
+          <Text style={styles.addPicturebuttonText}>Add more pictures</Text>
+        </TouchableOpacity> 
+
 
         <TouchableOpacity style={styles.nextbutton} onPress={navigateToAddPearls}>
           <Text style={styles.buttonText}>Next</Text>
