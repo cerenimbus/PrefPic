@@ -85,7 +85,7 @@ const helpScreen: React.FC = () => {
       if (data.ResultInfo && data.ResultInfo.Result === 'Success') {
         Alert.alert(
           `Help About ${topic}`,
-          data.ResultInfo.Message,
+          data.ResultInfo.Help,
           [
             { text: 'Ok', onPress: navigateToMainAccountPage },
             { text: 'Back', onPress: navigateToMainAccountPage },

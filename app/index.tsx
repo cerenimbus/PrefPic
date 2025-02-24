@@ -17,7 +17,7 @@ export default function start(){
     };
   
     checkPhysicianStatus();
-  }, []);
+  }, []); 
 
   const handlePhysicianPress = () => {
     if (physicianStatus === "Demo" || physicianStatus === "Active") {
@@ -44,7 +44,13 @@ export default function start(){
                     </TouchableOpacity>
                  </View>
                  <View>
-                    <TouchableOpacity style={styles.getButton2} onPress={() => router.push("/startpage")}
+                    <TouchableOpacity 
+                    style={styles.getButton2} 
+                    onPress={() => 
+                      {
+                        AsyncStorage.setItem("isSurgicalStaff", "true");
+                        router.push("/startpage");
+                      }}
                 >
                         <Text style = {styles.text2}>Surgical Staff</Text>
                     </TouchableOpacity>
