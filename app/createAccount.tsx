@@ -71,6 +71,7 @@ const CreateAccount = () => {
   const passwordRef = useRef<TextInput | null>(null);
   const roleRef = useRef<TextInput | null>(null);
   const specialtyRef = useRef<TextInput | null>(null);
+  const [phoneError, setPhoneError] = useState("");
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 //   const [activeField, setActiveField] = useState<React.RefObject<TextInput> | null>(null); 
   const [activeField, setActiveField] = useState<React.RefObject<TextInput | View> | null>(null);
@@ -136,6 +137,23 @@ const CreateAccount = () => {
 // const specialtyOptions = specialties[role as keyof typeof specialties] || [];
 const specialtyOptions = specialties[form.role as keyof typeof specialties] || [];
 
+const handlePhoneChange = (text: string) => {
+  // Remove non-numeric characters
+  const numericText = text.replace(/[^0-9]/g, '');
+
+  // Limit input to 10 digits
+  if (numericText.length <= 10) {
+      handleInputChange("phone", numericText); // Update the form state
+
+      // Validate length
+      if (numericText.length === 10) {
+          setPhoneError(""); // Clear error when valid
+      } else {
+          setPhoneError("Phone number must be exactly 10 digits");
+      }
+  }
+};
+
 const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
     Keyboard.dismiss();
     setForm((prev) => ({
@@ -199,13 +217,16 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
     ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
       currentDate.getMinutes()
     ).padStart(2, "0")}`;
-
+// const devidID2 = "ab02345lasl23rlksjl234";
+// const date2 = "11/22/2013-23:00";
     const keyString = `${deviceID}${formattedDate}`;
     const key = CryptoJS.SHA1(keyString).toString();
 
-    const url = `https://PrefPic.com/dev/PPService/CreateAccount.php?DeviceID=${encodeURIComponent(
-      deviceID.id
-    )}&DeviceType=${encodeURIComponent(deviceID.type)}&DeviceModel=${encodeURIComponent(deviceID.model)}&DeviceVersion=${encodeURIComponent(deviceID.version)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&First=${encodeURIComponent(
+    const url = `https://PrefPic.com/dev/PPService/CreateAccount.php?DeviceID=${encodeURIComponent(deviceID.id)}&DeviceType=${encodeURIComponent(deviceID.type)}&DeviceModel=${encodeURIComponent(
+      deviceID.model
+    )}&DeviceVersion=${encodeURIComponent(
+      deviceID.version
+    )}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&First=${encodeURIComponent(
       form.firstName
     )}&Last=${encodeURIComponent(form.lastName)}&Title=${encodeURIComponent(
       form.title
@@ -275,18 +296,26 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                             onBlur={handleBlur}
                             returnKeyType="done"
                             />
-                        <TextInput
-                            ref={phoneRef}
-                            style={[styles.input, activeField === phoneRef ? styles.activeInput : {}]}
-                            multiline
-                            placeholder="Phone Number"
-                            value={form.phone}
-                            keyboardType="phone-pad"
-                            onChangeText={(text) => handleInputChange("phone", text)}
-                            onFocus={() => handleFocus(phoneRef)}
-                            onBlur={handleBlur}
-                            returnKeyType="done"
-                            />
+                        
+                              {phoneError ? <Text style={{ color: "red", marginBottom: 5 }}>{phoneError}</Text> : null}
+
+                              <TextInput
+                                  ref={phoneRef}
+                                  style={[
+                                      styles.input, 
+                                      activeField === phoneRef ? styles.activeInput : {},
+                                      phoneError ? { borderColor: "red", borderWidth: 1 } : {}
+                                  ]}
+                                  multiline
+                                  placeholder="Phone Number"
+                                  value={form.phone}
+                                  keyboardType="phone-pad"
+                                  onChangeText={handlePhoneChange}
+                                  onFocus={() => handleFocus(phoneRef)}
+                                  onBlur={handleBlur}
+                                  returnKeyType="done"
+                              />
+                          
                         <TextInput
                             ref={emailRef}
                             style={[styles.input, activeField === emailRef ? styles.activeInput : {}]}
@@ -301,21 +330,21 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                             />
                 <View style={styles.passwordContainer}>
                     <TextInput
-                            ref={passwordRef}
-                            style={[styles.input, activeField === passwordRef ? styles.activeInput : {}]}
-                            multiline
-                            placeholder="Password"
-                            secureTextEntry={!showPassword}
-                            value={form.password}
-                            onChangeText={(text) => handleInputChange("password", text)}
-                            onFocus={() => handleFocus(passwordRef)}
-                            onBlur={handleBlur}
-                            returnKeyType="done"
-                            />
+                        ref={passwordRef}
+                        style={[styles.input, activeField === passwordRef ? styles.activeInput : {}]}
+                        placeholder="Password"
+                        secureTextEntry={!showPassword} // This will now work
+                        value={form.password}
+                        onChangeText={(text) => handleInputChange("password", text)}
+                        onFocus={() => handleFocus(passwordRef)}
+                        onBlur={handleBlur}
+                        returnKeyType="done"
+                    />
                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
                         <Feather name={showPassword ? "eye" : "eye-off"} size={20} color="gray" />
                     </TouchableOpacity>
                 </View>
+
                 <View style={styles.checkboxContainer}>
                     <Text style={styles.selectText}>Select Role:</Text>
 
@@ -383,6 +412,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
       },
+      phoneContainer: {
+        marginBottom: 16, // Space between fields
+        position: "relative", // For precise placement of error text
+    },
       disabledButton: {
         backgroundColor: "#A9A9A9", // Gray color for disabled button
       },

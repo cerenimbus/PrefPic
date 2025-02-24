@@ -43,7 +43,7 @@ export default function AddPearls() {
       pathname: "procedureReviewSummary",
       params: { procedureName, alwaysDo, watchFor, neverDo },
     });
-  };
+  };  
 
   const handleFocus = (inputRef: React.RefObject<TextInput>) => {
     setActiveField(inputRef);
