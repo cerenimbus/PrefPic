@@ -14,23 +14,43 @@ const BottomNavigation: React.FC = () => {
         // router.push('mainAccountPage');
     };
 
+
+
+
+    ///Alberto 02/21/2024 fixed router
     const navigateToTeamMember = () => {
         router.push("/teamMember");
     };
+
     const isTeamActive = pathname === "/teamMember";
     const isTeamActive1 = pathname === "/enterTeamMember";
     const isFeedbackActive = pathname === "/feedback";
     //const isProcedureActive = pathname === "/library";
     const isProcedureDisabled = pathname === "/teamMember" || pathname === "/feedback" || pathname === "/enterTeamMember";
 
+
     const navigateToHelp = () => {
-        router.push('help');
+        router.push('/help');
     };
-
+    const navigateToTeamMember = () => {
+        router.push("teamMember"); 
+    };
     const navigateToFeedback = () => {
-        router.push("/feedback");
+
+        router.push("feedback"); 
+
     };
 
+    const isTeamActive = pathname === "/teamMember";
+    const isFeedbackActive = pathname === "/feedback";
+    const isHelpActive = pathname === "/help";
+    const isProcedureActive = pathname === "/library";
+    //const isProcedureDisabled = pathname === "/teamMember" || pathname === "/feedback";
+
+    {/* 
+    MG 02/21/2025
+    Fixed Routings
+    */}
     return (
         <View style={styles.container}>
 
@@ -40,15 +60,18 @@ const BottomNavigation: React.FC = () => {
                     style={styles.icon}/>
                 <Text style={styles.navTextActive}>Procedure</Text>
             </TouchableOpacity> */}
+
             <TouchableOpacity style={styles.navItem} onPress={navigateToLibrary}>
                 <Image
                     // source={require('../assets/Procedure_blue.png')}
-                    source={isProcedureDisabled ? require('../assets/Procedure_grayed.png') : require('../assets/Procedure_blue.png')}
+                    source={isProcedureActive ? require('../assets/Procedure_blue.png') : require('../assets/Procedure_grayed.png')}
                     style={styles.icon}
                 />
                 {/* <Text style={styles.navTextActive}>Procedure</Text> */}
-                <Text style={isProcedureDisabled ? styles.navTextDisabled : styles.navText}>Procedure</Text>
+                <Text style={isProcedureActive ? styles.navTextActive: styles.navText}>Procedure</Text>
             </TouchableOpacity>
+
+
 
 
             {/* <TouchableOpacity style={styles.navItem}//turn to false for testing 
@@ -61,19 +84,24 @@ const BottomNavigation: React.FC = () => {
             <TouchableOpacity style={styles.navItem} onPress={navigateToTeamMember}>
                 <Image
                     // source={require('../assets/Team_grayed.png')}
+
                     source={isTeamActive || isTeamActive1 ? require('../assets/Team_blue.png') : require('../assets/Team_grayed.png')}
                     style={styles.icon} />
                 {/* <Text style={styles.navText}>Team</Text> */}
+
                 <Text style={isTeamActive ? styles.navTextActive : styles.navText}>Team</Text>
             </TouchableOpacity>
 
 
             <TouchableOpacity style={styles.navItem} onPress={navigateToHelp}>
-                <Image
-                    source={require('../assets/Help_grayed.png')}
+
+                <Image 
+
+                   source={isHelpActive ? require('../assets/Help_blue.png') : require('../assets/Help_grayed.png')}
+
                     style={styles.icon}
                 />
-                <Text style={styles.navText}>Help</Text>
+                <Text style={isHelpActive ? styles.navTextActive : styles.navText}>Help</Text>
             </TouchableOpacity>
 
             {/* <TouchableOpacity style={styles.navItem}>
@@ -85,7 +113,10 @@ const BottomNavigation: React.FC = () => {
             <TouchableOpacity style={styles.navItem} onPress={navigateToFeedback}>
                 <Image
                     source={isFeedbackActive ? require('../assets/Feedback_blue.png') : require('../assets/Feedback_grayed.png')}
-                    style={styles.icon} />
+
+                    style={styles.icon}
+                    />
+
                 <Text style={isFeedbackActive ? styles.navTextActive : styles.navText}>Feedback</Text>
             </TouchableOpacity>
         </View>

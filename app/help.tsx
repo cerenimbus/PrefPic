@@ -1,5 +1,5 @@
 import { router, useRouter, useLocalSearchParams } from "expo-router";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ImageBackground } from "react-native";
 import { useState, useEffect } from "react";
 import React from "react";
 import BottomNavigation from "../components/bottomNav";
@@ -12,11 +12,13 @@ const helpScreen: React.FC = () => {
   const router = useRouter();
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
   const [authorizationCode, setAuthorizationCode] = useState<string | null>(null);
+  // MG 02/21/2025
+  // Added background image to the button
   const buttonHelp = [
-    { title: 'Leave Feedback or Ask Questions' },
-    { title: 'Help About Teams' },
-    { title: 'Help About Pictures' },
-    { title: 'Help About Procedures' },
+    { title: 'Leave Feedback or Ask Questions', image: require('../assets/questions.png') },
+    { title: 'Teams', image: require('../assets/Teams.png') },
+    { title: 'Pictures', image: require('../assets/pictures.png') },
+    { title: 'Procedures', image: require('../assets/helpAboutProcedure.png') },
   ];
 
   useEffect(() => {
@@ -43,6 +45,9 @@ const helpScreen: React.FC = () => {
 
   const navigateToMainAccountPage = () => {
     router.push('/mainAccountPage');
+  };
+  const navigateToFeedback = () => {
+    router.push('/feedback');
   };
 
   const getHelp = async (topic: string) => {
@@ -97,12 +102,17 @@ const helpScreen: React.FC = () => {
   };
 
   const handlePress = (title: string) => {
+    if(title === 'Leave Feedback or Ask Questions') {
+      navigateToFeedback();
+      return;
+    }
+    
     let topic = '';
-    if (title === 'Help About Procedures') {
+    if (title === 'Procedures') {
       topic = 'Procedure';
-    } else if (title === 'Help About Teams') {
+    } else if (title === 'Teams') {
       topic = 'Team';
-    } else if (title === 'Help About Pictures') {
+    } else if (title === 'Pictures') {
       topic = 'Picture';
     }
 
@@ -123,7 +133,11 @@ const helpScreen: React.FC = () => {
             style={styles.card}
             onPress={() => handlePress(item.title)}
           >
-            <Text style={styles.text}>{item.title}</Text>
+            <ImageBackground source={item.image} style={styles.imageBackground} imageStyle={styles.imageStyle}>
+              <View style={styles.textContainer}>
+                <Text style={styles.text}>{item.title}</Text>
+              </View>
+            </ImageBackground>
           </TouchableOpacity>
         ))}
       </View>
@@ -138,6 +152,16 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     marginTop: 30,
+  },
+  imageBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+  },
+  imageStyle: {
+    borderRadius: 10,
   },
   helpText: {
     fontSize: 40,
@@ -169,17 +193,26 @@ const styles = StyleSheet.create({
     width: '47%',
     height: 240,
     backgroundColor: '#2E518B',
-    padding: 20,
     margin: 4,
     borderRadius: 10,
-    alignItems: 'center',
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  textContainer: {
+    backgroundColor: 'rgba(92, 168, 209, 0.5)',
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
+    alignItems: 'center',
   },
   text: {
     color: 'white',
     textAlign: 'center',
     fontWeight: 'bold',
     fontFamily: 'Darker Grotesque',
+    padding: 10,
+    fontSize: 14,
   },
 });
 

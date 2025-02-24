@@ -20,6 +20,9 @@ const TeamMembersScreen: React.FC = () => {
   const [newMemberName, setNewMemberName] = useState('');
   const [authorizationCode, setAuthorizationCode] = useState<string | null>(null);
   const [teamMembers, setTeamMembers] = useState<Array<{id: string, fullName: string, title: string}>>([]);
+  //const [teamMembers, setTeamMembers] = useState <string []>([]);
+  const [username, setUsername] = useState(''); //
+  const [teamCode, setTeamCode] = useState(''); //
 
   const router = useRouter();
   const searchParams = useLocalSearchParams();  
@@ -102,7 +105,30 @@ const TeamMembersScreen: React.FC = () => {
     }
   };
 
+  //MLI 02/21/2025
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const storedUsername = await AsyncStorage.getItem('username');
+        const storedTeamCode = await AsyncStorage.getItem('teamCode');
+        if (storedUsername) setUsername(storedUsername);
+        if (storedTeamCode) {
+          setTeamCode(storedTeamCode);
+        } else {
+          const generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+          setTeamCode(generatedCode);
+          await AsyncStorage.setItem('teamCode', generatedCode);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchUserData();
+  }, []);
+//
+
   const handleAddMember = () => {
+   router.push("/addTeamMember")
     if (!isAddingMember) {
       setIsAddingMember(true);
       return;
@@ -118,27 +144,90 @@ const TeamMembersScreen: React.FC = () => {
       setIsAddingMember(false);
     }
   };
-  
+
+  const navigateToviewTeamMember = () => {
+    router.push({
+    pathname: "",
+  });
+};
+
   const navigateToLibrary = () => {
     router.push({
       pathname: "library"
     });
   };
 
-  const handleRemoveMember = (id: string) => {
-    setMembers(members.filter(member => member.id !== id));
+  const navigateToAddTeamMember = () => {
+    router.push({
+      pathname: "addTeamMember"
+    });
   };
+
+  //commented by MLI 02/21/2025
+  // const handleRemoveMember = (id: string) => {
+  //   setMembers(members.filter(member => member.id !== id));
+  // };
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={navigateToLibrary}>
+      {/* MLI - 02/21/2025 */}
+      <Text style={styles.username}>{username || '[USER NAME]'}</Text>
+      <Text style={styles.title}>Team Members</Text>
+      <Text style={styles.teamCode}>Team code: <Text style={styles.codeText}>#{teamCode}</Text></Text>
+      <Text style={styles.description}>
+        Give this code to invite others to your surgical team with instructions to download this app and create an account.
+      </Text>
+      
+      <View style={styles.card}>
+        <TouchableOpacity style={styles.addButton} onPress={navigateToAddTeamMember}>
+          <Text style={styles.addButtonText}>Add Team Member +</Text>
+          </TouchableOpacity>
+          {teamMembers.length >= 5 ? (
+            <ScrollView style = {{flex: 1}}>
+              {members.map((member, index) => (
+                <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToviewTeamMember()}>
+                  <Text style={styles.teamMemberButtonText}>{member.name}</Text>
+                  <TouchableOpacity style={styles.teamMemberButton}>
+                    <Text style={styles.item}>{'>'}</Text>
+                    </TouchableOpacity>
+                    </TouchableOpacity>
+                  ))}
+                  </ScrollView>
+                  ) : (
+                  <View>
+                    {members.map((member, index) => (
+                      <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToviewTeamMember()}>
+                        <Text style={styles.teamMemberButtonText}>{member.name}</Text>
+                        <TouchableOpacity style={styles.teamMemberButton}>
+                          <Text style={styles.item}>{'>'}</Text>
+                          </TouchableOpacity>
+                          </TouchableOpacity>
+                        ))}
+                  </View>
+                )}
+                </View>
+                <BottomNavigation />
+                </SafeAreaView>
+      );
+    };
+
+    /* commented by MLI - 02/21/2025 */
+      /* <ScrollView style={styles.membersList}>
+        {[...members, ...Array(5 - members.length).fill(null)].map((member, index) => (
+          <View key={index} style={styles.memberItem} >
+            <Text style={styles.memberName}>{member ? member.name : 'Full Name'}</Text>
+          </View>
+        ))}
+      </ScrollView> */
+
+      /* <TouchableOpacity style={styles.backButton} onPress={navigateToLibrary}>
         <Text style={styles.backTextArrow}>←</Text>
         <Text style={styles.backText}>Back</Text>
       </TouchableOpacity>
       <Text style={styles.title}>Team Members</Text>
-      <Text style={styles.subtitle}>[Title]   [First Name]   [Last Name]</Text>
+      <Text style={styles.subtitle}>[Title]   [First Name]   [Last Name]</Text> */
 
-      <View style={styles.content}>
+      /* <View style={styles.content}>
         <View style={styles.inputContainer}>
           {isAddingMember ? (
             <TextInput
@@ -151,40 +240,47 @@ const TeamMembersScreen: React.FC = () => {
             />
           ) : (
             <Text style={styles.nameText}>Name</Text>
-          )}
+          )} */
           
-          <TouchableOpacity style={styles.addButton} onPress={handleAddMember}>
-            <Text style={styles.addButtonText}>Add</Text>
-            <Text style={styles.plusIcon}>+</Text>
-          </TouchableOpacity>
-        </View>
 
-        <View style={styles.membersList}>
-          {members.map((member) => (
+        //   <TouchableOpacity style={styles.addButton} onPress={handleAddMember}>
+        //     <Text style={styles.addButtonText}>Add</Text>
+        //     <Text style={styles.plusIcon}>+</Text>
+        //   </TouchableOpacity>
+        // </View> */
+        // <View>
+        //   <TouchableOpacity style={styles.addButton} onPress={handleAddMember}>
+        //     <Text style={styles.addButtonText} >Add</Text>
+        //     <Text style={styles.plusIcon}>+</Text>
+        //   </TouchableOpacity>
+        // </View>
+
+
+        /* <View style={styles.membersList}> */
+          /* {members.map((member) => (
             <View key={member.id} style={styles.memberItem}>
               <Text style={styles.memberName}>{member.name}</Text>
               <TouchableOpacity 
                 style={styles.removeButton}
-                onPress={() => handleRemoveMember(member.id)}
+                onPress={() => handleRemoveMember(member.id)} //commented by MLI
               >
                 <Text style={styles.minusIcon}>-</Text>
               </TouchableOpacity>
-            </View>
-          ))}
+            </View> */
+          /* ))}
           {Array(7 - members.length).fill(null).map((_, index) => (
             <View key={`empty-${index}`} style={styles.memberItem}>
               <Text style={styles.memberName}>[Full Name]</Text>
-              <TouchableOpacity style={styles.removeButton} disabled>
+              <TouchableOpacity style={styles.removeButton} >
                 <Text style={styles.minusIcon}>-</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
-      </View>
-      <BottomNavigation />
-    </SafeAreaView>
-  );
-};
+              </TouchableOpacity> */
+            /* </View> */
+          /* ))} */
+        // </SafeAreaView>
+      // </View>
+      // <BottomNavigation />
+    //</SafeAreaView>
+  //</View>
 
 const styles = StyleSheet.create({
   container: {
@@ -201,11 +297,45 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginTop: 0,
   },
+  teamMemberContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#B0BEC5',
+},
+  username: {
+    color: '#4A6FA5',
+    fontSize: 15,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 50,
+  },
+  teamCode: {
+    fontSize: 20,
+    marginBottom: 10,
+    fontFamily: "Darker Grotesque",
+  },
+  codeText: {
+    color: '#4A6FA5',
+    fontWeight: 'bold',
+  },
+  description: {
+    textAlign: 'center',
+    fontSize: 20,
+    marginBottom: 20,
+    fontFamily: "Darker Grotesque",
+    gap: 15,
+    marginLeft: 34,
+    marginRight: 30,
+    marginTop: -5,
+  },
   title: {
     fontSize: 40,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginTop: 55,
+    marginTop: 35,
     marginBottom: 5,
     fontFamily: "Darker Grotesque",
   },
@@ -254,7 +384,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Inter",
     color: '#fff',
-    fontWeight: '600',
+    fontWeight: 'bold',
     marginRight: 4,
   },
   plusIcon: {
@@ -278,6 +408,17 @@ const styles = StyleSheet.create({
     color: '#666',
     flex: 1,
   },
+  teamMemberButtonText: {
+    color: 'gray',
+    fontSize: 18, // Adjusted font size
+},
+teamMemberButton: {
+  backgroundColor: '#ffffff', // Button background color
+  width: 40, // Set width for the circle
+  height: 40, // Set height for the circle
+  alignItems: 'center', // Center content horizontally
+  justifyContent: 'center', // Center content vertically
+},
   removeButton: {
     width: 30,
     height: 30,
@@ -314,6 +455,25 @@ const styles = StyleSheet.create({
     marginLeft: -150,
     marginTop: -23.5,
   }, 
+  item: {
+        color: 'gray',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    card: {
+      width: '100%', // or maxWidth: 400
+      maxWidth: 400,
+      height: 508, // Adjust height as needed
+      backgroundColor: '#ffffff',
+      borderRadius: 10,
+      padding: 20, // Padding for inner content
+      borderWidth: 2, // Add border
+      borderColor: 'white', // Border color
+      shadowColor: '#000', // Shadow for iOS
+      shadowOpacity: 0.1,
+      shadowRadius: 10,
+      shadowOffset: { width: 0, height: 2 },
+  },
 });
 
 export default TeamMembersScreen;
