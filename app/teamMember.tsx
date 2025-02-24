@@ -249,6 +249,7 @@ const TeamMembersScreen: React.FC = () => {
         //   </TouchableOpacity>
         // </View> */
 
+
         //   <TouchableOpacity style={styles.addButton} onPress={handleAddMember}>
         //     <Text style={styles.addButtonText} >Add</Text>
         //     <Text style={styles.plusIcon}>+</Text>
@@ -271,7 +272,7 @@ const TeamMembersScreen: React.FC = () => {
           {Array(7 - members.length).fill(null).map((_, index) => (
             <View key={`empty-${index}`} style={styles.memberItem}>
               <Text style={styles.memberName}>[Full Name]</Text>
-              <TouchableOpacity style={styles.removeButton} disabled>
+              <TouchableOpacity style={styles.removeButton} >
                 <Text style={styles.minusIcon}>-</Text>
               </TouchableOpacity> */
             /* </View> */

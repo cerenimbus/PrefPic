@@ -12,11 +12,13 @@ const helpScreen: React.FC = () => {
   const router = useRouter();
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
   const [authorizationCode, setAuthorizationCode] = useState<string | null>(null);
+  // MG 02/21/2025
+  // Added background image to the button
   const buttonHelp = [
     { title: 'Leave Feedback or Ask Questions', image: require('../assets/questions.png') },
-    { title: 'Help About Teams', image: require('../assets/Teams.png') },
-    { title: 'Help About Pictures', image: require('../assets/pictures.png') },
-    { title: 'Help About Procedures', image: require('../assets/helpAboutProcedure.png') },
+    { title: 'Teams', image: require('../assets/Teams.png') },
+    { title: 'Pictures', image: require('../assets/pictures.png') },
+    { title: 'Procedures', image: require('../assets/helpAboutProcedure.png') },
   ];
 
   useEffect(() => {
@@ -43,6 +45,9 @@ const helpScreen: React.FC = () => {
 
   const navigateToMainAccountPage = () => {
     router.push('/mainAccountPage');
+  };
+  const navigateToFeedback = () => {
+    router.push('/feedback');
   };
 
   const getHelp = async (topic: string) => {
@@ -97,12 +102,17 @@ const helpScreen: React.FC = () => {
   };
 
   const handlePress = (title: string) => {
+    if(title === 'Leave Feedback or Ask Questions') {
+      navigateToFeedback();
+      return;
+    }
+    
     let topic = '';
-    if (title === 'Help About Procedures') {
+    if (title === 'Procedures') {
       topic = 'Procedure';
-    } else if (title === 'Help About Teams') {
+    } else if (title === 'Teams') {
       topic = 'Team';
-    } else if (title === 'Help About Pictures') {
+    } else if (title === 'Pictures') {
       topic = 'Picture';
     }
 
@@ -202,6 +212,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'Darker Grotesque',
     padding: 10,
+    fontSize: 14,
   },
 });
 
