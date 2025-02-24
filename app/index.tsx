@@ -1,31 +1,73 @@
 import React from "react";
 import { ImageBackground, Image,StyleSheet,TouchableOpacity,View,Text, SafeAreaView} from "react-native";
 import { useRouter } from "expo-router";
-import { useState,useEffect } from "react";
+import { useContext,useState,useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "./AuthContext";
 
 
 export default function start(){
 
   const router = useRouter();
-  const [physicianStatus, setPhysicianStatus] = useState<string | null>(null);
+  const authContext = useContext(AuthContext);
+  const authCode = authContext?.authCode || null;
+
+  const [userType, setUserType] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkPhysicianStatus = async () => {
-      const status = await AsyncStorage.getItem("status");
-      setPhysicianStatus(status); // No more TypeScript error
+    const setTestAuthCode = async () => {
+      await AsyncStorage.setItem("AUTH_CODE", "123456"); // Test value
     };
-  
-    checkPhysicianStatus();
+    setTestAuthCode();
   }, []);
+  
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const storedType = await AsyncStorage.getItem("type");
+        const storedStatus = await AsyncStorage.getItem("status");
+
+        setUserType(storedType);
+        setStatus(storedStatus);
+
+        console.log("Auth Code:", authCode);
+        console.log("User Type:", storedType);
+        console.log("Status:", storedStatus);
+
+        if (authCode) {
+          if (storedType === "Physician" && storedStatus === "Demo") {
+            router.replace("/library");
+          } else if (storedType === "Surgical Staff" && storedStatus === "Demo") {
+            console.log("Invalid combination: Surgical Staff cannot be in demo mode.");
+          } else if (storedType === "Surgical Staff" && storedStatus === "Active") {
+            router.replace("/sign-in");
+          } else if (storedType === "Physician" && storedStatus === "Active") {
+            router.replace("/sign-in");
+          } else if (storedStatus === "Verified") {
+            router.replace("/");
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [authCode]);
 
   const handlePhysicianPress = () => {
-    if (physicianStatus === "Demo" || physicianStatus === "Active") {
-      router.push("/sign-in"); 
-    } else {
-      router.push("/"); 
+    if (!authCode) {
+      router.push("/start");
     }
   };
+
+  const handleSurgicalStaffPress = () => {
+    if (!authCode) {
+      router.push("/create-account");
+    }
+  };
+
 
     return(
 

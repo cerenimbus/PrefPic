@@ -144,7 +144,7 @@ export default function Signin() {
       const key = CryptoJS.SHA1(keyString).toString();
 
       // Construct API URL
-      const url = `https://prefpic.com/dev/PPService/AuthorizeUser.php?DeviceID=${encodeURIComponent(deviceID)}&DeviceType=${encodeURIComponent(deviceType)}&DeviceModel=${encodeURIComponent(deviceModel)}&DeviceVersion=${encodeURIComponent(deviceVersion)}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}&PrefPicVersion=10&TestFlag=0&AuthCode=${encodeURIComponent(authCode || "")}`;
+      const url = `https://prefpic.com/dev/PPService/AuthorizeUser.php?DeviceID=${encodeURIComponent(deviceID)}&DeviceType=${encodeURIComponent(deviceType)}&DeviceModel=${encodeURIComponent(deviceModel)}&DeviceVersion=${encodeURIComponent(deviceVersion)}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}&PrefPicVersion=10&TestFlag=0`;
 
       console.log("Request URL:", url);
 
@@ -181,7 +181,7 @@ export default function Signin() {
           {/* Form Container */}
           <View style={styles.container}>
                       {/* Centered Image and Text */}
-                    
+
           <View style={styles.imageTextContainer}>
             <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
             <Text style={styles.signintxt}>Sign in</Text>
