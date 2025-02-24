@@ -3,47 +3,78 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { router } from "expo-router";
+import { usePathname } from 'expo-router';
 
 const BottomNavigation: React.FC = () => {
     const router = useRouter();
+    const pathname = usePathname();
     const navigateToLibrary = () => {
-        // router.push('library');
+        router.push('library');
     };
     const navigateToHelp = () => {
         router.push('help');
     };
 
-    ///Alberto 02/21/2024 added disabled to the navigation
+    const navigateToTeamMember = () => {
+        router.push('teamMember');
+    };
+    const navigateToFeedback = () => {
+        router.push('feedback');
+    };
+    {/* 
+    MG 02/21/2025
+    constant if the button is active 
+    */}
+    const isTeamActive = pathname === "/teamMember";
+    const isFeedbackActive = pathname === "/feedback";
+    const isHelpActive = pathname === "/help";
+    const isProcedureActive = pathname === "/library";
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.navItem} onPress={navigateToLibrary} disabled={true}>
+            {/* 
+            MG 02/21/2025
+            Procedure Icon */}
+            <TouchableOpacity style={styles.navItem} onPress={navigateToLibrary}>
+
                 <Image 
-                    source={require('../assets/Procedure_blue.png')}
+                    source={isProcedureActive ? require('../assets/Procedure_blue.png') : require('../assets/Procedure_grayed.png')}
                     style={styles.icon}
                 />
-                <Text style={styles.navTextActive}>Procedure</Text>
+                <Text style={isProcedureActive ? styles.navTextActive: styles.navText}>Procedure</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navItem} disabled={true} //turn to false for testing 
-             onPress={() => router.push('addTeamMember')}>
+            {/* 
+            MG 02/21/2025
+            Team Icon */}
+            <TouchableOpacity style={styles.navItem} onPress={navigateToTeamMember}>
                 <Image 
-                    source={require('../assets/Team_grayed.png')}
+                    source={isTeamActive ? require('../assets/Team_blue.png') : require('../assets/Team_grayed.png')}
                     style={styles.icon}
                 />
-                <Text style={styles.navText}>Team</Text>
+                <Text style={isTeamActive ? styles.navTextActive: styles.navText}>Team</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navItem} onPress={navigateToHelp} disabled={true}>
+
+            {/* 
+            MG 02/21/2025
+            Help Icon */}
+            <TouchableOpacity style={styles.navItem} onPress={navigateToHelp}>
+
                 <Image 
-                    source={require('../assets/Help_grayed.png')}
+                    source={isHelpActive ? require('../assets/Help_blue.png') : require('../assets/Help_grayed.png')}
                     style={styles.icon}
                 />
-                <Text style={styles.navText}>Help</Text>
+                <Text style={isHelpActive ? styles.navTextActive: styles.navText}>Help</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navItem} disabled={true}>
+
+            {/* 
+            MG 02/21/2025
+            Feedback Icon */}
+            <TouchableOpacity style={styles.navItem} onPress={navigateToFeedback}>
+
                 <Image 
-                    source={require('../assets/Feedback_grayed.png')}
+                    source={isFeedbackActive ? require('../assets/Feedback_blue.png') : require('../assets/Feedback_grayed.png')}
                     style={styles.icon}
                 />
-                <Text style={styles.navText}>Feedback</Text>
+                <Text style={isFeedbackActive ? styles.navTextActive: styles.navText}>Feedback</Text>
             </TouchableOpacity>
         </View>
         

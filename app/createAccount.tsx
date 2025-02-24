@@ -57,6 +57,7 @@ const CreateAccount = () => {
     model: string;
     version: string;
   } | null>(null);
+  const [authorizationCode, setAuthorizationCode] = useState<string | null>(null); 
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isContinueEnabled, setIsContinueEnabled] = useState(false);
   const router = useRouter();
@@ -111,6 +112,24 @@ const CreateAccount = () => {
     ],
     "Surgical Staff": ["Charge Nurse", "OR Nurse"],
   };
+
+  useEffect(() => {
+    const fetchAuthorizationCode = async () => {
+        try {
+            console.log('Fetching authorization code from AsyncStorage...');
+            const code = await AsyncStorage.getItem('authorizationCode');
+            if (code) {
+                console.log('Fetched authorization code:', code); // Debugging statement
+                setAuthorizationCode(code);
+            } else {
+                console.log('No authorization code found in AsyncStorage');
+            }
+        } catch (error) {
+            console.error('Error fetching authorization code:', error);
+        }
+    };
+    fetchAuthorizationCode();
+}, []);
   
   // Fix the error when accessing specialties
 //   const specialtyOptions = specialties[role] || []; // Ensure it returns an empty array if role is not valid
@@ -172,6 +191,8 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
         return;
     }
 
+
+
     const currentDate = new Date();
     const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
       currentDate.getDate()
@@ -184,7 +205,7 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
 
     const url = `https://PrefPic.com/dev/PPService/CreateAccount.php?DeviceID=${encodeURIComponent(
       deviceID.id
-    )}&DeviceType=${deviceID.type}&DeviceModel=${deviceID.model}&DeviceVersion=${deviceID.version}&Date=${formattedDate}&Key=${key}&First=${encodeURIComponent(
+    )}&DeviceType=${encodeURIComponent(deviceID.type)}&DeviceModel=${encodeURIComponent(deviceID.model)}&DeviceVersion=${encodeURIComponent(deviceID.version)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&First=${encodeURIComponent(
       form.firstName
     )}&Last=${encodeURIComponent(form.lastName)}&Title=${encodeURIComponent(
       form.title

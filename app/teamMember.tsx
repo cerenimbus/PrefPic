@@ -147,7 +147,7 @@ const TeamMembersScreen: React.FC = () => {
 
   const navigateToviewTeamMember = () => {
     router.push({
-    pathname: "",
+    pathname: "addTeamMember",
   });
 };
 
@@ -186,11 +186,9 @@ const TeamMembersScreen: React.FC = () => {
             <ScrollView style = {{flex: 1}}>
               {members.map((member, index) => (
                 <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToviewTeamMember()}>
-                  <Text style={styles.teamMemberButtonText}>{member.name}</Text>
-                  <TouchableOpacity style={styles.teamMemberButton}>
-                    <Text style={styles.item}>{'>'}</Text>
-                    </TouchableOpacity>
-                    </TouchableOpacity>
+                <Text style={styles.teamMemberButtonText}>{member.name}</Text>
+                <Text style={styles.item}>{'>'}</Text>
+              </TouchableOpacity>
                   ))}
                   </ScrollView>
                   ) : (
@@ -249,11 +247,12 @@ const TeamMembersScreen: React.FC = () => {
         //   </TouchableOpacity>
         // </View> */
 
-//          <TouchableOpacity style={styles.addButton} onPress={handleAddMember}>
-  //          <Text style={styles.addButtonText} >Add</Text>
-    //        <Text style={styles.plusIcon}>+</Text>
-      //    </TouchableOpacity>
-        //</View>
+
+        //   <TouchableOpacity style={styles.addButton} onPress={handleAddMember}>
+        //     <Text style={styles.addButtonText} >Add</Text>
+        //     <Text style={styles.plusIcon}>+</Text>
+        //   </TouchableOpacity>
+        // </View>
 
 
         /* <View style={styles.membersList}> */
