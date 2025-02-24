@@ -217,13 +217,16 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
     ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
       currentDate.getMinutes()
     ).padStart(2, "0")}`;
-
+// const devidID2 = "ab02345lasl23rlksjl234";
+// const date2 = "11/22/2013-23:00";
     const keyString = `${deviceID}${formattedDate}`;
     const key = CryptoJS.SHA1(keyString).toString();
 
-    const url = `https://PrefPic.com/dev/PPService/CreateAccount.php?DeviceID=${encodeURIComponent(
-      deviceID.id
-    )}&DeviceType=${encodeURIComponent(deviceID.type)}&DeviceModel=${encodeURIComponent(deviceID.model)}&DeviceVersion=${encodeURIComponent(deviceID.version)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&First=${encodeURIComponent(
+    const url = `https://PrefPic.com/dev/PPService/CreateAccount.php?DeviceID=${encodeURIComponent(deviceID.id)}&DeviceType=${encodeURIComponent(deviceID.type)}&DeviceModel=${encodeURIComponent(
+      deviceID.model
+    )}&DeviceVersion=${encodeURIComponent(
+      deviceID.version
+    )}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&First=${encodeURIComponent(
       form.firstName
     )}&Last=${encodeURIComponent(form.lastName)}&Title=${encodeURIComponent(
       form.title
