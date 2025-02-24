@@ -16,14 +16,12 @@ export default function start(){
   const [status, setStatus] = useState<string | null>(null);
 
  useEffect(() => {
-    const checkPhysicianStatus = async () => {
-      const status = await AsyncStorage.getItem("status");
-      setPhysicianStatus(status); // No more TypeScript error
+    
     const setTestAuthCode = async () => {
       await AsyncStorage.setItem("AUTH_CODE", "123456"); // Test value
     };
   
-    checkPhysicianStatus();
+   
     setTestAuthCode();
   }, []);
   
