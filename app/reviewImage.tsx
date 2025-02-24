@@ -153,17 +153,17 @@ const navigateToReviewSummary = async (fileUri: string, fileType: string) => {
         if (response.ok) {
             Alert.alert("Success!", "Image uploaded successfully.");
 
-            // 🔹 Store the image in AsyncStorage
+            // RHCM 2/22/2025 Store the image in AsyncStorage
             const storedImages = await AsyncStorage.getItem("capturedImages");
             const imageList = storedImages ? JSON.parse(storedImages) : [];
 
-            // Append the new image
+            // RHCM 2/22/2025 Append the new image
             imageList.push(fileUri);
 
-            // Store updated list (limit to 5 images)
+            // RHCM 2/22/2025 Store updated list (limit to 5 images)
             await AsyncStorage.setItem("capturedImages", JSON.stringify(imageList.slice(0, 5)));
 
-            console.log("🔹 Updated Images List:", imageList);
+            console.log(" Updated Images List:", imageList);
 
             // Navigate to viewEditPicture WITHOUT passing photoUri in params
             router.push({

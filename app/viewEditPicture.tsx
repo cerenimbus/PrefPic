@@ -129,7 +129,7 @@ export default function ViewEditPicture() {
           setImages(JSON.parse(storedImages));
         }
       } catch (error) {
-        console.error("🔹 Error loading images:", error);
+        console.error("Error loading images:", error);
       }
     };
   
