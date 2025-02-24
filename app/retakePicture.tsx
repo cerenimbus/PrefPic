@@ -14,6 +14,10 @@ export default function ViewEditPicture() {
     }>();
    console.log(photoUri);
 
+    // const params = useLocalSearchParams();
+
+    // const procedureName = params.procedureName as string;
+
   useEffect(() => {
     if(photoUri){
       const cleanedUri = decodeURIComponent(photoUri);
