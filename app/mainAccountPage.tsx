@@ -1,16 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Alert, Image, TextInput } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Alert, Image } from 'react-native';
 import BottomNavigation from '../components/bottomNav';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { getDeviceID } from '../components/deviceInfo';
 import { XMLParser } from 'fast-xml-parser';
+import { HelperText } from 'react-native-paper';
 
 const mainAccountPage: React.FC = () => {
   const router = useRouter();
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
   const [authorizationCode, setAuthorizationCode] = useState<string | null>(null);
+  // MG 02/21/2025
+  // added parameter for text of the API to display in text area
+  const [helpText, setHelpText] = useState<string | null>(null);
+  const searchParams = useLocalSearchParams(); 
+// MG 02/21/2025
+// added parameters for title, firstName, and lastName
+  // const title = Array.isArray(searchParams.title) ? searchParams.title[0] : searchParams.title;
+  // const firstName = Array.isArray(searchParams.firstName) ? searchParams.firstName[0] : searchParams.firstName;
+  // const lastName = Array.isArray(searchParams.lastName) ? searchParams.lastName[0] : searchParams.lastName;
 
   useEffect(() => {
     const fetchAuthorizationCode = async () => {
@@ -49,7 +59,7 @@ const mainAccountPage: React.FC = () => {
   };
 
   const getHelp = async () => {
-    const topic = 'Instructions';
+    const topic = 'Instruction';
     console.log('Device ID:', deviceID); // Log the device ID
     console.log('Authorization Code:', authorizationCode); // Log the authorization code
 
@@ -85,15 +95,7 @@ const mainAccountPage: React.FC = () => {
       console.log('Parsed Data:', data);
 
       if (data.ResultInfo && data.ResultInfo.Result === 'Success') {
-        Alert.alert(
-          `Help About ${topic}`,
-          data.ResultInfo.Message,
-          [
-            { text: 'Ok', onPress: navigateToMainAccountPage },
-            { text: 'Back', onPress: navigateToMainAccountPage },
-          ],
-          { cancelable: false }
-        );
+        setHelpText(data.ResultInfo.Help);
       } else {
         Alert.alert('Error', 'Failed to fetch help from server.');
       }
@@ -105,9 +107,9 @@ const mainAccountPage: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity onPress={() => router.back()}>
+      {/* <TouchableOpacity onPress={() => router.back()}>
         <Text style={styles.backText}>←  Back</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <View style={styles.center}>
         <View style={styles.imageHolder}>
           <Image 
@@ -116,15 +118,15 @@ const mainAccountPage: React.FC = () => {
           />
         </View>
         <View style={styles.info}>
-          <Text style={styles.infoText}>[Title]</Text>
-          <Text style={styles.infoText}>[First Name]</Text>
-          <Text style={{color: '#999999'}}>[Last Name]</Text>
+          {/*
+          <Text style={styles.infoText}>{title}</Text>
+          <Text style={styles.infoText}>{firstName}</Text>
+          <Text style={{color: '#999999'}}>{lastName}</Text>
+          */}
         </View>
-        <TextInput 
-          style={styles.input} 
-          multiline 
-          placeholder="Enter details..." 
-        />
+        <Text style={styles.input}>
+          {helpText}
+        </Text> 
       </View>
       <BottomNavigation />
     </SafeAreaView>

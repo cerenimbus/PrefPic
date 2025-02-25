@@ -85,7 +85,10 @@ export default function Signin() {
   const navigateToCreateAccount = () => { 
     router.push("/createAccount"); // Adjust the path if your CreateAccount screen is in another folder
   };
-
+  
+  const navigateToTeamAccount = () => { 
+    router.push("/teamMember"); // Adjust the path if your CreateAccount screen is in another folder
+  };
   const navigateToMainAccountPage = () => {
     router.push("/mainAccountPage");
   };
@@ -144,8 +147,7 @@ export default function Signin() {
       const key = CryptoJS.SHA1(keyString).toString();
 
       // Construct API URL
-      const url = `https://prefpic.com/dev/PPService/AuthorizeUser.php?DeviceID=${encodeURIComponent(deviceID)}&DeviceType=${encodeURIComponent(deviceType)}&DeviceModel=${encodeURIComponent(deviceModel)}&DeviceVersion=${encodeURIComponent(deviceVersion)}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(email)}&Phone=1234567890&Password=${encodeURIComponent(password)}&PrefPicVersion=10&TestFlag=0&AuthCode=${encodeURIComponent(authCode || "")}`;
-
+      const url = `https://prefpic.com/dev/PPService/AuthorizeUser.php?DeviceID=${encodeURIComponent(deviceID)}&DeviceType=${encodeURIComponent(deviceType)}&DeviceModel=${encodeURIComponent(deviceModel)}&DeviceVersion=${encodeURIComponent(deviceVersion)}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}&PrefPicVersion=10&TestFlag=0&AuthCode=${encodeURIComponent(authCode || "")}`;
       console.log("Request URL:", url);
 
       // Call API
@@ -181,6 +183,7 @@ export default function Signin() {
           {/* Form Container */}
           <View style={styles.container}>
                       {/* Centered Image and Text */}
+
           <View style={styles.imageTextContainer}>
             <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
             <Text style={styles.signintxt}>Sign in</Text>
@@ -235,6 +238,9 @@ export default function Signin() {
             <TouchableOpacity onPress={navigateToCreateAccount}>
               <Text style={styles.caccount}>Create an account</Text>
             </TouchableOpacity>
+            {/* <TouchableOpacity onPress={navigateToTeamAccount}>
+              <Text style={styles.caccount}>Team</Text>
+            </TouchableOpacity> */}
 
           </View>
           

@@ -8,7 +8,6 @@ import { XMLParser } from 'fast-xml-parser';
 import { getDeviceID } from '../components/deviceInfo';
 
 
-
 const LibraryScreen: React.FC = () => {
     const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
     const [selectedProcedure, setSelectedProcedure] = useState<string | null>(null);
@@ -21,6 +20,12 @@ const LibraryScreen: React.FC = () => {
     const router = useRouter();
     const searchParams = useLocalSearchParams();
     const procedureName = Array.isArray(searchParams.procedureName) ? searchParams.procedureName[0] : searchParams.procedureName;
+    const [isSurgicalStaff, setIsSurgicalStaff] = useState(false);
+    // MG 02/21/2025
+    // added parameters for title, firstName, and lastName
+    // const title = Array.isArray(searchParams.title) ? searchParams.title[0] : searchParams.title;
+    // const firstName = Array.isArray(searchParams.firstName) ? searchParams.firstName[0] : searchParams.firstName;
+    // const lastName = Array.isArray(searchParams.lastName) ? searchParams.lastName[0] : searchParams.lastName;
 
     useEffect(() => {
         const alwaysDoParam = searchParams.alwaysDo;
@@ -37,6 +42,14 @@ const LibraryScreen: React.FC = () => {
         }
     }, [searchParams.alwaysDo, searchParams.watchFor, searchParams.neverDo]);
     
+    useEffect(() => {
+        const checkUserType = async () => {
+          const value = await AsyncStorage.getItem("isSurgicalStaff");
+          setIsSurgicalStaff(value === "true");
+        };
+        checkUserType();
+      }, []);
+
     // Fetch authorization code from AsyncStorage when the component mounts
     useEffect(() => {
         const fetchAuthorizationCode = async () => {
@@ -213,16 +226,18 @@ const LibraryScreen: React.FC = () => {
         <SafeAreaView style={styles.container}>
             <View style={styles.container}>
 
-                <Text style={styles.title}>DR. CRAIG CLARK</Text>
+                {/*<Text style={styles.title}>{title}{firstName}{lastName}</Text>*/}
                 <Text style={styles.subtitle}>Procedures Library</Text>
                 <Text style={styles.description}>
                     On this screen you create or edit your medical procedures practices.
                     Then you will add your pictures.
                 </Text>
                 <View style={styles.card}>
+                    {!isSurgicalStaff && (
                     <TouchableOpacity style={styles.addButton} onPress={navigateToAddProcedure}>
                         <Text style={styles.addProcedureButtonText}>Add Procedure   +</Text>
                     </TouchableOpacity>
+                    )}
                     {procedures.length >= 5 ? (
                         <ScrollView style = {{flex: 1}}>
                             {procedures.map((procedure, index) => (
@@ -318,6 +333,7 @@ const styles = StyleSheet.create({
         fontSize: 20, // Adjust arrow size as needed
     },
     card: {
+        flex: 1,
         width: '100%', // or maxWidth: 400
         maxWidth: 400,
         height: 508, // Adjust height as needed
@@ -355,14 +371,14 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto',
     },
     subtitle: {
-        fontSize: 45,
+        fontSize: 40,
         marginBottom: 10,
         textAlign: 'center',
         fontFamily: 'Roboto',
     },
     description: {
         marginBottom: 20,
-        fontSize: 17,
+        fontSize: 18,
         lineHeight: 24,
         textAlign: 'center',
         width: 307,
