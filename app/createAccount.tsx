@@ -111,7 +111,21 @@ const CreateAccount = () => {
       "Urology",
       "Vascular Surgery",
     ],
-    "Surgical Staff": ["Charge Nurse", "OR Nurse"],
+    "Surgical Staff": [
+      "Anesthesia",
+      "OR Nurse/Circulator",
+      "Surgical “Scrub” Tech",
+      "Sterile Processing Tech",
+      "Pre-Op Nurse",
+      "PACU Nurse",
+      "Front Desk Receptionist",
+      "Administration",
+      "Equipment/Implant Rep",
+      "Imaging Technician",
+      "Perfusionist",
+      "Neurophysiology/ EP Tech",
+      
+      ],
   };
 
   useEffect(() => {
@@ -357,12 +371,12 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                         <Text>Physician</Text>
                     </View>
 
-                    <View style={styles.checkboxOption}>
+                    <View style={styles.checkboxOption2}>
                         <Checkbox
                         status={form.role === "Surgical Staff" ? "checked" : "unchecked"}
                         onPress={() => handleRoleSelection("Surgical Staff")}
                         />
-                        <Text>Surgical Staff</Text>
+                        <Text>Staff</Text>
                     </View>
                 </View>
                 
@@ -435,7 +449,8 @@ const styles = StyleSheet.create({
   header: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
   input: { width: "100%", padding: 12, backgroundColor: "#F5F5F5", borderRadius: 10, marginBottom: 10 },
   checkboxContainer: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: 10 },
-  checkboxOption: { flexDirection: "row", alignItems: "center", marginRight: 5 },
+  checkboxOption: { flexDirection: "row", alignItems: "center", marginRight: 5},
+  checkboxOption2: { flexDirection: "row", alignItems: "center", marginRight: 50 },
   selectText: { fontWeight: "bold", marginRight: 10, fontSize: 12, },
   note: { textAlign: "center", fontSize: 12, color: "gray", marginBottom: 20 },
   continueButton: { backgroundColor: "#375894", padding: 10, borderRadius: 25, width: "100%", alignItems: "center" },
