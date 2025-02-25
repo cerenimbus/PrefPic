@@ -58,10 +58,11 @@ export default function Camera() {
         pathname: "reviewImage",
         params: { photoUri: newUri, procedureName },
       });
+    }
     } catch (error) {
       console.error("Error capturing photo:", error);
     }
-  }
+  
 
   // Function to compress the image and ensure it's under 1MB
   async function compressImage(uri: string, quality = 0.8): Promise<{ uri: string }> {
@@ -75,7 +76,7 @@ export default function Camera() {
     
     return compressed;
   }
-  
+}
 
   return (
     <View style={styles.container}>
