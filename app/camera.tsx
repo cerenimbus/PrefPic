@@ -33,20 +33,27 @@ export default function Camera() {
 
     try {
       const photoData = await cameraRef.current.takePictureAsync();
-      if (!photoData?.uri) throw new Error("Failed to capture photo");
 
-      console.log("Captured photo URI: ", photoData.uri);
+    
+   
+      // Debugging: Log the captured photo URI
+      console.log("Captured photo URI: ", photoData?.uri);
+     
+    //RJP -> 2/011/2025
+    // Check if photoData is defined before setting the URI
+    if (photoData?.uri) {
+        //Alberto -> 2/011/2025
+      //copy the file to a new location to prevent image lost when app or cache reset
+     const newUri= FileSystem.documentDirectory + "tempImage.jpg";
+     await FileSystem.copyAsync({
+      from: photoData.uri, to: newUri,
+     });
 
-      // Compress image to ensure it's under 1MB
-      const compressedPhoto = await compressImage(photoData.uri);
+     setPhoto(newUri); // Save the image URI
+     
 
-      // Copy to a new location to prevent image loss on app/cache reset
-      const newUri = FileSystem.documentDirectory + "tempImage.jpg";
-      await FileSystem.copyAsync({ from: compressedPhoto.uri, to: newUri });
+      // Navigate to Add_3.tsx with the photo URI and procedureName
 
-      setPhoto(newUri);
-
-      // Navigate to ReviewImage page with photo URI
       router.push({
         pathname: "reviewImage",
         params: { photoUri: newUri, procedureName },

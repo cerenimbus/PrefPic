@@ -24,6 +24,8 @@ export default function start(){
    
     setTestAuthCode();
   }, []);
+
+
   
   useEffect(() => {
     const fetchUserData = async () => {
@@ -53,6 +55,7 @@ export default function start(){
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
+
       }
     };
 
