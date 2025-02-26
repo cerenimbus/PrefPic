@@ -16,16 +16,18 @@ import {
   Alert,
 } from "react-native";
 
-export default function ViewEditPicture() {
+export default function RetakePicture() {
   const router = useRouter();
   const [photoUriState, setPhotoUriState] = useState<string | null>(null);
   const [descriptionText, setDescriptionText] = useState<string>("");
   const [notesText, setNotesText] = useState<string>("");
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
 
-  const { photoUri, procedureName } = useLocalSearchParams<{
+  const { photoUri, procedureName, updatedDescription, updatedNotes } = useLocalSearchParams<{
     photoUri: string;
     procedureName: string;
+    updatedDescription: string;
+    updatedNotes: string;
   }>();
 
   useEffect(() => {
@@ -44,6 +46,15 @@ export default function ViewEditPicture() {
       setPhotoUriState(null);
     }
   }, [photoUri, procedureName]);
+
+  useEffect(() => {
+    if (updatedDescription) {
+      setDescriptionText(updatedDescription as string);
+    }
+    if (updatedNotes) {
+      setNotesText(updatedNotes as string);
+    }
+  }, [updatedDescription, updatedNotes]);
 
   const navigateToCamera = () => {
     setPhotoUriState(null);
@@ -100,6 +111,17 @@ export default function ViewEditPicture() {
       formData.append("Name", descriptionText);
       formData.append("Note", notesText);
 
+      console.log("🔹 Form Data:", {
+        DeviceID: deviceID.id,
+        Date: formattedDate,
+        Key: key,
+        AC: authorizationCode,
+        PrefPicVersion: "1",
+        Picture: procedureSerial,
+        Name: descriptionText,
+        Note: notesText,
+      });
+
       const response = await fetch(url, {
         method: "POST",
         body: formData,
@@ -112,11 +134,13 @@ export default function ViewEditPicture() {
       const data = await response.text();
       console.log("🔹 API Response Body:", data);
       console.log("🔹 API Response Status:", response.status);
-      console.log("🔹 url:", response.body);
 
       if (response.ok) {
         Alert.alert("Success!", "Picture text updated successfully.");
-        router.push("viewEditPicture");
+        router.push({
+          pathname: "viewEditPicture",
+          params: { updatedDescription: descriptionText, updatedNotes: notesText },
+        });
       } else {
         const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
         Alert.alert("Update Failed", errorMessage);
@@ -126,42 +150,43 @@ export default function ViewEditPicture() {
       Alert.alert("Update Failed", "An error occurred during the update.");
     }
   };
+
   const deletePicture = async () => {
     try {
       console.log("🔹 Starting Delete API call...");
-  
+
       const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
       if (!procedureSerial) {
         Alert.alert("Error", "Procedure not found. Please create a procedure first.");
         return;
       }
       console.log("🔹 Procedure Serial:", procedureSerial);
-  
+
       if (!deviceID) {
         Alert.alert("Error", "Device ID not found.");
         return;
       }
       console.log("🔹 Device ID:", deviceID);
-  
+
       const authorizationCode = await AsyncStorage.getItem("authorizationCode");
       if (!authorizationCode) {
         Alert.alert("Authorization Error", "Please log in again.");
         return;
       }
       console.log("🔹 Authorization Code:", authorizationCode);
-  
+
       const currentDate = new Date();
       const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
         currentDate.getDate()
       ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
         currentDate.getMinutes()
       ).padStart(2, "0")}`;
-  
+
       const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
       console.log("🔹 Key String:", keyString);
       const key = CryptoJS.SHA1(keyString).toString();
       console.log("🔹 Generated Key:", key);
-  
+
       const url = "https://prefpic.com/dev/PPService/DeletePicture.php";
       const formData = new FormData();
       formData.append("DeviceID", deviceID.id);
@@ -170,7 +195,7 @@ export default function ViewEditPicture() {
       formData.append("AC", authorizationCode);
       formData.append("PrefPicVersion", "1");
       formData.append("Picture", procedureSerial);
-  
+
       const response = await fetch(url, {
         method: "POST",
         body: formData,
@@ -179,14 +204,14 @@ export default function ViewEditPicture() {
           "Content-Type": "multipart/form-data",
         },
       });
-  
+
       const data = await response.text();
       console.log("🔹 API Response Body:", data);
       console.log("🔹 API Response Status:", response.status);
-  
+
       if (response.ok) {
         Alert.alert("Success!", "Picture deleted successfully.");
-        
+
         // Remove the image from AsyncStorage
         const storedImages = await AsyncStorage.getItem("capturedImages");
         if (storedImages) {
@@ -194,7 +219,7 @@ export default function ViewEditPicture() {
           const updatedImages = images.filter((img: string) => img !== photoUriState);
           await AsyncStorage.setItem("capturedImages", JSON.stringify(updatedImages));
         }
-  
+
         setPhotoUriState(null); // Clear the photo URI state
         router.push("viewEditPicture"); // Navigate back to the previous screen
       } else {
