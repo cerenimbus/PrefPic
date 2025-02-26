@@ -232,7 +232,7 @@ export default function ViewEditPicture() {
 
       if (response.ok) {
         Alert.alert("Success!", "Picture text updated successfully.");
-        router.push("addPearls");
+        router.push("library");
       } else {
         const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
         Alert.alert("Update Failed", errorMessage);
