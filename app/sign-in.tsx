@@ -164,7 +164,19 @@ export default function Signin() {
         const authorizationCode = resultInfo?.Auth;
         await AsyncStorage.setItem("AUTH_CODE", authorizationCode || "");
         saveAuthCode(authorizationCode || "");
-        router.push("/mainAccountPage");
+
+        const userDetails = await AsyncStorage.getItem('userDetails');
+        const parsedUserDetails = userDetails ? JSON.parse(userDetails): null;
+
+        router.push({
+        pathname: "/mainAccountPage",
+        params: {
+          title: parsedUserDetails?.title,
+          firstName: parsedUserDetails?.firstName,
+          lastName: parsedUserDetails?.lastName,
+          email: parsedUserDetails?.email,
+          },
+        });
       } else {
         Alert.alert("Authorization Failed", resultInfo?.Message || "An unknown error occurred.");
       }

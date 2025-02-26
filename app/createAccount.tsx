@@ -258,6 +258,12 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
       console.log("API Response:", data);
 
       if (data.includes("<Result>Success</Result>")) {
+        await AsyncStorage.setItem('userDetails', JSON.stringify({
+          title: form.title,
+          firstName: form.firstName,  //save to async storage for display in main account screen
+          lastName: form.lastName,
+          email: form.email,
+        }));
         Alert.alert("Success", "A confirmation email has been sent to you.", [
           { text: "OK", onPress: () => router.push("mainAccountPage") },
         ]);
