@@ -125,9 +125,9 @@ export default function ViewEditPicture() {
         console.error("Error loading images:", error);
       }
     };
-
+  
     loadImages();
-  }, []);
+  }, [params.photoUri, params.imageIndex]);
 
   useEffect(() => {
     const fetchDeviceID = async () => {
