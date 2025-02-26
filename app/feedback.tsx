@@ -78,14 +78,17 @@ const feedbackScreen: React.FC = () => {
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (email && !emailRegex.test(email)) {
-      Alert.alert('Invalid Email', 'Must enter a validly formatted email');
-    }
+    return emailRegex.test(email);
   };
 
+  // MG 02/26/2025
+  // adjust the alert if the email is invalid
   const submitFeedback = async () => {
     if (!deviceID || !authorizationCode) {
       console.error('Device ID or Authorization Code not found');
+      return;
+    } else if (!validateEmail(formData.email)){
+      Alert.alert('Invalid Email', 'Must enter a validly formatted email');
       return;
     }
 
@@ -149,7 +152,7 @@ const feedbackScreen: React.FC = () => {
             value={formData.email}
             onChangeText={(text) => {
               setFormData(prev => ({ ...prev, email: text }));
-              validateEmail(text);
+              //validateEmail(text);
             }}
             keyboardType="email-address"
             placeholderTextColor="#999999"
@@ -195,7 +198,7 @@ const feedbackScreen: React.FC = () => {
             placeholderTextColor="#999999"
           />
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.submitButton, !isSubmitEnabled && styles.submitButtonDisabled]} 
             onPress={submitFeedback}
             disabled={!isSubmitEnabled}>
