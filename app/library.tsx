@@ -215,7 +215,7 @@ const LibraryScreen: React.FC = () => {
     const navigateToMainAccountPage = () => {
         router.push('mainAccountPage');
     };
-
+    
     //function navigateToAddPearls(procedure: string): void {
         //throw new Error('Function not implemented.');
     //}
@@ -381,8 +381,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         lineHeight: 24,
         textAlign: 'center',
-        width: 307,
-        height: 67,
+        // width: 307,
+        // height: 67,
         fontFamily: 'Darker Grotesque',
     },
     addButton: {
