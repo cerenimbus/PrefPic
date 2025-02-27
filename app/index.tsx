@@ -63,6 +63,9 @@ export default function start(){
   }, [authCode]);
 
 
+  // MG 02/26/2025
+  // handle if the user is staff or no so that the 
+  // procedure button in library will be hidden
   const handlePhysicianPress = async () => {
       await AsyncStorage.setItem("isSurgicalStaff", "false");
       router.push("/sign-in");
