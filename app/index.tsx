@@ -15,12 +15,17 @@ export default function start(){
   const [userType, setUserType] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
 
-  useEffect(() => {
+ useEffect(() => {
+    
     const setTestAuthCode = async () => {
       await AsyncStorage.setItem("AUTH_CODE", "123456"); // Test value
     };
+  
+   
     setTestAuthCode();
   }, []);
+
+
   
   useEffect(() => {
     const fetchUserData = async () => {
@@ -50,11 +55,13 @@ export default function start(){
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
+
       }
     };
 
     fetchUserData();
   }, [authCode]);
+
 
   const handlePhysicianPress = () => {
     if (!authCode) {
@@ -86,7 +93,13 @@ export default function start(){
                     </TouchableOpacity>
                  </View>
                  <View>
-                    <TouchableOpacity style={styles.getButton2} onPress={() => router.push("/startpage")}
+                    <TouchableOpacity 
+                    style={styles.getButton2} 
+                    onPress={() => 
+                      {
+                        AsyncStorage.setItem("isSurgicalStaff", "true");
+                        router.push("/startpage");
+                      }}
                 >
                         <Text style = {styles.text2}>Surgical Staff</Text>
                     </TouchableOpacity>
