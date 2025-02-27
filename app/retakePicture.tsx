@@ -1,8 +1,277 @@
-import { Router, useRouter } from "expo-router";
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getDeviceID } from '../components/deviceInfo';
+import CryptoJS from "crypto-js";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
+  Alert,
+} from "react-native";
+
+export default function ViewEditPicture() {
+  const router = useRouter();
+  const [photoUriState, setPhotoUriState] = useState<string | null>(null);
+  const [descriptionText, setDescriptionText] = useState<string>("");
+  const [notesText, setNotesText] = useState<string>("");
+  const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
+
+  const { photoUri, procedureName } = useLocalSearchParams<{
+    photoUri: string;
+    procedureName: string;
+  }>();
+
+  useEffect(() => {
+    const fetchDeviceID = async () => {
+      const id = await getDeviceID();
+      setDeviceID(id);
+    };
+    fetchDeviceID();
+  }, []);
+
+  useEffect(() => {
+    if (photoUri) {
+      const cleanedUri = decodeURIComponent(photoUri);
+      setPhotoUriState(cleanedUri);
+    } else {
+      setPhotoUriState(null);
+    }
+  }, [photoUri, procedureName]);
+
+  const navigateToCamera = () => {
+    setPhotoUriState(null);
+    router.replace({
+      pathname: "camera",
+      params: { procedureName, notesText },
+    });
+  };
+
+  const navigateToEditPicture = async () => {
+    try {
+      console.log("🔹 Starting API call...");
+
+      const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
+      if (!procedureSerial) {
+        Alert.alert("Error", "Procedure not found. Please create a procedure first.");
+        return;
+      }
+      console.log("🔹 Procedure Serial:", procedureSerial);
+
+      if (!deviceID) {
+        Alert.alert("Error", "Device ID not found.");
+        return;
+      }
+      console.log("🔹 Device ID:", deviceID);
+
+      const authorizationCode = await AsyncStorage.getItem("authorizationCode");
+      if (!authorizationCode) {
+        Alert.alert("Authorization Error", "Please log in again.");
+        return;
+      }
+      console.log("🔹 Authorization Code:", authorizationCode);
+
+      const currentDate = new Date();
+      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
+        currentDate.getDate()
+      ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
+        currentDate.getMinutes()
+      ).padStart(2, "0")}`;
+
+      const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
+      console.log("🔹 Key String:", keyString);
+      const key = CryptoJS.SHA1(keyString).toString();
+      console.log("🔹 Generated Key:", key);
+
+      const url = "https://prefpic.com/dev/PPService/UpdatePictureText.php";
+      const formData = new FormData();
+      formData.append("DeviceID", deviceID.id);
+      formData.append("Date", formattedDate);
+      formData.append("Key", key);
+      formData.append("AC", authorizationCode);
+      formData.append("PrefPicVersion", "1");
+      formData.append("Picture", procedureSerial);
+      formData.append("Name", descriptionText);
+      formData.append("Note", notesText);
+
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const data = await response.text();
+      console.log("🔹 API Response Body:", data);
+      console.log("🔹 API Response Status:", response.status);
+      console.log("🔹 url:", response.body);
+
+      if (response.ok) {
+        Alert.alert("Success!", "Picture text updated successfully.");
+        router.push("viewEditPicture");
+      } else {
+        const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
+        Alert.alert("Update Failed", errorMessage);
+      }
+    } catch (error) {
+      console.error("🔹 Error during API call:", error);
+      Alert.alert("Update Failed", "An error occurred during the update.");
+    }
+  };
+  const deletePicture = async () => {
+    try {
+      console.log("🔹 Starting Delete API call...");
+  
+      const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
+      if (!procedureSerial) {
+        Alert.alert("Error", "Procedure not found. Please create a procedure first.");
+        return;
+      }
+      console.log("🔹 Procedure Serial:", procedureSerial);
+  
+      if (!deviceID) {
+        Alert.alert("Error", "Device ID not found.");
+        return;
+      }
+      console.log("🔹 Device ID:", deviceID);
+  
+      const authorizationCode = await AsyncStorage.getItem("authorizationCode");
+      if (!authorizationCode) {
+        Alert.alert("Authorization Error", "Please log in again.");
+        return;
+      }
+      console.log("🔹 Authorization Code:", authorizationCode);
+  
+      const currentDate = new Date();
+      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
+        currentDate.getDate()
+      ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
+        currentDate.getMinutes()
+      ).padStart(2, "0")}`;
+  
+      const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
+      console.log("🔹 Key String:", keyString);
+      const key = CryptoJS.SHA1(keyString).toString();
+      console.log("🔹 Generated Key:", key);
+  
+      const url = "https://prefpic.com/dev/PPService/DeletePicture.php";
+      const formData = new FormData();
+      formData.append("DeviceID", deviceID.id);
+      formData.append("Date", formattedDate);
+      formData.append("Key", key);
+      formData.append("AC", authorizationCode);
+      formData.append("PrefPicVersion", "1");
+      formData.append("Picture", procedureSerial);
+  
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+        },
+      });
+  
+      const data = await response.text();
+      console.log("🔹 API Response Body:", data);
+      console.log("🔹 API Response Status:", response.status);
+  
+      if (response.ok) {
+        Alert.alert("Success!", "Picture deleted successfully.");
+        
+        // Remove the image from AsyncStorage
+        const storedImages = await AsyncStorage.getItem("capturedImages");
+        if (storedImages) {
+          const images = JSON.parse(storedImages);
+          const updatedImages = images.filter((img: string) => img !== photoUriState);
+          await AsyncStorage.setItem("capturedImages", JSON.stringify(updatedImages));
+        }
+  
+        setPhotoUriState(null); // Clear the photo URI state
+        router.push("viewEditPicture"); // Navigate back to the previous screen
+      } else {
+        const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Delete failed.";
+        Alert.alert("Delete Failed", errorMessage);
+      }
+    } catch (error) {
+      console.error("🔹 Error during Delete API call:", error);
+      Alert.alert("Delete Failed", "An error occurred during the delete.");
+    }
+  };
+
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.container}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Text style={styles.backText}>← Back</Text>
+          </TouchableOpacity>
+          <Text style={styles.header}>Image for: {procedureName}</Text>
+
+          {photoUriState ? (
+            <Image source={{ uri: photoUriState }} style={styles.image} />
+          ) : (
+            <Text style={{ textAlign: "center", marginVertical: 20 }}>
+              No image available
+            </Text>
+          )}
+
+          <TouchableOpacity style={styles.retakePicture} onPress={navigateToCamera}>
+            <Text style={styles.retakePictureText}>Retake pic</Text>
+          </TouchableOpacity>
+
+          <View style={styles.centerBox}>
+            <Text style={styles.description}>Description</Text>
+            <TextInput
+              style={styles.contentsInput}
+              value={descriptionText}
+              onChangeText={setDescriptionText}
+              placeholder="Enter description"
+              multiline
+            />
+
+            <Text style={styles.notes}>Notes</Text>
+            <TextInput
+              style={styles.bulletTextInput}
+              value={notesText}
+              onChangeText={setNotesText}
+              placeholder="Enter notes"
+              multiline
+            />
+          </View>
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.delete} onPress={deletePicture}>
+              <Text style={styles.deletebuttonText}>Delete</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.save} onPress={navigateToEditPicture}>
+              <Text style={styles.buttonText}>Save</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+  },
+
   container: {
     flex: 1,
     backgroundColor: "#F5F8FF",
@@ -19,7 +288,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 16,
     paddingTop: 30,
-    fontWeight: "600", 
+    fontWeight: "600",
   },
 
   buttonContainer: {
@@ -36,8 +305,9 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 31,
     alignItems: "center",
-    marginLeft: 22,
-    width: 150,
+    marginLeft: 20,
+    width: 170,
+    right: 10,
   },
 
   delete: {
@@ -46,8 +316,9 @@ const styles = StyleSheet.create({
     borderRadius: 31,
     alignItems: "center",
     borderColor: "#375894",
-    width: 150,
+    width: 170,
     borderWidth: 2,
+    right: 10,
   },
 
   deletebuttonText: {
@@ -63,142 +334,70 @@ const styles = StyleSheet.create({
   },
 
   centerBox: {
-    marginTop: 30, 
-    width: 320,
-    height: 220,
+    marginTop: 30,
+    width: "100%",
     backgroundColor: "#FFFFFF",
     alignSelf: "center",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
     padding: 10,
-    position: "relative", 
+    position: "relative",
   },
 
   description: {
     fontSize: 16,
     fontWeight: "600",
     color: "#000",
-    position: "absolute",
-    top: 10,
-    left: 10,
-  },
-  edit: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#375894",
-    position: "absolute",
-    top: 10,
-    right: 10,
-    textDecorationLine: "underline",
+    marginBottom: 5,
+    alignSelf: "flex-start",
   },
 
-  contents: {
+  contentsInput: {
     fontSize: 16,
     color: "#000",
-    position: "absolute",
-    top: 40,
-    left: 10,
+    width: "100%",
+    paddingVertical: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
   },
+
   notes: {
     fontSize: 16,
     fontWeight: "600",
     color: "#000",
-    position: "absolute",
-    top: 90,
-    left: 10,
-  },
-  bulletText: {
-    fontSize: 14,
-    color: "#000",
-    position: "absolute",
-    top: 85, 
-    left: 15,
-    padding: 5,
-    margin: 10,
-  },
-  image: {
-    height: 250,  
-    borderRadius: 30,
-    marginTop: 10,  
-    alignSelf: "center",  
-  },
-  imageContainer:{
-    width: "100%",
-  alignItems: "center",
-  position: "relative", 
+    marginTop: 10,
+    alignSelf: "flex-start",
   },
 
-  retakePicture:{
-    position: "absolute",  
-    bottom: 380,  
-    left: "50%",  
-    transform: [{ translateX: -75 }], 
+  bulletTextInput: {
+    fontSize: 14,
+    color: "#000",
+    width: "100%",
+    paddingVertical: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+
+  image: {
+    height: 250,
+    borderRadius: 30,
+    marginTop: 10,
+    alignSelf: "center",
+    width: "100%",
+  },
+
+  retakePicture: {
+    alignSelf: "center",
+    marginVertical: 10,
     padding: 14,
     borderRadius: 31,
-    alignItems: "center",
-    borderColor: "#FFFF",
-    width: 170,
     backgroundColor: "#375894",
-    borderWidth: 2,
   },
-  retakePictureText:{
+
+  retakePictureText: {
     color: "#FFFF",
     fontSize: 16,
     fontWeight: "600",
-    
   },
-
 });
-
-export default function ViewEditPicture() {
-  const router = useRouter();
-
-  const bulletPointText = `
-• Best to have x tool on the edge of table
-• Do not rearrange
-• xyz
-`;
-
-  return (
-    <View style={styles.container}>
-      {/* Header */}
-      <TouchableOpacity onPress={() => router.back()}>
-        <Text style={styles.backText}>← Back</Text>
-      </TouchableOpacity>
-      <Text style={styles.header}>Image for: [Procedure Name]</Text>
-
-      {/* Image */}
-      <View style={styles.imageContainer}>
-        <Image style={styles.image} source={require("../assets/reviewImage/reviewImage.png")} />
-      </View>
-
-        {/* Retake picture */}
-        <TouchableOpacity style={styles.retakePicture} onPress={() => router.back()}>
-          <Text style={styles.retakePictureText}>Retake pic</Text>
-        </TouchableOpacity>
-
-      {/* Center box */}
-      <View style={styles.centerBox}>
-        <Text style={styles.description}>Description</Text>
-        <TouchableOpacity style={styles.edit} onPress={() => router.back()}>
-        <Text style={styles.edit}>Edit</Text>
-        </TouchableOpacity>
-        <Text style={styles.contents}>Back Table equipment</Text>
-        <Text style={styles.notes}>Notes</Text>
-        <Text style={styles.bulletText}>{bulletPointText}</Text>
-      </View>
-
-      {/* Buttons */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.delete} onPress={() => router.back()}>
-          <Text style={styles.deletebuttonText}>Delete</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.save} onPress={() => router.back()}>
-          <Text style={styles.buttonText}>Save</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-}

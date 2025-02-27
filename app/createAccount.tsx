@@ -71,6 +71,7 @@ const CreateAccount = () => {
   const passwordRef = useRef<TextInput | null>(null);
   const roleRef = useRef<TextInput | null>(null);
   const specialtyRef = useRef<TextInput | null>(null);
+  const [phoneError, setPhoneError] = useState("");
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 //   const [activeField, setActiveField] = useState<React.RefObject<TextInput> | null>(null); 
   const [activeField, setActiveField] = useState<React.RefObject<TextInput | View> | null>(null);
@@ -110,7 +111,21 @@ const CreateAccount = () => {
       "Urology",
       "Vascular Surgery",
     ],
-    "Surgical Staff": ["Charge Nurse", "OR Nurse"],
+    "Surgical Staff": [
+      "Anesthesia",
+      "OR Nurse/Circulator",
+      "Surgical “Scrub” Tech",
+      "Sterile Processing Tech",
+      "Pre-Op Nurse",
+      "PACU Nurse",
+      "Front Desk Receptionist",
+      "Administration",
+      "Equipment/Implant Rep",
+      "Imaging Technician",
+      "Perfusionist",
+      "Neurophysiology/ EP Tech",
+      
+      ],
   };
 
   useEffect(() => {
@@ -135,6 +150,23 @@ const CreateAccount = () => {
 //   const specialtyOptions = specialties[role] || []; // Ensure it returns an empty array if role is not valid
 // const specialtyOptions = specialties[role as keyof typeof specialties] || [];
 const specialtyOptions = specialties[form.role as keyof typeof specialties] || [];
+
+const handlePhoneChange = (text: string) => {
+  // Remove non-numeric characters
+  const numericText = text.replace(/[^0-9]/g, '');
+
+  // Limit input to 10 digits
+  if (numericText.length <= 10) {
+      handleInputChange("phone", numericText); // Update the form state
+
+      // Validate length
+      if (numericText.length === 10) {
+          setPhoneError(""); // Clear error when valid
+      } else {
+          setPhoneError("Phone number must be exactly 10 digits");
+      }
+  }
+};
 
 const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
     Keyboard.dismiss();
@@ -199,13 +231,17 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
     ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
       currentDate.getMinutes()
     ).padStart(2, "0")}`;
-
-    const keyString = `${deviceID}${formattedDate}`;
+    
+    const newdevice = "";
+    const newdate = "";
+    const keyString = `${deviceID.id}${formattedDate}`;
     const key = CryptoJS.SHA1(keyString).toString();
 
-    const url = `https://PrefPic.com/dev/PPService/CreateAccount.php?DeviceID=${encodeURIComponent(
-      deviceID.id
-    )}&DeviceType=${encodeURIComponent(deviceID.type)}&DeviceModel=${encodeURIComponent(deviceID.model)}&DeviceVersion=${encodeURIComponent(deviceID.version)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&First=${encodeURIComponent(
+    const url = `https://PrefPic.com/dev/PPService/CreateAccount.php?DeviceID=${encodeURIComponent(deviceID.id)}&DeviceType=${encodeURIComponent(deviceID.type)}&DeviceModel=${encodeURIComponent(
+      deviceID.model
+    )}&DeviceVersion=${encodeURIComponent(
+      deviceID.version
+    )}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&First=${encodeURIComponent(
       form.firstName
     )}&Last=${encodeURIComponent(form.lastName)}&Title=${encodeURIComponent(
       form.title
@@ -222,8 +258,14 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
       console.log("API Response:", data);
 
       if (data.includes("<Result>Success</Result>")) {
+        await AsyncStorage.setItem('userDetails', JSON.stringify({
+          title: form.title,
+          firstName: form.firstName,  //save to async storage for display in main account screen
+          lastName: form.lastName,
+          email: form.email,
+        }));
         Alert.alert("Success", "A confirmation email has been sent to you.", [
-          { text: "OK", onPress: () => router.push("/signin") },
+          { text: "OK", onPress: () => router.push("mainAccountPage") },
         ]);
       } else {
         Alert.alert("Error", "Failed to create account.");
@@ -275,18 +317,26 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                             onBlur={handleBlur}
                             returnKeyType="done"
                             />
-                        <TextInput
-                            ref={phoneRef}
-                            style={[styles.input, activeField === phoneRef ? styles.activeInput : {}]}
-                            multiline
-                            placeholder="Phone Number"
-                            value={form.phone}
-                            keyboardType="phone-pad"
-                            onChangeText={(text) => handleInputChange("phone", text)}
-                            onFocus={() => handleFocus(phoneRef)}
-                            onBlur={handleBlur}
-                            returnKeyType="done"
-                            />
+                        
+                              {phoneError ? <Text style={{ color: "red", marginBottom: 5 }}>{phoneError}</Text> : null}
+
+                              <TextInput
+                                  ref={phoneRef}
+                                  style={[
+                                      styles.input, 
+                                      activeField === phoneRef ? styles.activeInput : {},
+                                      phoneError ? { borderColor: "red", borderWidth: 1 } : {}
+                                  ]}
+                                  multiline
+                                  placeholder="Phone Number"
+                                  value={form.phone}
+                                  keyboardType="phone-pad"
+                                  onChangeText={handlePhoneChange}
+                                  onFocus={() => handleFocus(phoneRef)}
+                                  onBlur={handleBlur}
+                                  returnKeyType="done"
+                              />
+                          
                         <TextInput
                             ref={emailRef}
                             style={[styles.input, activeField === emailRef ? styles.activeInput : {}]}
@@ -301,21 +351,21 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                             />
                 <View style={styles.passwordContainer}>
                     <TextInput
-                            ref={passwordRef}
-                            style={[styles.input, activeField === passwordRef ? styles.activeInput : {}]}
-                            multiline
-                            placeholder="Password"
-                            secureTextEntry={!showPassword}
-                            value={form.password}
-                            onChangeText={(text) => handleInputChange("password", text)}
-                            onFocus={() => handleFocus(passwordRef)}
-                            onBlur={handleBlur}
-                            returnKeyType="done"
-                            />
+                        ref={passwordRef}
+                        style={[styles.input, activeField === passwordRef ? styles.activeInput : {}]}
+                        placeholder="Password"
+                        secureTextEntry={!showPassword} // This will now work
+                        value={form.password}
+                        onChangeText={(text) => handleInputChange("password", text)}
+                        onFocus={() => handleFocus(passwordRef)}
+                        onBlur={handleBlur}
+                        returnKeyType="done"
+                    />
                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
                         <Feather name={showPassword ? "eye" : "eye-off"} size={20} color="gray" />
                     </TouchableOpacity>
                 </View>
+
                 <View style={styles.checkboxContainer}>
                     <Text style={styles.selectText}>Select Role:</Text>
 
@@ -327,12 +377,12 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                         <Text>Physician</Text>
                     </View>
 
-                    <View style={styles.checkboxOption}>
+                    <View style={styles.checkboxOption2}>
                         <Checkbox
                         status={form.role === "Surgical Staff" ? "checked" : "unchecked"}
                         onPress={() => handleRoleSelection("Surgical Staff")}
                         />
-                        <Text>Surgical Staff</Text>
+                        <Text>Staff</Text>
                     </View>
                 </View>
                 
@@ -383,6 +433,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
       },
+      phoneContainer: {
+        marginBottom: 16, // Space between fields
+        position: "relative", // For precise placement of error text
+    },
       disabledButton: {
         backgroundColor: "#A9A9A9", // Gray color for disabled button
       },
@@ -401,7 +455,8 @@ const styles = StyleSheet.create({
   header: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
   input: { width: "100%", padding: 12, backgroundColor: "#F5F5F5", borderRadius: 10, marginBottom: 10 },
   checkboxContainer: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: 10 },
-  checkboxOption: { flexDirection: "row", alignItems: "center", marginRight: 5 },
+  checkboxOption: { flexDirection: "row", alignItems: "center", marginRight: 5},
+  checkboxOption2: { flexDirection: "row", alignItems: "center", marginRight: 50 },
   selectText: { fontWeight: "bold", marginRight: 10, fontSize: 12, },
   note: { textAlign: "center", fontSize: 12, color: "gray", marginBottom: 20 },
   continueButton: { backgroundColor: "#375894", padding: 10, borderRadius: 25, width: "100%", alignItems: "center" },

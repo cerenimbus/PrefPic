@@ -32,6 +32,7 @@ export default function StartScreen() {
   
 
 
+  
  // Check if user already completed the demo
  useFocusEffect(
   React.useCallback(() => {
@@ -133,6 +134,7 @@ useEffect(() => {
 
   const navigateToIndex = () => {
     if (!isChecked) {
+      AsyncStorage.setItem("isSurgicalStaff", "true");
       Alert.alert("Terms & Privacy", "You must accept the Terms and Privacy Policy to proceed.");
       return;
     }

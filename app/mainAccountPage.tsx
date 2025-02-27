@@ -8,6 +8,13 @@ import { getDeviceID } from '../components/deviceInfo';
 import { XMLParser } from 'fast-xml-parser';
 import { HelperText } from 'react-native-paper';
 
+interface UserDetails {
+  title: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
 const mainAccountPage: React.FC = () => {
   const router = useRouter();
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
@@ -18,9 +25,22 @@ const mainAccountPage: React.FC = () => {
   const searchParams = useLocalSearchParams(); 
 // MG 02/21/2025
 // added parameters for title, firstName, and lastName
-  // const title = Array.isArray(searchParams.title) ? searchParams.title[0] : searchParams.title;
-  // const firstName = Array.isArray(searchParams.firstName) ? searchParams.firstName[0] : searchParams.firstName;
-  // const lastName = Array.isArray(searchParams.lastName) ? searchParams.lastName[0] : searchParams.lastName;
+  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('userDetails');
+        if (jsonValue != null) {
+          setUserDetails(JSON.parse(jsonValue));
+        }
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    };
+
+    fetchUserDetails();
+  }, []);
 
   useEffect(() => {
     const fetchAuthorizationCode = async () => {
@@ -59,7 +79,7 @@ const mainAccountPage: React.FC = () => {
   };
 
   const getHelp = async () => {
-    const topic = 'Instructions';
+    const topic = 'Instruction';
     console.log('Device ID:', deviceID); // Log the device ID
     console.log('Authorization Code:', authorizationCode); // Log the authorization code
 
@@ -95,7 +115,7 @@ const mainAccountPage: React.FC = () => {
       console.log('Parsed Data:', data);
 
       if (data.ResultInfo && data.ResultInfo.Result === 'Success') {
-        setHelpText(data.ResultInfo.Message);
+        setHelpText(data.ResultInfo.Help);
       } else {
         Alert.alert('Error', 'Failed to fetch help from server.');
       }
@@ -114,15 +134,15 @@ const mainAccountPage: React.FC = () => {
         <View style={styles.imageHolder}>
           <Image 
             source={{uri: '../assets/Procedure_blue.png'}}
-            style={styles.image}
+            style={styles.image}  
           />
         </View>
         <View style={styles.info}>
-          {/*
-          <Text style={styles.infoText}>{title}</Text>
-          <Text style={styles.infoText}>{firstName}</Text>
-          <Text style={{color: '#999999'}}>{lastName}</Text>
-          */}
+          
+          <Text style={styles.infoText}>{userDetails?.title}</Text>
+          <Text style={styles.infoText}>{userDetails?.firstName}</Text>
+          <Text style={{color: 'black', fontSize: 15, fontFamily: 'Darker Grotesque'}}>{userDetails?.lastName}</Text>
+         
         </View>
         <Text style={styles.input}>
           {helpText}
@@ -168,13 +188,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginHorizontal: 10,
+    marginHorizontal: 1,
   },
   infoText: {
-    marginRight: 10, 
+    marginRight: 5, 
     fontFamily: 'Darker Grotesque',
     fontSize: 15,
-    color: '#999999',
+    color: 'black',
   },
   center: {
     justifyContent: 'center',

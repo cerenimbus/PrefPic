@@ -63,16 +63,14 @@ export default function start(){
   }, [authCode]);
 
 
-  const handlePhysicianPress = () => {
-    if (!authCode) {
-      router.push("/start");
-    }
+  const handlePhysicianPress = async () => {
+      await AsyncStorage.setItem("isSurgicalStaff", "false");
+      router.push("/sign-in");
   };
 
-  const handleSurgicalStaffPress = () => {
-    if (!authCode) {
-      router.push("/create-account");
-    }
+  const handleSurgicalStaffPress = async () => {
+      await AsyncStorage.setItem("isSurgicalStaff", "true");
+      router.push("/startpage");
   };
 
 
@@ -87,20 +85,14 @@ export default function start(){
                              <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
                            </View>
                  <View>
-                    <TouchableOpacity  style={styles.getButton} onPress={() => router.push("/sign-in")}
-              >
+                    <TouchableOpacity  style={styles.getButton} onPress={handlePhysicianPress}>
                     <Text style={styles.text1}>Physician</Text>
                     </TouchableOpacity>
                  </View>
                  <View>
                     <TouchableOpacity 
                     style={styles.getButton2} 
-                    onPress={() => 
-                      {
-                        AsyncStorage.setItem("isSurgicalStaff", "true");
-                        router.push("/startpage");
-                      }}
-                >
+                    onPress={handleSurgicalStaffPress}>
                         <Text style = {styles.text2}>Surgical Staff</Text>
                     </TouchableOpacity>
                  </View>

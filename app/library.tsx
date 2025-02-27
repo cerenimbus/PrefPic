@@ -8,7 +8,6 @@ import { XMLParser } from 'fast-xml-parser';
 import { getDeviceID } from '../components/deviceInfo';
 
 
-
 const LibraryScreen: React.FC = () => {
     const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
     const [selectedProcedure, setSelectedProcedure] = useState<string | null>(null);
@@ -21,6 +20,7 @@ const LibraryScreen: React.FC = () => {
     const router = useRouter();
     const searchParams = useLocalSearchParams();
     const procedureName = Array.isArray(searchParams.procedureName) ? searchParams.procedureName[0] : searchParams.procedureName;
+    const [isSurgicalStaff, setIsSurgicalStaff] = useState(false);
     // MG 02/21/2025
     // added parameters for title, firstName, and lastName
     // const title = Array.isArray(searchParams.title) ? searchParams.title[0] : searchParams.title;
@@ -42,6 +42,14 @@ const LibraryScreen: React.FC = () => {
         }
     }, [searchParams.alwaysDo, searchParams.watchFor, searchParams.neverDo]);
     
+    useEffect(() => {
+        const checkUserType = async () => {
+          const value = await AsyncStorage.getItem("isSurgicalStaff");
+          setIsSurgicalStaff(value === "true");
+        };
+        checkUserType();
+      }, []);
+
     // Fetch authorization code from AsyncStorage when the component mounts
     useEffect(() => {
         const fetchAuthorizationCode = async () => {
@@ -207,7 +215,7 @@ const LibraryScreen: React.FC = () => {
     const navigateToMainAccountPage = () => {
         router.push('mainAccountPage');
     };
-
+    
     //function navigateToAddPearls(procedure: string): void {
         //throw new Error('Function not implemented.');
     //}
@@ -225,9 +233,11 @@ const LibraryScreen: React.FC = () => {
                     Then you will add your pictures.
                 </Text>
                 <View style={styles.card}>
+                    {!isSurgicalStaff && (
                     <TouchableOpacity style={styles.addButton} onPress={navigateToAddProcedure}>
                         <Text style={styles.addProcedureButtonText}>Add Procedure   +</Text>
                     </TouchableOpacity>
+                    )}
                     {procedures.length >= 5 ? (
                         <ScrollView style = {{flex: 1}}>
                             {procedures.map((procedure, index) => (
@@ -371,8 +381,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         lineHeight: 24,
         textAlign: 'center',
-        width: 307,
-        height: 67,
+        // width: 307,
+        // height: 67,
         fontFamily: 'Darker Grotesque',
     },
     addButton: {
