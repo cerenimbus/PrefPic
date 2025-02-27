@@ -18,7 +18,8 @@ export default function start(){
  useEffect(() => {
     
     const setTestAuthCode = async () => {
-      await AsyncStorage.setItem("AUTH_CODE", "123456"); // Test value
+      const storedAuthCode = await AsyncStorage.getItem("authorizationCode");
+      console.log("Auth Code:", storedAuthCode);
     };
   
    
