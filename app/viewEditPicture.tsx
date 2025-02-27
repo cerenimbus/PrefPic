@@ -186,78 +186,93 @@ export default function ViewEditPicture() {
     });
   };
 
-  const navigateToAddPearls = async () => {
-    try {
-      console.log("🔹 Starting API call...");
 
-      const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
-      if (!procedureSerial) {
-        Alert.alert("Error", "Procedure not found. Please create a procedure first.");
-        return;
-      }
-      console.log("🔹 Procedure Serial:", procedureSerial);
+  //Alberto 02/27/2025
+  ////changing titles
+  const navigateToAddPearls = () => {
+   router.push({
+      pathname: "addPearls",
+      params: { procedureName, descriptionText, notesText },
+    }); 
+  }
 
-      if (!deviceID) {
-        Alert.alert("Error", "Device ID not found.");
-        return;
-      }
-      console.log("🔹 Device ID:", deviceID);
+  // const navigateToAddPearls = async () => {
+  //   try {
+  //     console.log("🔹 Starting API call...");
 
-      const authorizationCode = await AsyncStorage.getItem("authorizationCode");
-      if (!authorizationCode) {
-        Alert.alert("Authorization Error", "Please log in again.");
-        return;
-      }
-      console.log("🔹 Authorization Code:", authorizationCode);
+  //     const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
+  //     if (!procedureSerial) {
+  //       Alert.alert("Error", "Procedure not found. Please create a procedure first.");
+  //       return;
+  //     }
+  //     console.log("🔹 Procedure Serial:", procedureSerial);
 
-      const currentDate = new Date();
-      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
-        currentDate.getDate()
-      ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
-        currentDate.getMinutes()
-      ).padStart(2, "0")}`;
+  //     if (!deviceID) {
+  //       Alert.alert("Error", "Device ID not found.");
+  //       return;
+  //     }
+  //     console.log("🔹 Device ID:", deviceID);
 
-      const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
-      console.log("🔹 Key String:", keyString);
-      const key = CryptoJS.SHA1(keyString).toString();
-      console.log("🔹 Generated Key:", key);
+  //     const authorizationCode = await AsyncStorage.getItem("authorizationCode");
+  //     if (!authorizationCode) {
+  //       Alert.alert("Authorization Error", "Please log in again.");
+  //       return;
+  //     }
+  //     console.log("🔹 Authorization Code:", authorizationCode);
 
-      const url = "https://prefpic.com/dev/PPService/UpdatePictureText.php";
-      const formData = new FormData();
-      formData.append("DeviceID", deviceID.id);
-      formData.append("Date", formattedDate);
-      formData.append("Key", key);
-      formData.append("AC", authorizationCode);
-      formData.append("PrefPicVersion", "1");
-      formData.append("Picture", procedureSerial);
-      formData.append("Name", procedureName);
-      formData.append("Note", "Updated picture text");
+  //     const currentDate = new Date();
+  //     const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
+  //       currentDate.getDate()
+  //     ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
+  //       currentDate.getMinutes()
+  //     ).padStart(2, "0")}`;
 
-      const response = await fetch(url, {
-        method: "POST",
-        body: formData,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "multipart/form-data",
-        },
-      });
+  //     const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
+  //     console.log("🔹 Key String:", keyString);
+  //     const key = CryptoJS.SHA1(keyString).toString();
+  //     console.log("🔹 Generated Key:", key);
 
-      const data = await response.text();
-      console.log("🔹 API Response Body:", data);
-      console.log("🔹 API Response Status:", response.status);
+  //     const url = "https://prefpic.com/dev/PPService/UpdatePictureText.php";
+  //     const formData = new FormData();
+  //     formData.append("DeviceID", deviceID.id);
+  //     formData.append("Date", formattedDate);
+  //     formData.append("Key", key);
+  //     formData.append("AC", authorizationCode);
+  //     formData.append("PrefPicVersion", "1");
+  //     formData.append("Picture", procedureSerial);
+  //     formData.append("Name", procedureName);
+  //     formData.append("Note", "Updated picture text");
 
-      if (response.ok) {
-        Alert.alert("Success!", "Picture text updated successfully.");
-        router.push("library");
-      } else {
-        const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
-        Alert.alert("Update Failed", errorMessage);
-      }
-    } catch (error) {
-      console.error("🔹 Error during API call:", error);
-      Alert.alert("Update Failed", "An error occurred during the update.");
-    }
-  };
+  //     // Commenting out the API call
+  //     /*
+  //     const response = await fetch(url, {
+  //       method: "POST",
+  //       body: formData,
+  //       headers: {
+  //         Accept: "application/json",
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //     });
+
+  //     const data = await response.text();
+  //     console.log("🔹 API Response Body:", data);
+  //     console.log("🔹 API Response Status:", response.status);
+
+  //     if (response.ok) {
+  //       Alert.alert("Success!", "Picture text updated successfully.");
+  //       router.push("library");
+  //     } else {
+  //       const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
+  //       Alert.alert("Update Failed", errorMessage);
+  //     }
+  //     */
+  //     Alert.alert("Success!", "Picture text updated successfully.");
+  //     router.push("library");
+  //   } catch (error) {
+  //     console.error("🔹 Error during API call:", error);
+  //     Alert.alert("Update Failed", "An error occurred during the update.");
+  //   }
+  // };
 
   const handleImagePress = (index: number) => {
     console.log("🔹 handleImagePress - procedureName:", procedureName); // Log procedureName to debug

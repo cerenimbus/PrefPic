@@ -167,8 +167,8 @@ const navigateToReviewSummary = async (fileUri: string, fileType: string) => {
 
             // Navigate to viewEditPicture WITHOUT passing photoUri in params
             router.push({
-                pathname: "viewEditPicture",
-                params: { procedureName },
+                pathname: "editPictureText",
+                params: { procedureName, photoUri },
             });
 
         } else {
