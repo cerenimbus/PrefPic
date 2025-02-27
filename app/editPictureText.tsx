@@ -191,7 +191,7 @@ export default function EditPictureText() {
       formData.append("PrefPicVersion", "1");
       formData.append("Picture", procedureSerial);
       formData.append("Name", procedureName);
-      formData.append("Note",  notesText);
+      formData.append("Note", "Updated picture text");
 
       const response = await fetch(url, {
         method: "POST",

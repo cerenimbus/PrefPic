@@ -13,6 +13,12 @@ export default function ProcedureReviewSummary() {
     });
   }
 
+  const navigateToEditPictures = () => {
+    router.push({
+      pathname: "viewEditPicture",
+      params: { procedureName,  },
+    });
+  }
   const [alwaysDo, setAlwaysDo] = useState(alwaysDoParam || "");
   const [watchFor, setWatchFor] = useState(watchForParam || "");
   const [neverDo, setNeverDo] = useState(neverDoParam || "");
@@ -60,7 +66,9 @@ export default function ProcedureReviewSummary() {
         //Images Section */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
+            <TouchableOpacity onPress={navigateToEditPictures}>
             <Text style={styles.cardTitle}>Images</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.imagesContainer}>
             {Array.from({ length: 6 }).map((_, index) => (
