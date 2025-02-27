@@ -11,6 +11,8 @@ import { XMLParser } from "fast-xml-parser";
 import * as Device from "expo-device";  // Import expo-device to get device info
 // import * as SplashScreen from "expo-splash-screen";
 // import { useFonts, DarkerGrotesque_600SemiBold } from "@expo-google-fonts/darker-grotesque";
+import Ionicons from "react-native-vector-icons/Ionicons"; // Import icon
+
 
 
 export default function Signin() {
@@ -20,6 +22,8 @@ export default function Signin() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [hasCheckedDemo, setHasCheckedDemo] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
 
 
 
@@ -210,14 +214,23 @@ export default function Signin() {
               keyboardType="email-address"
               autoCapitalize="none"
             />
-            <TextInput
-              style={styles.inputpass}
-              placeholder="Password"
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-              secureTextEntry
-              autoCapitalize="none"
-            />
+                <View style={styles.inputContainer}>
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        value={password}
+        onChangeText={(text) => setPassword(text)}
+        secureTextEntry={!isPasswordVisible} // Toggle visibility
+        autoCapitalize="none"
+      />
+      <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+        <Ionicons
+          name={isPasswordVisible ? "eye-off" : "eye"} // Change icon
+          size={24}
+          color="gray"
+        />
+      </TouchableOpacity>
+    </View>
 
             {/* Terms and Privacy Policy */}
             <View style={styles.checkboxContainer}>
@@ -265,6 +278,20 @@ export default function Signin() {
 }
 
 const styles = StyleSheet.create({
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F1F5FC",
+    borderColor: "#ccc",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 10,
+  },
+
   flexContainer: {
     flex: 1,
   },
