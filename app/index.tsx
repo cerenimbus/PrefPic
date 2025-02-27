@@ -68,7 +68,7 @@ export default function start(){
   // procedure button in library will be hidden
   const handlePhysicianPress = async () => {
       await AsyncStorage.setItem("isSurgicalStaff", "false");
-      router.push("/sign-in");
+      router.push("/startpage");
   };
 
   const handleSurgicalStaffPress = async () => {
