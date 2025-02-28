@@ -11,6 +11,12 @@ interface TeamMember {
   id: string;
   name: string;
 }
+//MLI 02/27/2025
+//Added this to display the username of the physician who created the account, allowing their name to be visible on the Team Members screen.
+interface UserDetails {
+  firstName: string;
+  lastName: string;
+}
 
 const TeamMembersScreen: React.FC = () => {
   const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
@@ -27,6 +33,25 @@ const TeamMembersScreen: React.FC = () => {
   const router = useRouter();
   const searchParams = useLocalSearchParams();  
   const memberName = Array.isArray(searchParams.memberName) ? searchParams.memberName[0] : searchParams.memberName;
+//MLI 02/27/2025
+//Added this to display the username of the physician who created the account, allowing their name to be visible on the Team Members screen.
+  const [userDetails, setUserDetails] = useState<UserDetails | null>(null); 
+
+//MLI 02/27/2025
+//Added this to display the username of the physician who created the account, allowing their name to be visible on the Team Members screen.
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('userDetails');
+        if (jsonValue != null) {
+          setUserDetails(JSON.parse(jsonValue));
+        }
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    };
+    fetchUserDetails();
+  }, []);
   
   useEffect(() => {
     const fetchAuthorizationCode = async () => {
@@ -171,7 +196,11 @@ const TeamMembersScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       {/* MLI - 02/21/2025 */}
-      <Text style={styles.username}>{username || '[USER NAME]'}</Text>
+      {/*<Text style={styles.username}>{username || '[USER NAME]'}</Text> */}
+      {/* MLI 02/27/2025 Added this to display the username of the physician who created the account, allowing their name to be visible on the Team Members screen.*/}
+      <Text style={styles.username}>
+      {userDetails ? `${userDetails.firstName} ${userDetails.lastName}` : '[USER NAME]'}
+      </Text>
       <Text style={styles.title}>Team Members</Text>
       <Text style={styles.teamCode}>Team code: <Text style={styles.codeText}>#{teamCode}</Text></Text>
       <Text style={styles.description}>
@@ -311,6 +340,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginTop: 50,
+    fontFamily: "Darker Grotesque",
   },
   teamCode: {
     fontSize: 20,

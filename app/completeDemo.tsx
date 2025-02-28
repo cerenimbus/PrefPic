@@ -20,7 +20,9 @@ export default function CompleteDemo() {
     markDemoAsCompleted();
   }, []);
 
-  const handleCreateAccount = () => {
+
+  const handleCreateAccount = async () => {
+    await AsyncStorage.setItem("isSurgicalStaff", "false");
     router.push("/createAccount"); // Navigate to CreateAccount screen
   };
 
