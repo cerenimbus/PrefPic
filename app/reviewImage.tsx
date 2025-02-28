@@ -79,7 +79,7 @@ const navigateToCamera = () => {
   ///API CALL 
 
 
-const navigateToReviewSummary = async (fileUri: string, fileType: string) => {
+  const navigateToReviewSummary = async (fileUri: string, fileType: string) => {
     try {
         console.log("🔹 Starting API call...");
 
@@ -165,10 +165,10 @@ const navigateToReviewSummary = async (fileUri: string, fileType: string) => {
 
             console.log(" Updated Images List:", imageList);
 
-            // Navigate to viewEditPicture WITHOUT passing photoUri in params
+            // Navigate to viewEditPicture WITH passing photoUri in params
             router.push({
-                pathname: "viewEditPicture",
-                params: { procedureName },
+                pathname: "editPictureText",
+                params: { procedureName, photoUri: fileUri },
             });
 
         } else {

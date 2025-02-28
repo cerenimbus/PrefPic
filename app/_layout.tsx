@@ -28,6 +28,7 @@ export default function RootLayout() {
       <Stack.Screen name="camera" options={{headerShown: false}} />
 
       <Stack.Screen name="startpage" options={{headerShown: false}} />
+      <Stack.Screen name="editPictureText" options={{headerShown: false}} />
 
 
       <Stack.Screen name="enterTeamMember" options={{headerShown: false}} />
