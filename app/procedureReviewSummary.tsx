@@ -1,6 +1,7 @@
 import { router, useRouter, useLocalSearchParams } from "expo-router";
 import React, {useState, useEffect} from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ProcedureReviewSummary() {
   const [procedureName, setProcedureName] = useState('');
@@ -9,6 +10,13 @@ export default function ProcedureReviewSummary() {
   const [alwaysDo, setAlwaysDo] = useState(alwaysDoParam || ""); 
   const [watchFor, setWatchFor] = useState(watchForParam || "");
   const [neverDo, setNeverDo] = useState(neverDoParam || "");
+
+const params = useLocalSearchParams();
+    const [descriptionText, setDescriptionText] = useState<string>(""); // Added state for description
+    const [notesText, setNotesText] = useState<string>(""); // Added state for notes
+   const [images, setImages] = useState<string[]>([]);
+
+
   const navigateToLibrary = () => {
     router.push({
       pathname: "library",
@@ -32,6 +40,57 @@ export default function ProcedureReviewSummary() {
       setNeverDo(neverDoParam);
     }
   }, [neverDoParam]);
+
+  const navigateToRetakePicture = (index: number) => {
+    router.push({
+      pathname: "camera",
+      params: { imageIndex: index, procedureName },
+    });
+  };
+
+  const handleImagePress = (index: number) => {
+    console.log("🔹 handleImagePress - procedureName:", procedureName); // Log procedureName to debug
+    if (images[index]) {
+      router.push({
+        pathname: "editPictureText",
+        params: { 
+          photoUri: images[index], 
+          imageIndex: index, 
+          procedureName,
+          updatedDescription: descriptionText, // Pass description
+          updatedNotes: notesText // Pass notes
+        },
+      });
+    } else {
+      navigateToRetakePicture(index);
+    }
+  };
+
+  useEffect(() => {
+    const loadImages = async () => {
+      try {
+        const storedImages = await AsyncStorage.getItem("capturedImages");
+        if (storedImages) {
+          setImages(JSON.parse(storedImages));
+        }
+      } catch (error) {
+        console.error("Error loading images:", error);
+      }
+    };
+    loadImages();
+  }, []);
+  
+  useEffect(() => {
+    if (params.photoUri) {
+      setImages((prevImages) => {
+        const updatedImages = [...prevImages, params.photoUri as string];
+        AsyncStorage.setItem("capturedImages", JSON.stringify(updatedImages.slice(0, 5))); // Save to AsyncStorage
+        return updatedImages.slice(0, 5); // Limit to 5 images
+      });
+    }
+  }, [params.photoUri]);
+
+
 
   // const navigateToLoading = () => {
   //   router.push("loading");
@@ -58,11 +117,19 @@ export default function ProcedureReviewSummary() {
             <Text style={styles.cardTitle}>Images</Text>
             <Text style={styles.editText}>Edit</Text>
           </View>
-          <View style={styles.imagesContainer}>
-            {Array.from({ length: 6 }).map((_, index) => (
-              <View key={index} style={styles.imagePlaceholder} />
-            ))}
-          </View>
+           <View style={styles.centerBox}>
+                          <View style={styles.boxContainer}>
+                            {Array.from({ length: 5 }).map((_, index) => (
+                              <TouchableOpacity key={index} style={styles.smallBox} onPress={() => handleImagePress(index)}>
+                                {images[index] ? (
+                                  <Image source={{ uri: images[index] }} style={styles.image} />
+                                ) : (
+                                  <Text style={styles.plusSign}>+</Text>
+                                )}
+                              </TouchableOpacity>
+                            ))}
+                          </View>
+                        </View>
         </View>
 
         {/* 
@@ -182,4 +249,37 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  centerBox: {
+    marginTop: 20,
+    width: 280,
+    height: 350,
+    backgroundColor: "#FFFFFF",
+    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    padding: 10,
+  },
+  boxContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-start",
+    gap: 10,
+    width: "100%",
+  },
+  smallBox: {
+    width: 80,
+    height: 150,
+    backgroundColor: "#D9D9D9",
+    borderRadius: 5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  plusSign: {
+    fontSize: 40,
+    color: "#375894",
+    fontWeight: "bold",
+  },
+  image: { width: "100%", height: "100%", resizeMode: "cover" },
+  imagePreview: { width: 80, height: 80, borderRadius: 10 },
 });
