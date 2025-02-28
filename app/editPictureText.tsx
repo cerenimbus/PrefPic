@@ -191,9 +191,9 @@ export default function EditPictureText() {
       formData.append("AC", authorizationCode);
       formData.append("PrefPicVersion", "1");
       formData.append("Picture", procedureSerial);
-      formData.append("Name", procedureName);
-      formData.append("Note", "Updated picture text");
-
+      formData.append("Name", descriptionText);
+      formData.append("Note", notesText);
+      
       const response = await fetch(url, {
         method: "POST",
         body: formData,
