@@ -141,6 +141,7 @@ useEffect(() => {
     handleGetStarted(); // Call API when "Get Started" is clicked
   };
 
+
 //   const navigateToCreateAccount = () => {
 //     router.push('createAccount');
 // };
