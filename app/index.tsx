@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { useContext,useState,useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "./AuthContext";
+import { useFocusEffect } from "@react-navigation/native";
 
 
 export default function start(){
@@ -32,7 +33,7 @@ export default function start(){
         console.log("User Type:", storedType);
         console.log("Status:", storedStatus);
 
-        if (authCode) {
+        if (storedAuthCode) {
           if (storedType === "Physician" && storedStatus === "Demo") {
             router.replace("/library");
           } else if (storedType === "Surgical Staff" && storedStatus === "Demo") {
@@ -42,7 +43,7 @@ export default function start(){
           } else if (storedType === "Physician" && storedStatus === "Active") {
             router.replace("/sign-in");
           } else if (storedStatus === "Verified") {
-            router.replace("/");
+            router.replace("/mainAccountPage");
           }
         }
       } catch (error) {
@@ -55,15 +56,36 @@ export default function start(){
   }, [authCode]);
 
 
+
   const handlePhysicianPress = async () => {
-      await AsyncStorage.setItem("isSurgicalStaff", "false");
-      router.push("/startpage");
+    await AsyncStorage.setItem("type", "Physician");
+    await AsyncStorage.setItem("status", "Demo");
+    router.push("/startpage");
   };
 
   const handleSurgicalStaffPress = async () => {
-      await AsyncStorage.setItem("isSurgicalStaff", "true");
-      router.push("/sign-in");
+    await AsyncStorage.setItem("type", "Surgical Staff");
+    await AsyncStorage.setItem("status", "Demo");
+    router.push("/sign-in");
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkAuthCode = async () => {
+        const storedAuthCode = await AsyncStorage.getItem("authorizationCode");
+        const storedStatus = await AsyncStorage.getItem("status");
+
+        if (storedAuthCode && storedStatus === "Active") {
+          router.replace("/sign-in"); // -Redirect if authCode exists and status is Active
+        } else if (storedAuthCode && storedStatus === "Demo") {
+          router.replace("/library"); // Redirect if authCode exists and status is Demo
+        }
+      };
+
+      checkAuthCode();
+    }, [])
+  );
+
 
 
     return(
