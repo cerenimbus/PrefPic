@@ -48,7 +48,7 @@ export default function AddPearls() {
     await AsyncStorage.setItem(`procedurePearls_${procedureName}`, JSON.stringify(pearlsArray));
 
     router.push({
-      pathname: "procedureReviewSummary",
+      pathname: "library",
       params: { procedureName, alwaysDo, watchFor, neverDo },
     });
   };    

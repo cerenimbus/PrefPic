@@ -176,8 +176,8 @@ const navigateToCamera = () => {
             Alert.alert("Upload Failed", errorMessage);
         }
     } catch (error) {
-        console.error("🔹 Error during picture upload:", error);
-        Alert.alert("Upload Failed", "An error occurred during picture upload.");
+    
+     
     }
 };
 

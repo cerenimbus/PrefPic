@@ -100,7 +100,7 @@ const LibraryScreen: React.FC = () => {
     
     const navigateToviewProcedure = (procedureName: string, alwaysDo:string, watchFor:string, neverDo:string) => {
         router.push({
-        pathname: "viewProcedure",
+        pathname: "procedureReviewSummary",
         params: { procedureName, alwaysDo, watchFor, neverDo },
     });
     const navigateToMainAccountPage = () => {
