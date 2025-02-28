@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+  import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -259,7 +259,7 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
 
       if (data.includes("<Result>Success</Result>")) {
         await AsyncStorage.setItem('userDetails', JSON.stringify({
-          title: form.title,
+          title: form.title,          //MG 02/26/2025
           firstName: form.firstName,  //save to async storage for display in main account screen
           lastName: form.lastName,
           email: form.email,

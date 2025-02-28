@@ -27,42 +27,42 @@ export default function Camera() {
     router.replace("addProcedure");
   };
 
+  /*
+  Takes a picture using takePictureAsync().
+  Compresses the image with expo-image-manipulator to ensure it's under 1MB.
+  If still above 1MB, recursively compresses it by reducing quality.
+  Saves the compressed image to a new location using expo-file-system.
+  Navigates to the reviewImage page with the compressed image.
+   */
+
   // Function to take and compress the picture
   async function takePicture() {
     if (!cameraRef.current) return;
 
     try {
       const photoData = await cameraRef.current.takePictureAsync();
+      if (!photoData?.uri) throw new Error("Failed to capture photo");
 
-    
-   
-      // Debugging: Log the captured photo URI
-      console.log("Captured photo URI: ", photoData?.uri);
-     
-    //RJP -> 2/011/2025
-    // Check if photoData is defined before setting the URI
-    if (photoData?.uri) {
-        //Alberto -> 2/011/2025
-      //copy the file to a new location to prevent image lost when app or cache reset
-     const newUri= FileSystem.documentDirectory + "tempImage.jpg";
-     await FileSystem.copyAsync({
-      from: photoData.uri, to: newUri,
-     });
+      console.log("Captured photo URI: ", photoData.uri);
 
-     setPhoto(newUri); // Save the image URI
-     
+      // Compress image to ensure it's under 1MB
+      const compressedPhoto = await compressImage(photoData.uri);
 
-      // Navigate to Add_3.tsx with the photo URI and procedureName
+      // Copy to a new location to prevent image loss on app/cache reset
+      const newUri = FileSystem.documentDirectory + "tempImage.jpg";
+      await FileSystem.copyAsync({ from: compressedPhoto.uri, to: newUri });
 
+      setPhoto(newUri);
+
+      // Navigate to ReviewImage page with photo URI
       router.push({
         pathname: "reviewImage",
         params: { photoUri: newUri, procedureName },
       });
-    }
     } catch (error) {
       console.error("Error capturing photo:", error);
     }
-  
+  }
 
   // Function to compress the image and ensure it's under 1MB
   async function compressImage(uri: string, quality = 0.8): Promise<{ uri: string }> {
@@ -76,7 +76,7 @@ export default function Camera() {
     
     return compressed;
   }
-}
+  
 
   return (
     <View style={styles.container}>

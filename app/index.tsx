@@ -18,7 +18,8 @@ export default function start(){
  useEffect(() => {
     
     const setTestAuthCode = async () => {
-      await AsyncStorage.setItem("AUTH_CODE", "123456"); // Test value
+      const storedAuthCode = await AsyncStorage.getItem("authorizationCode");
+      console.log("Auth Code:", storedAuthCode);
     };
   
    
@@ -63,9 +64,12 @@ export default function start(){
   }, [authCode]);
 
 
+  // MG 02/26/2025
+  // handle if the user is staff or no so that the 
+  // procedure button in library will be hidden
   const handlePhysicianPress = async () => {
       await AsyncStorage.setItem("isSurgicalStaff", "false");
-      router.push("/sign-in");
+      router.push("/startpage");
   };
 
   const handleSurgicalStaffPress = async () => {
