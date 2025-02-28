@@ -16,7 +16,8 @@ import {
   Alert,
 } from "react-native";
 
-export default function RetakePicture() {
+
+export default function EditPictureText() {
   const router = useRouter();
   const [photoUriState, setPhotoUriState] = useState<string | null>(null);
   const [descriptionText, setDescriptionText] = useState<string>("");
@@ -138,7 +139,7 @@ export default function RetakePicture() {
       if (response.ok) {
         Alert.alert("Success!", "Picture text updated successfully.");
         router.push({
-          pathname: "viewEditPicture",
+          pathname: "addPearls",
           params: { updatedDescription: descriptionText, updatedNotes: notesText },
         });
       } else {
@@ -151,29 +152,26 @@ export default function RetakePicture() {
     }
   };
 
-  const deletePicture = async () => {
+  const handleAddMorePictures = async () => {
     try {
-      console.log("🔹 Starting Delete API call...");
+      console.log("🔹 Starting API call before adding more pictures...");
 
       const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
       if (!procedureSerial) {
         Alert.alert("Error", "Procedure not found. Please create a procedure first.");
         return;
       }
-      console.log("🔹 Procedure Serial:", procedureSerial);
 
       if (!deviceID) {
         Alert.alert("Error", "Device ID not found.");
         return;
       }
-      console.log("🔹 Device ID:", deviceID);
 
       const authorizationCode = await AsyncStorage.getItem("authorizationCode");
       if (!authorizationCode) {
         Alert.alert("Authorization Error", "Please log in again.");
         return;
       }
-      console.log("🔹 Authorization Code:", authorizationCode);
 
       const currentDate = new Date();
       const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
@@ -183,11 +181,9 @@ export default function RetakePicture() {
       ).padStart(2, "0")}`;
 
       const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
-      console.log("🔹 Key String:", keyString);
       const key = CryptoJS.SHA1(keyString).toString();
-      console.log("🔹 Generated Key:", key);
 
-      const url = "https://prefpic.com/dev/PPService/DeletePicture.php";
+      const url = "https://prefpic.com/dev/PPService/UpdatePictureText.php";
       const formData = new FormData();
       formData.append("DeviceID", deviceID.id);
       formData.append("Date", formattedDate);
@@ -195,7 +191,9 @@ export default function RetakePicture() {
       formData.append("AC", authorizationCode);
       formData.append("PrefPicVersion", "1");
       formData.append("Picture", procedureSerial);
-
+      formData.append("Name", descriptionText);
+      formData.append("Note", notesText);
+      
       const response = await fetch(url, {
         method: "POST",
         body: formData,
@@ -210,28 +208,23 @@ export default function RetakePicture() {
       console.log("🔹 API Response Status:", response.status);
 
       if (response.ok) {
-        Alert.alert("Success!", "Picture deleted successfully.");
-
-        // Remove the image from AsyncStorage
-        const storedImages = await AsyncStorage.getItem("capturedImages");
-        if (storedImages) {
-          const images = JSON.parse(storedImages);
-          const updatedImages = images.filter((img: string) => img !== photoUriState);
-          await AsyncStorage.setItem("capturedImages", JSON.stringify(updatedImages));
-        }
-
-        setPhotoUriState(null); // Clear the photo URI state
-        router.push("viewEditPicture"); // Navigate back to the previous screen
+        console.log("🔹 API call successful. Navigating to camera...");
+        router.push({
+          pathname: "camera",
+          params: { procedureName, notesText },
+        });
       } else {
-        const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Delete failed.";
-        Alert.alert("Delete Failed", errorMessage);
+        const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
+        Alert.alert("Update Failed", errorMessage);
       }
     } catch (error) {
-      console.error("🔹 Error during Delete API call:", error);
-      Alert.alert("Delete Failed", "An error occurred during the delete.");
+      console.error("🔹 Error during API call:", error);
+      Alert.alert("Update Failed", "An error occurred during the update.");
     }
   };
 
+  
+  
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -277,12 +270,12 @@ export default function RetakePicture() {
           </View>
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.delete} onPress={deletePicture}>
-              <Text style={styles.deletebuttonText}>Delete</Text>
+            <TouchableOpacity style={styles.delete} onPress={handleAddMorePictures}>
+              <Text style={styles.deletebuttonText}>Take more pictures</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.save} onPress={navigateToEditPicture}>
-              <Text style={styles.buttonText}>Save</Text>
+              <Text style={styles.buttonText}>Done with this procedure</Text>
             </TouchableOpacity>
           </View>
         </View>

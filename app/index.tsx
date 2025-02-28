@@ -15,6 +15,7 @@ export default function start(){
   const [userType, setUserType] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
 
+
  useEffect(() => {
     
     const setTestAuthCode = async () => {
@@ -27,17 +28,19 @@ export default function start(){
   }, []);
 
 
+
   
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        const storedAuthCode = await AsyncStorage.getItem("authorizationCode");
         const storedType = await AsyncStorage.getItem("type");
         const storedStatus = await AsyncStorage.getItem("status");
 
         setUserType(storedType);
         setStatus(storedStatus);
 
-        console.log("Auth Code:", authCode);
+        console.log("Auth Code:", storedAuthCode);
         console.log("User Type:", storedType);
         console.log("Status:", storedStatus);
 
@@ -74,7 +77,7 @@ export default function start(){
 
   const handleSurgicalStaffPress = async () => {
       await AsyncStorage.setItem("isSurgicalStaff", "true");
-      router.push("/startpage");
+      router.push("/sign-in");
   };
 
 
