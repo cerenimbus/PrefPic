@@ -40,7 +40,7 @@ export default function AddPearls() {
 
   const navigateToProcedureReviewSummary = () => {
     router.push({
-      pathname: "procedureReviewSummary",
+      pathname: "library",
       params: { procedureName, alwaysDo, watchFor, neverDo },
     });
   };  

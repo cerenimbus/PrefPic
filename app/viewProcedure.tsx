@@ -18,7 +18,7 @@ export default function ProcedureReviewSummary() {
   const [neverDo, setNeverDo] = useState(neverDoParam || "");
   const navigatetoaddpearls = () => {
     router.push({
-      pathname: "addPearls",   
+      pathname: "viewEditPicture",   
       params: { procedureName, alwaysDo, watchFor, neverDo },
     });
   }
