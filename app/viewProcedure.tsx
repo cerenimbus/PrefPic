@@ -1,6 +1,7 @@
 import { router, useRouter, useLocalSearchParams } from "expo-router";
 import React, {useState, useEffect} from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ProcedureReviewSummary() {
   const {procedureName, alwaysDo: alwaysDoParam, watchFor: watchForParam, neverDo: neverDoParam}= useLocalSearchParams();
@@ -22,23 +23,26 @@ export default function ProcedureReviewSummary() {
       params: { procedureName, alwaysDo, watchFor, neverDo },
     });
   }
+  // MG 02/28/2025
+  // get the saved pearl with a unique key 
   useEffect(() => {
-    if (alwaysDoParam) {
-      setAlwaysDo(alwaysDoParam);
-    }
-  }, [alwaysDoParam]);
-  
-  useEffect(() => {
-    if (watchForParam) {
-      setWatchFor(watchForParam);
-    }
-  }, [watchForParam]);
+    const fetchProcedurePearls = async () => {
+      try {
+        const pearls = await AsyncStorage.getItem(`procedurePearls_${procedureName}`);
+        if (pearls) {
+          const pearlsArray = JSON.parse(pearls);
+          setAlwaysDo(pearlsArray[0] || ""); // Set the first item
+          setWatchFor(pearlsArray[1] || ""); // Set the second item
+          setNeverDo(pearlsArray[2] || ""); // Set the third item
+        }
+      } catch (error) {
+        console.error('Error fetching procedure pearls:', error);
+      }
+    };
 
-  useEffect(() => {
-    if (neverDoParam) {
-      setNeverDo(neverDoParam);
-    }
-  }, [neverDoParam]);
+    fetchProcedurePearls();
+  }, [procedureName]);
+
   // const navigateToLoading = () => {
   //   router.push("loading");
   // }
