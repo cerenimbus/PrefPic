@@ -14,12 +14,19 @@ const BottomNavigation: React.FC = () => {
         // router.push('mainAccountPage');
     };
 
-
-
+    //MLI 02/28/2025 for the Surgical Staff role, it will navigate to the enterTeamMember page
+    const userRole = "SurgicalStaff";
+    //
 
     ///Alberto 02/21/2024 fixed router
     const navigateToTeamMember = () => {
+        //MLI 02/28/2025 for the Surgical Staff role, it will navigate to the enterTeamMember page
+        if (userRole === "SurgicalStaff") {
+            router.push("enterTeamMember");
+        }
+        else {
         router.push("/teamMember");
+        }
     };
 
     // const isTeamActive = pathname === "/teamMember";

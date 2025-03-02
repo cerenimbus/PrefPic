@@ -207,18 +207,21 @@ const styles = StyleSheet.create({
     height: 27,
     marginLeft: 20,
     marginTop: -23.5,
+    marginRight: 25, //added MLI 02/28/2025 for ui purposes
   }, 
   backButton: {
     padding: 10,
     marginBottom: 10,
+    alignSelf: 'flex-start', //added MLI 02/28/2025 for ui purposes
   },
   title: {
     color: "#000000",
     fontFamily: "Darker Grotesque", //
     fontSize: 40,
     fontWeight: "600",
-    marginTop: 106,
-    marginLeft: 60,
+    marginTop: 50,
+    textAlign: "center", //added MLI 02/28/2025 for ui purposes
+    // marginLeft: 60,
   },
   subtitle: {
     color: "#000000",
@@ -226,7 +229,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "400",
     marginTop: 30,
-    marginLeft: 50,
+    // marginLeft: 50,
+    textAlign: "center", //added MLI 02/28/2025 for ui purposes
   },
   subtitle1: {
     color: "#000000",
@@ -234,7 +238,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "400",
     marginTop: 0,
-    marginLeft: 130,
+    // marginLeft: 130,
+    textAlign: "center", //added MLI 02/28/2025 for ui purposes
   },
   input: {
     fontFamily: "Inter", //
@@ -244,12 +249,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 16,
     marginTop: 35,
+    width: '100%', //added MLI 02/28/2025 for ui purposes
   },
   nextButton: {
     backgroundColor: "#375894",
     padding: 15,
     borderRadius: 30,
     alignItems: "center",
+    width: '100%', //added MLI 02/28/2025 for ui purposes
   },
   disabledButton: {
     backgroundColor: "#A0A0A0", // Greyed out when disabled
@@ -263,4 +270,3 @@ const styles = StyleSheet.create({
 });
 
 export default AddProcedure;
-

@@ -36,6 +36,7 @@ const TeamMembersScreen: React.FC = () => {
 //MLI 02/27/2025
 //Added this to display the username of the physician who created the account, allowing their name to be visible on the Team Members screen.
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null); 
+  const [userType, setUserType] = useState<string | null>(null); //
 
 //MLI 02/27/2025
 //Added this to display the username of the physician who created the account, allowing their name to be visible on the Team Members screen.
@@ -93,6 +94,27 @@ const TeamMembersScreen: React.FC = () => {
         setTeamMembers((prev) => [...prev, { id: Date.now().toString(), fullName: memberName, title: 'New Member' }]);
     }
   }, [memberName, teamMembers]);
+
+  // MLI 02/28/2025
+  // Added this to check the user type and navigate to the appropriate screen
+  //This will be here for the meantime because it will not route to the proper screen, I will added the proper routing in the bottonNav.tsx
+  useEffect(() => {
+    const fetchUserType = async () => {
+      try {
+        const storedType = await AsyncStorage.getItem("type");
+        setUserType(storedType);
+        if (storedType === "SurgicalStaff") {
+          router.replace('/enterTeamMember');
+        } else if (storedType === "Physician") {
+          router.replace('/teamMember');
+        }
+      } catch (error) {
+        console.error('Error fetching user type:', error);
+      }
+    };
+    fetchUserType();
+  }, []);
+  //
 
   const getTeamList = async () => {
     if (!deviceID) {
