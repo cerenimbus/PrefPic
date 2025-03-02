@@ -29,23 +29,26 @@ export default function StartScreen() {
   };
     fetchDeviceID();
   }, []);
+  
 
- // Check if user already completed the demo
- useFocusEffect(
-  React.useCallback(() => {
-    const checkDemoStatus = async () => {
-      if (hasCheckedDemo) return; // Avoid redundant checks
 
-      const demoStatus = await AsyncStorage.getItem("status");
-      if (demoStatus === "Demo" || demoStatus === "Active") {
-        router.replace("/sign-in"); // Redirect if demo is done
-      }
-      setHasCheckedDemo(true); // Mark as checked
-    };
+  
+//  // Check if user already completed the demo
+//  useFocusEffect(
+//   React.useCallback(() => {
+//     const checkDemoStatus = async () => {
+//       if (hasCheckedDemo) return; // Avoid redundant checks
 
-    checkDemoStatus();
-  }, [hasCheckedDemo])
-);
+//       const demoStatus = await AsyncStorage.getItem("status");
+//       if (demoStatus === "Demo" || demoStatus === "Active") {
+//         router.replace("/sign-in"); // Redirect if demo is done
+//       }
+//       setHasCheckedDemo(true); // Mark as checked
+//     };
+
+//     checkDemoStatus();
+//   }, [hasCheckedDemo])
+// );
 
 useEffect(() => {
   const checkUserType = async () => {
@@ -131,11 +134,13 @@ useEffect(() => {
 
   const navigateToIndex = () => {
     if (!isChecked) {
+      AsyncStorage.setItem("isSurgicalStaff", "true");
       Alert.alert("Terms & Privacy", "You must accept the Terms and Privacy Policy to proceed.");
       return;
     }
     handleGetStarted(); // Call API when "Get Started" is clicked
   };
+
 
 //   const navigateToCreateAccount = () => {
 //     router.push('createAccount');

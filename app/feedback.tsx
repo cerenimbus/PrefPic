@@ -79,27 +79,24 @@ const feedbackScreen: React.FC = () => {
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (email && !emailRegex.test(email)) {
-      Alert.alert('Invalid Email', 'Must enter a validly formatted email');
-    }
+    return emailRegex.test(email);
   };
 
-<<<<<<< Updated upstream
-=======
+
   const validatePhoneNumber = (phone: string) => {
     const phoneRegex = /^\d{10}$/;
     return phoneRegex.test(phone);
   };
 
+ 
   // MG 02/26/2025
   // adjust the alert if the email is invalid
->>>>>>> Stashed changes
+
   const submitFeedback = async () => {
     if (!deviceID || !authorizationCode) {
       console.error('Device ID or Authorization Code not found');
       return;
-<<<<<<< Updated upstream
-=======
+
       //MLI 02/28/2025 allow feedback submission even when an email is not provided.
       //Fixed the issue where entering a phone number exceeding 10 digits caused an error.
     } else if (formData.email && !validateEmail(formData.email)) {
@@ -110,7 +107,7 @@ const feedbackScreen: React.FC = () => {
       return;
     } else {
       setPhoneError(null);
->>>>>>> Stashed changes
+
     }
 
     setIsLoading(true);
@@ -174,7 +171,7 @@ const feedbackScreen: React.FC = () => {
             value={formData.email}
             onChangeText={(text) => {
               setFormData(prev => ({ ...prev, email: text }));
-              validateEmail(text);
+              //validateEmail(text);
             }}
             keyboardType="email-address"
             placeholderTextColor="#999999"
@@ -221,7 +218,7 @@ const feedbackScreen: React.FC = () => {
             placeholderTextColor="#999999"
           />
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.submitButton, !isSubmitEnabled && styles.submitButtonDisabled]} 
             onPress={submitFeedback}
             disabled={!isSubmitEnabled}>

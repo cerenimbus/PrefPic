@@ -12,6 +12,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { useState, useRef } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function AddPearls() {
   const router = useRouter();
@@ -38,12 +39,19 @@ export default function AddPearls() {
   const [neverDo, setNeverDo] = useState<string>(neverDoParam || "");
   const [activeField, setActiveField] = useState<React.RefObject<TextInput> | null>(null); 
 
-  const navigateToProcedureReviewSummary = () => {
+  const navigateToProcedureReviewSummary = async() => {
+    // Create an array of the values
+    const pearlsArray = [alwaysDo, watchFor, neverDo];
+
+    // MG 02/28/2025
+    // Save the array in AsyncStorage with a unique key for the procedure
+    await AsyncStorage.setItem(`procedurePearls_${procedureName}`, JSON.stringify(pearlsArray));
+
     router.push({
-      pathname: "procedureReviewSummary",
+      pathname: "library",
       params: { procedureName, alwaysDo, watchFor, neverDo },
     });
-  };
+  };    
 
   const handleFocus = (inputRef: React.RefObject<TextInput>) => {
     setActiveField(inputRef);

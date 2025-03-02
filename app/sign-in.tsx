@@ -11,6 +11,8 @@ import { XMLParser } from "fast-xml-parser";
 import * as Device from "expo-device";  // Import expo-device to get device info
 // import * as SplashScreen from "expo-splash-screen";
 // import { useFonts, DarkerGrotesque_600SemiBold } from "@expo-google-fonts/darker-grotesque";
+import Ionicons from "react-native-vector-icons/Ionicons"; // Import icon
+
 
 
 export default function Signin() {
@@ -20,6 +22,8 @@ export default function Signin() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [hasCheckedDemo, setHasCheckedDemo] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
 
 
 
@@ -85,7 +89,10 @@ export default function Signin() {
   const navigateToCreateAccount = () => { 
     router.push("/createAccount"); // Adjust the path if your CreateAccount screen is in another folder
   };
-
+  
+  const navigateToTeamAccount = () => { 
+    router.push("/teamMember"); // Adjust the path if your CreateAccount screen is in another folder
+  };
   const navigateToMainAccountPage = () => {
     router.push("/mainAccountPage");
   };
@@ -144,8 +151,7 @@ export default function Signin() {
       const key = CryptoJS.SHA1(keyString).toString();
 
       // Construct API URL
-      const url = `https://prefpic.com/dev/PPService/AuthorizeUser.php?DeviceID=${encodeURIComponent(deviceID)}&DeviceType=${encodeURIComponent(deviceType)}&DeviceModel=${encodeURIComponent(deviceModel)}&DeviceVersion=${encodeURIComponent(deviceVersion)}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(email)}&Phone=1234567890&Password=${encodeURIComponent(password)}&PrefPicVersion=10&TestFlag=0&AuthCode=${encodeURIComponent(authCode || "")}`;
-
+      const url = `https://prefpic.com/dev/PPService/AuthorizeUser.php?DeviceID=${encodeURIComponent(deviceID)}&DeviceType=${encodeURIComponent(deviceType)}&DeviceModel=${encodeURIComponent(deviceModel)}&DeviceVersion=${encodeURIComponent(deviceVersion)}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}&PrefPicVersion=10&TestFlag=0&AuthCode=${encodeURIComponent(authCode || "")}`;
       console.log("Request URL:", url);
 
       // Call API
@@ -162,7 +168,19 @@ export default function Signin() {
         const authorizationCode = resultInfo?.Auth;
         await AsyncStorage.setItem("AUTH_CODE", authorizationCode || "");
         saveAuthCode(authorizationCode || "");
-        router.push("/mainAccountPage");
+
+        const userDetails = await AsyncStorage.getItem('userDetails');
+        const parsedUserDetails = userDetails ? JSON.parse(userDetails): null;
+
+        router.push({
+        pathname: "/mainAccountPage",
+        params: {
+          title: parsedUserDetails?.title,
+          firstName: parsedUserDetails?.firstName,
+          lastName: parsedUserDetails?.lastName,
+          email: parsedUserDetails?.email,
+          },
+        });
       } else {
         Alert.alert("Authorization Failed", resultInfo?.Message || "An unknown error occurred.");
       }
@@ -181,6 +199,7 @@ export default function Signin() {
           {/* Form Container */}
           <View style={styles.container}>
                       {/* Centered Image and Text */}
+
           <View style={styles.imageTextContainer}>
             <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
             <Text style={styles.signintxt}>Sign in</Text>
@@ -195,14 +214,23 @@ export default function Signin() {
               keyboardType="email-address"
               autoCapitalize="none"
             />
-            <TextInput
-              style={styles.inputpass}
-              placeholder="Password"
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-              secureTextEntry
-              autoCapitalize="none"
-            />
+                <View style={styles.inputContainer}>
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        value={password}
+        onChangeText={(text) => setPassword(text)}
+        secureTextEntry={!isPasswordVisible} // Toggle visibility
+        autoCapitalize="none"
+      />
+      <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+        <Ionicons
+          name={isPasswordVisible ? "eye-off" : "eye"} // Change icon
+          size={24}
+          color="gray"
+        />
+      </TouchableOpacity>
+    </View>
 
             {/* Terms and Privacy Policy */}
             <View style={styles.checkboxContainer}>
@@ -235,6 +263,9 @@ export default function Signin() {
             <TouchableOpacity onPress={navigateToCreateAccount}>
               <Text style={styles.caccount}>Create an account</Text>
             </TouchableOpacity>
+            {/* <TouchableOpacity onPress={navigateToTeamAccount}>
+              <Text style={styles.caccount}>Team</Text>
+            </TouchableOpacity> */}
 
           </View>
           
@@ -247,6 +278,20 @@ export default function Signin() {
 }
 
 const styles = StyleSheet.create({
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F1F5FC",
+    borderColor: "#ccc",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 10,
+  },
+
   flexContainer: {
     flex: 1,
   },

@@ -29,9 +29,9 @@ const BottomNavigation: React.FC = () => {
         }
     };
 
-    const isTeamActive = pathname === "/teamMember";
+    // const isTeamActive = pathname === "/teamMember";
     const isTeamActive1 = pathname === "/enterTeamMember";
-    const isFeedbackActive = pathname === "/feedback";
+    // const isFeedbackActive = pathname === "/feedback";
     //const isProcedureActive = pathname === "/library";
     const isProcedureDisabled = pathname === "/teamMember" || pathname === "/feedback" || pathname === "/enterTeamMember";
 
@@ -39,15 +39,15 @@ const BottomNavigation: React.FC = () => {
     const navigateToHelp = () => {
         router.push('/help');
     };
-    const navigateToTeamMember = () => {
-        router.push("teamMember"); 
-    };
+    // const navigateToTeamMember = () => {
+    //     router.push("teamMember"); 
+    // };
     const navigateToFeedback = () => {
 
         router.push("feedback"); 
 
     };
-
+    const ismainAccountPageActive = pathname === "/mainAccountPage"
     const isTeamActive = pathname === "/teamMember";
     const isFeedbackActive = pathname === "/feedback";
     const isHelpActive = pathname === "/help";
@@ -104,7 +104,7 @@ const BottomNavigation: React.FC = () => {
 
                 <Image 
 
-                   source={isHelpActive ? require('../assets/Help_blue.png') : require('../assets/Help_grayed.png')}
+                   source={isHelpActive || ismainAccountPageActive ? require('../assets/Help_blue.png') : require('../assets/Help_grayed.png')}
 
                     style={styles.icon}
                 />

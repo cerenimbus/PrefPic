@@ -77,8 +77,9 @@ const styles = StyleSheet.create({
 
 export default function AddTeamMember() {
   const router = useRouter();
-  const { teamNumber } = useLocalSearchParams<{ teamNumber?: string }>();
-
+  const params = useLocalSearchParams();
+  const teamNumber = params.teamNumber;
+  console.log("Params received:", teamNumber);
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -88,7 +89,7 @@ export default function AddTeamMember() {
       <Text style={styles.header}>Add Team Member</Text>
 
       <Text style={styles.teamNumber}>
-        Team Number: {teamNumber ?? "Not Provided"}
+        Team Number: {teamNumber  }
       </Text>
 
       {/* Center box */}

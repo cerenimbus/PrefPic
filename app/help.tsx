@@ -68,6 +68,7 @@ const helpScreen: React.FC = () => {
       const key = CryptoJS.SHA1(keyString).toString();
 
       const url = `https://PrefPic.com/dev/PPService/GetHelp.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&Topic=${topic}&PrefPicVersion=1`;
+      console.log("Constructed URL: ",url);
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -85,7 +86,7 @@ const helpScreen: React.FC = () => {
       if (data.ResultInfo && data.ResultInfo.Result === 'Success') {
         Alert.alert(
           `Help About ${topic}`,
-          data.ResultInfo.Message,
+          data.ResultInfo.Help,
           [
             { text: 'Ok', onPress: navigateToMainAccountPage },
             { text: 'Back', onPress: navigateToMainAccountPage },

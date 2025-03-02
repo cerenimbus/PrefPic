@@ -1,108 +1,106 @@
-// Add_2.tsx page
-//RJP -> 2/08/2025
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { useRef,useState } from 'react';
-import { router,useLocalSearchParams } from "expo-router";
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Image } from 'react-native';
-//Alberto -> 2/011/2025
+import { useRef, useState } from 'react';
+import { router, useLocalSearchParams } from "expo-router";
+import { Button, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import * as FileSystem from 'expo-file-system';
-
-
+import * as ImageManipulator from 'expo-image-manipulator'; // Import image manipulator
 
 export default function Camera() {
-  const [facing] = useState<CameraType>('back'); //use back camera
+  const [facing] = useState<CameraType>('back'); // Use back camera
   const [permission, requestPermission] = useCameraPermissions();
   const [photo, setPhoto] = useState<string | null>(null);
   const cameraRef = useRef<CameraView>(null); // Camera reference
   const { procedureName } = useLocalSearchParams<{ procedureName: string }>();
-  
 
-  if (!permission) {
-    // Camera permissions are still loading.
-    return <View />;
-  }
-
+  if (!permission) return <View />;
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
         <Text style={styles.message}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Button onPress={requestPermission} title="Grant Permission" />
       </View>
     );
   }
 
-  const navigateToaddprocedure = () => {
-    setPhoto(null); 
+  const navigateToAddProcedure = () => {
+    setPhoto(null);
     router.replace("addProcedure");
-  }
+  };
 
-  // Function to take a picture
+  /*
+  Takes a picture using takePictureAsync().
+  Compresses the image with expo-image-manipulator to ensure it's under 1MB.
+  If still above 1MB, recursively compresses it by reducing quality.
+  Saves the compressed image to a new location using expo-file-system.
+  Navigates to the reviewImage page with the compressed image.
+   */
+
+  // Function to take and compress the picture
   async function takePicture() {
-    if (cameraRef.current) {
-      try {
+    if (!cameraRef.current) return;
+
+    try {
       const photoData = await cameraRef.current.takePictureAsync();
-    
-   
-      // Debugging: Log the captured photo URI
-      console.log("Captured photo URI: ", photoData?.uri);
-     
-       //RJP -> 2/011/2025
-    // Check if photoData is defined before setting the URI
-    if (photoData?.uri) {
-        //Alberto -> 2/011/2025
-      //copy the file to a new location to prevent image lost when app or cache reset
-     const newUri= FileSystem.documentDirectory + "tempImage.jpg";
-     await FileSystem.copyAsync({
-      from: photoData.uri, to: newUri,
-     });
+      if (!photoData?.uri) throw new Error("Failed to capture photo");
 
-     setPhoto(newUri); // Save the image URI
-     
+      console.log("Captured photo URI: ", photoData.uri);
 
-      // Navigate to Add_3.tsx with the photo URI and procedureName
+      // Compress image to ensure it's under 1MB
+      const compressedPhoto = await compressImage(photoData.uri);
+
+      // Copy to a new location to prevent image loss on app/cache reset
+      const newUri = FileSystem.documentDirectory + "tempImage.jpg";
+      await FileSystem.copyAsync({ from: compressedPhoto.uri, to: newUri });
+
+      setPhoto(newUri);
+
+      // Navigate to ReviewImage page with photo URI
       router.push({
         pathname: "reviewImage",
-        params: { photoUri: newUri, procedureName: procedureName },
+        params: { photoUri: newUri, procedureName },
       });
-    } else {
-      console.error("Failed to capture photo: photoData or photoData.uri is undefined");
+    } catch (error) {
+      console.error("Error capturing photo:", error);
     }
-  } catch (error) {
-    console.error("Error capturing photo: ", error);
   }
-}
-}
+
+  // Function to compress the image and ensure it's under 1MB
+  async function compressImage(uri: string, quality = 0.8): Promise<{ uri: string }> {
+    let compressed = await ImageManipulator.manipulateAsync(uri, [], { compress: quality });
+  
+    // Check if file exists before accessing size
+    const fileInfo = await FileSystem.getInfoAsync(compressed.uri);
+    if (fileInfo.exists && fileInfo.size && fileInfo.size > 1024 * 1024) {
+      return compressImage(uri, quality - 0.1); // Recursively compress more
+    }
+    
+    return compressed;
+  }
+  
+
   return (
     <View style={styles.container}>
+      <TouchableOpacity onPress={navigateToAddProcedure}>
+        <Text style={styles.backText}>← Back</Text>
+      </TouchableOpacity>
 
-    <TouchableOpacity
-      onPress={navigateToaddprocedure}
-    >
-      <Text style={styles.backText}>← Back</Text>
-    </TouchableOpacity>
+      <Text style={styles.header}>Add Image for: {procedureName}</Text>
 
-    <Text style={styles.header}>Add Image for: {procedureName}</Text>
-
-    <View style={styles.cameraBorder}>
+      <View style={styles.cameraBorder}>
         {photo ? (
           <Image source={{ uri: photo }} style={styles.camera} />
         ) : (
           <CameraView ref={cameraRef} style={styles.camera} facing={facing}>
-            
-            {/* Take Picture Button */}
             <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
-                <View style={styles.captureInnerButton} />
-            </TouchableOpacity>    
+              <View style={styles.captureInnerButton} />
+            </TouchableOpacity>
           </CameraView>
         )}
       </View>
 
-    <TouchableOpacity style={styles.cancelButton} onPress={navigateToaddprocedure}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
-          </TouchableOpacity>
-      
+      <TouchableOpacity style={styles.cancelButton} onPress={navigateToAddProcedure}>
+        <Text style={styles.cancelButtonText}>Cancel</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -111,84 +109,56 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    //alignItems: 'center', // Center content
   },
   message: {
     textAlign: 'center',
     paddingBottom: 10,
   },
-  cameraContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   camera: {
-    width: 350, // Slightly smaller than the border
-    height: 490, // Maintain square shape
-    borderRadius: 15, // Match the border rounding
+    width: 350,
+    height: 490,
+    borderRadius: 15,
     overflow: 'hidden',
-    //flex: 1,
   },
   cameraBorder: {
-    width: 360, // Square size
-    height: 500, // Square size
-    borderWidth: 2, // Border thickness
-    borderColor: 'transparent', // Border color
-    borderRadius: 18, //  rounded edges
+    width: 360,
+    height: 500,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   captureButton: {
     position: 'absolute',
-    bottom: 20, // Keeps button near the bottom
+    bottom: 20,
     alignSelf: 'center',
-    width: 60, // iPhone-style button size
+    width: 60,
     height: 60,
-    borderRadius: 30, // Makes it circular
-    backgroundColor: 'white', // White outer ring
+    borderRadius: 30,
+    backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 4,
-    borderColor: '#d1d1d1', // Light gray border like iPhone
+    borderColor: '#d1d1d1',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    elevation: 5, // For Android shadow
+    elevation: 5,
   },
-
   captureInnerButton: {
-    width: 40, // Smaller inner circle
+    width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#fff', // White inner button
+    backgroundColor: '#fff',
   },
-
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    margin: 64,
-  },
-  button: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-
   header: {
     fontSize: 20,
     textAlign: "center",
     marginVertical: 16,
     paddingTop: 15,
   },
-
   cancelButton: {
     backgroundColor: "#FFFFFF",
     padding: 15,
@@ -204,11 +174,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "800",
   },
-
   backText: {
     marginTop: 5,
     fontSize: 16,
     color: '#007AFF',
   },
-
 });
+

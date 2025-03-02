@@ -29,7 +29,7 @@ const TeamMembersScreen: React.FC = () => {
   //const [teamMembers, setTeamMembers] = useState <string []>([]);
   const [username, setUsername] = useState(''); //
   const [teamCode, setTeamCode] = useState(''); //
-
+  const [teamNumber, setTeamNumber] = useState('');
   const router = useRouter();
   const searchParams = useLocalSearchParams();  
   const memberName = Array.isArray(searchParams.memberName) ? searchParams.memberName[0] : searchParams.memberName;
@@ -118,10 +118,10 @@ const TeamMembersScreen: React.FC = () => {
 
   const getTeamList = async () => {
     if (!deviceID) {
-      console.error('Device information not found');
-      return;
+        console.error('Device information not found');
+        return;
     }
-    
+
     setIsLoading(true);
     try {
         const currentDate = new Date();
@@ -131,6 +131,7 @@ const TeamMembersScreen: React.FC = () => {
 
         const url = `https://PrefPic.com/dev/PPService/GetTeamList.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&PrefPicVersion=1`;
         console.log('Fetching getTeam list from URL:', url);
+
         const response = await fetch(url);
         const data = await response.text();
         console.log('API response:', data);
@@ -138,11 +139,25 @@ const TeamMembersScreen: React.FC = () => {
         const parser = new XMLParser();
         const result = parser.parse(data);
 
+        //RHCM 2/28/2025 Extract CurrentTeam and set it directly
+        const currentTeam = result?.ResultInfo?.Selections?.CurrentTeam;
+        if (currentTeam) {
+            setTeamCode(currentTeam);
+        } else {
+            console.warn('No CurrentTeam found in API response.');
+        }
+         // RHCM 2/28/2025 Extract Team Number (Phone)
+         const teamNumber = result?.ResultInfo?.Selections?.Member?.Phone;
+         if (teamNumber) {
+             setTeamNumber(teamNumber);
+         } else {
+             console.warn('No Team Number found in API response.');
+         }
         const teamList = result?.TeamList?.Member || [];
-        setTeamMembers(teamList.map((member: any) => ({ 
-          id: member.ID || Date.now().toString(),
-          fullName: member.Name,
-          title: member.Title || 'Member'
+        setTeamMembers(teamList.map((member: any) => ({
+            id: member.ID || Date.now().toString(),
+            fullName: member.Name,
+            title: member.Title || 'Member'
         })));
     } catch (error) {
         console.error('Error fetching team list:', error);
@@ -150,28 +165,32 @@ const TeamMembersScreen: React.FC = () => {
     } finally {
         setIsLoading(false);
     }
-  };
+};
+
+
 
   //MLI 02/21/2025
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        const storedUsername = await AsyncStorage.getItem('username');
-        const storedTeamCode = await AsyncStorage.getItem('teamCode');
-        if (storedUsername) setUsername(storedUsername);
-        if (storedTeamCode) {
-          setTeamCode(storedTeamCode);
-        } else {
-          const generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-          setTeamCode(generatedCode);
-          await AsyncStorage.setItem('teamCode', generatedCode);
+        try {
+            const storedUsername = await AsyncStorage.getItem('username');
+            if (storedUsername) setUsername(storedUsername);
+
+            //RHCM 2/28/2025 Directly fetch and set the team code from the API
+            await getTeamList();
+            
+        } catch (error) {
+            console.error('Error fetching user data:', error);
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
     };
+    //RHCM 2/28/2025 Runs when teamNumber changes
+    if (teamNumber) {
+      navigateToViewTeamMember(teamNumber);
+    }
+
     fetchUserData();
-  }, []);
+},  [teamNumber]);
+
 //
 
   const handleAddMember = () => {
@@ -191,12 +210,22 @@ const TeamMembersScreen: React.FC = () => {
       setIsAddingMember(false);
     }
   };
+// RHCM 2/28/2025 Modified to pass the params teamNumber to be used in addTeamMember.tsx
+const navigateToViewTeamMember = (teamNumber: string) => {
+  if (!teamNumber) {
+      console.warn("No team number available to pass.");
+      return;
+  }
 
-  const navigateToviewTeamMember = () => {
-    router.push({
-    pathname: "",
+  router.push({
+      pathname: "/addTeamMember",
+      params: { teamNumber: teamNumber },
   });
+
+  console.log("Navigating with teamNumber:", teamNumber); // Debugging
 };
+
+
 
   const navigateToLibrary = () => {
     router.push({
@@ -236,18 +265,16 @@ const TeamMembersScreen: React.FC = () => {
           {teamMembers.length >= 5 ? (
             <ScrollView style = {{flex: 1}}>
               {members.map((member, index) => (
-                <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToviewTeamMember()}>
-                  <Text style={styles.teamMemberButtonText}>{member.name}</Text>
-                  <TouchableOpacity style={styles.teamMemberButton}>
-                    <Text style={styles.item}>{'>'}</Text>
-                    </TouchableOpacity>
-                    </TouchableOpacity>
+                <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
+                <Text style={styles.teamMemberButtonText}>{member.name}</Text>
+                <Text style={styles.item}>{'>'}</Text>
+              </TouchableOpacity>
                   ))}
                   </ScrollView>
                   ) : (
                   <View>
                     {members.map((member, index) => (
-                      <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToviewTeamMember()}>
+                      <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
                         <Text style={styles.teamMemberButtonText}>{member.name}</Text>
                         <TouchableOpacity style={styles.teamMemberButton}>
                           <Text style={styles.item}>{'>'}</Text>
@@ -333,6 +360,7 @@ const TeamMembersScreen: React.FC = () => {
       // <BottomNavigation />
     //</SafeAreaView>
   //</View>
+
 
 const styles = StyleSheet.create({
   container: {
