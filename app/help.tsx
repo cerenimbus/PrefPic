@@ -123,7 +123,7 @@ const helpScreen: React.FC = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1,backgroundColor: '#E7EFFF', }}>
       <View>
         <Text style={styles.helpText}>Help</Text>
       </View>
@@ -165,13 +165,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   helpText: {
-    fontSize: 40,
+    fontSize: 60,
     marginBottom: 10,
     textAlign: 'center',
     fontFamily: 'Darker Grotesque',
     top: 40,
     paddingTop: 40,
-    paddingBottom: 80,
+    paddingBottom: 60,
   },
   bottomNav: {
     width: '100%',
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'Darker Grotesque',
     padding: 10,
-    fontSize: 14,
+    fontSize: 20,
   },
 });
 
