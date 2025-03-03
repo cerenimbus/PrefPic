@@ -80,7 +80,7 @@ export default function Camera() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={navigateToAddProcedure}>
+      <TouchableOpacity style= {styles.backButtonContainer} onPress={navigateToAddProcedure}>
         <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
 
@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    
   },
   message: {
     textAlign: 'center',
@@ -116,9 +117,11 @@ const styles = StyleSheet.create({
   },
   camera: {
     width: 350,
-    height: 490,
+    height: 500,
     borderRadius: 15,
     overflow: 'hidden',
+    alignItems: 'center', 
+    
   },
   cameraBorder: {
     width: 360,
@@ -127,7 +130,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     borderRadius: 18,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignSelf: 'center',
+    
   },
   captureButton: {
     position: 'absolute',
@@ -171,13 +175,19 @@ const styles = StyleSheet.create({
   },
   cancelButtonText: {
     color: "#375894",
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "800",
   },
+  backButtonContainer: {
+    position: 'absolute',
+    top: 50, // Adjust this value to lower the button
+    left: 20,
+    zIndex: 1,
+  },
   backText: {
-    marginTop: 5,
-    fontSize: 16,
+    fontSize: 20,
     color: '#007AFF',
   },
+  
 });
 
