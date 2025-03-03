@@ -33,22 +33,22 @@ export default function StartScreen() {
 
 
   
- // Check if user already completed the demo
- useFocusEffect(
-  React.useCallback(() => {
-    const checkDemoStatus = async () => {
-      if (hasCheckedDemo) return; // Avoid redundant checks
+//  // Check if user already completed the demo
+//  useFocusEffect(
+//   React.useCallback(() => {
+//     const checkDemoStatus = async () => {
+//       if (hasCheckedDemo) return; // Avoid redundant checks
 
-      const demoStatus = await AsyncStorage.getItem("status");
-      if (demoStatus === "Demo" || demoStatus === "Active") {
-        router.replace("/sign-in"); // Redirect if demo is done
-      }
-      setHasCheckedDemo(true); // Mark as checked
-    };
+//       const demoStatus = await AsyncStorage.getItem("status");
+//       if (demoStatus === "Demo" || demoStatus === "Active") {
+//         router.replace("/sign-in"); // Redirect if demo is done
+//       }
+//       setHasCheckedDemo(true); // Mark as checked
+//     };
 
-    checkDemoStatus();
-  }, [hasCheckedDemo])
-);
+//     checkDemoStatus();
+//   }, [hasCheckedDemo])
+// );
 
 useEffect(() => {
   const checkUserType = async () => {

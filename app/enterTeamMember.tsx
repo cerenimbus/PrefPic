@@ -118,12 +118,13 @@ const enterTeamMember = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    //alignItems: 'center',
     backgroundColor: '#f0f4fa',
     padding: 20,
   },
   title: {
-    fontSize: 20,
+    textAlign: 'center',
+    fontSize: 25,
     fontWeight: 'bold',
     marginBottom: 10,
   },
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#3b82f6",
     marginBottom: 40,
-    marginRight: 300,
+    //marginRight: 300,
     marginTop: 30,
   },
   description: {
@@ -141,7 +142,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    width: '90%',
+
+    width: '100%',
     height: 45,
     borderWidth: 1,
     borderColor: 'white',
@@ -157,6 +159,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   buttonText: {
+    textAlign: 'center',
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',

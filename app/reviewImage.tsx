@@ -183,7 +183,7 @@ const navigateToCamera = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={navigateToCamera}>
+      <TouchableOpacity style ={styles.backButtonContainer} onPress={navigateToCamera}>
         <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
 
@@ -245,10 +245,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F5F8FF",
     padding: 16,
+    paddingTop: 40,
+  },
+  backButtonContainer: {
+    position: 'absolute',
+    top: 50, // Adjust this value to lower the button
+    left: 20,
+    zIndex: 1,
   },
   backText: {
-    fontSize: 16,
-    color: "#007AFF",
+    fontSize: 20,
+    color: '#007AFF',
   },
   header: {
     fontSize: 20,
@@ -284,12 +291,12 @@ const styles = StyleSheet.create({
   },
   retakebuttonText: {
     color: "#375894",
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "600",
   },
   buttonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "600",
   },
   image: {

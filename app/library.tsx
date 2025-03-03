@@ -316,17 +316,17 @@ const styles = StyleSheet.create({
     },
     FinishButtonText: {
         color: '#3A5A8C',
-        fontSize: 18, // Adjusted font size
+        fontSize: 20, // Adjusted font size
         fontWeight: 'bold',
     },
     addProcedureButtonText: {
         color: '#ffffff',
-        fontSize: 18, // Adjusted font size
+        fontSize: 20, // Adjusted font size
         fontWeight: 'bold',
     },
     procedureNameButtonText: {
         color: 'gray',
-        fontSize: 18, // Adjusted font size
+        fontSize: 20, // Adjusted font size
     },
     arrow: {
         color: '#4A6FA5', // Arrow color
@@ -368,17 +368,17 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         color: '#4A6FA5',
         textAlign: 'center',
-        fontFamily: 'Roboto',
+        fontFamily: 'Darker Grotesque',
     },
     subtitle: {
         fontSize: 40,
         marginBottom: 10,
         textAlign: 'center',
-        fontFamily: 'Roboto',
+        fontFamily: 'Darker Grotesque',
     },
     description: {
         marginBottom: 20,
-        fontSize: 18,
+        fontSize: 20,
         lineHeight: 24,
         textAlign: 'center',
         // width: 307,
