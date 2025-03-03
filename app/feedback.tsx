@@ -31,6 +31,7 @@ const feedbackScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -81,15 +82,32 @@ const feedbackScreen: React.FC = () => {
     return emailRegex.test(email);
   };
 
+
+  const validatePhoneNumber = (phone: string) => {
+    const phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phone);
+  };
+
+ 
   // MG 02/26/2025
   // adjust the alert if the email is invalid
+
   const submitFeedback = async () => {
     if (!deviceID || !authorizationCode) {
       console.error('Device ID or Authorization Code not found');
       return;
-    } else if (!validateEmail(formData.email)){
+
+      //MLI 02/28/2025 allow feedback submission even when an email is not provided.
+      //Fixed the issue where entering a phone number exceeding 10 digits caused an error.
+    } else if (formData.email && !validateEmail(formData.email)) {
       Alert.alert('Invalid Email', 'Must enter a validly formatted email');
       return;
+    } else if (formData.phone && !validatePhoneNumber(formData.phone)) {
+      setPhoneError('Phone number must be exactly 10 digits');
+      return;
+    } else {
+      setPhoneError(null);
+
     }
 
     setIsLoading(true);
@@ -111,8 +129,9 @@ const feedbackScreen: React.FC = () => {
       const result = parser.parse(data);
 
       if (result.ResultInfo.Result === 'Success') {
-        Alert.alert('Success', result.ResultInfo.Message);
-        router.back();
+        Alert.alert('Success', result.ResultInfo.Message, [
+          { text: 'OK', onPress: () => router.replace('/mainAccountPage') }
+        ]);
       } else {
         Alert.alert('Error', result.ResultInfo.Message);
       }
@@ -158,6 +177,7 @@ const feedbackScreen: React.FC = () => {
             placeholderTextColor="#999999"
           />
 
+          {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
           <TextInput
             style={styles.inputPhone}
             placeholder="Phone"
@@ -350,6 +370,11 @@ const styles = StyleSheet.create({
     marginLeft: 34,
     marginRight: 30,
     marginTop: -5,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 8,
+    marginLeft: 12,
   },
 });
 

@@ -94,7 +94,7 @@ export default function ProcedureReviewSummary() {
 
       <TouchableOpacity style={styles.button} onPress={navigateToLibrary}>
 
-        <Text style={styles.buttonText}>Finish</Text>
+        <Text style={styles.buttonText}>Done</Text>
       </TouchableOpacity>
     </View>
   );
