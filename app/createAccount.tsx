@@ -193,15 +193,24 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
   };
 
   const isValidEmail = (email: string) => {
-    return /^[\w-.]+@[\w-]+\.[a-z]{2,}$/.test(email);
+    return /^[\w-.]+@[\w-]+\.[a-z]{1,}$/.test(email);
   };
+
+  // const handleFocus = (inputRef: React.RefObject<TextInput | View>) => {
+  //   setActiveField(inputRef);
+  //   setTimeout(() => {
+  //     scrollViewRef.current?.scrollTo({ y: 100, animated: true }); 
+  //   }, 300);
+  // };
 
   const handleFocus = (inputRef: React.RefObject<TextInput | View>) => {
     setActiveField(inputRef);
     setTimeout(() => {
-      scrollViewRef.current?.scrollTo({ y: 100, animated: true }); 
+        inputRef.current?.measure((x, y, width, height, pageX, pageY) => {
+            scrollViewRef.current?.scrollTo({ y: pageY - 100, animated: true }); 
+        });
     }, 300);
-  };
+};
 
   const handleBlur = () => {
     setActiveField(null);
