@@ -8,6 +8,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { getDeviceID } from '../components/deviceInfo';
 
 
+
 const LibraryScreen: React.FC = () => {
     const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
     const [selectedProcedure, setSelectedProcedure] = useState<string | null>(null);
@@ -223,6 +224,7 @@ const LibraryScreen: React.FC = () => {
     
 
     return (
+        
         <SafeAreaView style={styles.container}>
             <View style={styles.container}>
 
