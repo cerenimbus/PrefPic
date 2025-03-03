@@ -78,14 +78,15 @@ const feedbackScreen: React.FC = () => {
   }, [formData.comment]);
 
 // const validateEmail = (email: string) => {
-  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   if (email && !emailRegex.test(email)) {
-  //     Alert.alert('Invalid Email', 'Must enter a validly formatted email');
-  //   }
-  // };
-  
+//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//     if (email && !emailRegex.test(email)) {
+//       Alert.alert('Invalid Email', 'Must enter a validly formatted email');
+//     }
+//   };
+
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
   };
 
@@ -103,6 +104,7 @@ const feedbackScreen: React.FC = () => {
       return;
       //MLI 02/28/2025 allow feedback submission even when an email is not provided.
       //Fixed the issue where entering a phone number exceeding 10 digits caused an error.
+    //} else if (formData.email && !validateEmail(formData.email)) {
     } else if (formData.email && !validateEmail(formData.email)) {
       Alert.alert('Invalid Email', 'Must enter a validly formatted email');
       return;
