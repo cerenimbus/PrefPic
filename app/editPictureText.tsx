@@ -232,7 +232,7 @@ export default function EditPictureText() {
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity  style= {styles.backButtonContainer} onPress={() => router.back()}>
             <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
           <Text style={styles.header}>Image for: {procedureName}</Text>
@@ -295,17 +295,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F8FF",
     padding: 16,
   },
-
-  backText: {
-    fontSize: 16,
-    color: "#007AFF",
+  backButtonContainer: {
+    position: 'absolute',
+    top: 50, // Adjust this value to lower the button
+    left: 20,
+    zIndex: 1,
   },
-
+  backText: {
+    fontSize: 20,
+    color: '#007AFF',
+  },
   header: {
     fontSize: 20,
     textAlign: "center",
     marginVertical: 16,
-    paddingTop: 30,
+    paddingTop: 60,
     fontWeight: "600",
   },
 
@@ -398,11 +402,12 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    height: 250,
+    height: 300,
     borderRadius: 30,
     marginTop: 10,
     alignSelf: "center",
     width: "100%",
+    
   },
 
   retakePicture: {
