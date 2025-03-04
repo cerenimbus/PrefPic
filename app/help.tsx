@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { getDeviceID } from '../components/deviceInfo';
 import { XMLParser } from 'fast-xml-parser';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const helpScreen: React.FC = () => {
   const router = useRouter();
@@ -123,7 +124,7 @@ const helpScreen: React.FC = () => {
   };
 
   return (
-    <View style={{ flex: 1,backgroundColor: '#E7EFFF', }}>
+    <SafeAreaView style={{flex: 1,backgroundColor: '#E7EFFF', }}>
       <View>
         <Text style={styles.helpText}>Help</Text>
       </View>
@@ -143,7 +144,7 @@ const helpScreen: React.FC = () => {
         ))}
       </View>
       <BottomNavigation/>
-    </View>
+    </SafeAreaView>
   );
 };
 
