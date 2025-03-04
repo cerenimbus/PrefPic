@@ -19,6 +19,7 @@ export default function Signin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isChecked, setChecked] = useState(false);
+  const[isChecked1, setChecked1] = useState(false);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [hasCheckedDemo, setHasCheckedDemo] = useState(false);
@@ -97,7 +98,8 @@ export default function Signin() {
     router.push("/mainAccountPage");
   };
   // Determine if the "Sign In" button should be enabled or disabled
-  const isFormValid = email && password && isChecked && validateEmail(email);
+  const isFormValid = email && password && isChecked && isChecked1 
+  && validateEmail(email);
 
   const handleSignIn = async () => {
 
@@ -122,6 +124,11 @@ export default function Signin() {
     // Check if Terms & Privacy is accepted
     if (!isChecked) {
       Alert.alert("Terms & Privacy", "You must accept the Terms and Privacy Policy to proceed.");
+      return;
+    }
+
+    if(!isChecked1){
+      Alert.alert("You must check the checkbox to proceed");
       return;
     }
 
@@ -244,6 +251,10 @@ export default function Signin() {
                 Privacy Policy
               </Text>
             </View>
+            <View style={styles.checkboxContainer2}>
+              <CheckBox value={isChecked1} onValueChange={setChecked1} />
+              <Text style={styles.ptext}>I will not enter any patient’s Personally Identifiable Information or pictures</Text>
+            </View>
 
             {/* Sign In Button */}
             <TouchableOpacity 
@@ -354,6 +365,7 @@ const styles = StyleSheet.create({
     gap: 4,
     marginTop: 10,
     justifyContent: "center",
+    paddingRight: 49,
   },
   background: {
     flex: 1,
@@ -363,7 +375,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: 294,
-    height: 470,
+    height: 500,
     justifyContent: "center",
     padding: 15,
     backgroundColor: "#FFFFFF",
@@ -393,4 +405,14 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     fontSize: 10,
   },
+  checkboxContainer2: {
+    flexDirection: "row",
+    gap: 4,
+    marginTop: 10,
+    paddingLeft: 10,
+  },
+  ptext: {
+    paddingTop: 5,
+    paddingRight: 5,
+  }
 });

@@ -11,57 +11,39 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-nat
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
 
-
 export default function StartScreen() {
   const [isChecked, setChecked] = useState(false);
+  const [isChecked1, setChecked1] = useState(false);
   const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
   const router = useRouter();
   const { saveAuthCode } = useContext(AuthContext) ?? {};
   const [hasCheckedDemo, setHasCheckedDemo] = useState(false);
 
-
   // Fetch the unique device ID dynamically
   useEffect(() => {
-  
-  const fetchDeviceID = async () => {
-    const id = await getDeviceID();
-    setDeviceID(id);
-  };
+    const fetchDeviceID = async () => {
+      const id = await getDeviceID();
+      setDeviceID(id);
+    };
     fetchDeviceID();
   }, []);
-  
 
+  // Check if user already completed the demo
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const checkDemoStatus = async () => {
+  //       if (hasCheckedDemo) return; // Avoid redundant checks
 
-  
-//  // Check if user already completed the demo
-//  useFocusEffect(
-//   React.useCallback(() => {
-//     const checkDemoStatus = async () => {
-//       if (hasCheckedDemo) return; // Avoid redundant checks
+  //       const demoStatus = await AsyncStorage.getItem("status");
+  //       if (demoStatus === "Demo" || demoStatus === "Active") {
+  //         router.replace("/sign-in"); // Redirect if demo is done
+  //       }
+  //       setHasCheckedDemo(true); // Mark as checked
+  //     };
 
-//       const demoStatus = await AsyncStorage.getItem("status");
-//       if (demoStatus === "Demo" || demoStatus === "Active") {
-//         router.replace("/sign-in"); // Redirect if demo is done
-//       }
-//       setHasCheckedDemo(true); // Mark as checked
-//     };
-
-//     checkDemoStatus();
-//   }, [hasCheckedDemo])
-// );
-
-useEffect(() => {
-  const checkUserType = async () => {
-    const userType = await AsyncStorage.getItem("UserType");
-
-    if (!userType) {
-      await AsyncStorage.setItem("UserType", "Staff"); // Default to "Staff" if not set
-    }
-  };
-
-  checkUserType();
-}, []);
-
+  //     checkDemoStatus();
+  //   }, [hasCheckedDemo])
+  // );
 
   const handleGetStarted = async () => {
     try {
@@ -138,16 +120,14 @@ useEffect(() => {
       Alert.alert("Terms & Privacy", "You must accept the Terms and Privacy Policy to proceed.");
       return;
     }
+    if (!isChecked1) {
+      Alert.alert("PII Agreement", "You must agree not to enter any patient’s Personally Identifiable Information or pictures to proceed.");
+      return;
+    }
     handleGetStarted(); // Call API when "Get Started" is clicked
   };
 
-
-//   const navigateToCreateAccount = () => {
-//     router.push('createAccount');
-// };
-
   return (
-    
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background} >
       <SafeAreaView style={{ flex: .7 }}>
       <View style={[styles.container]}>
@@ -175,24 +155,21 @@ useEffect(() => {
             Privacy Policy
           </Text>
         </View>
+        <View style={styles.checkboxContainer2}>
+              <CheckBox value={isChecked1} onValueChange={setChecked1} />
+              <Text style={styles.ptext}>I will not enter any patient’s Personally Identifiable Information or pictures</Text>
+            </View>
 
         {/* Button */}
         <View style={styles.bcontainer}>
           <TouchableOpacity
-            style={[styles.getButton, { opacity: isChecked ? 1 : 0.5 }]}
+            style={[styles.getButton, { opacity: isChecked && isChecked1 ? 1 : 0.5 }]}
             onPress={navigateToIndex}
-            disabled={!isChecked} // Prevents clicking when unchecked
+            disabled={!isChecked || !isChecked1}
+             // Prevents clicking when unchecked
           >
             <Text style={styles.GetText}>Get Started</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity
-            style={[styles.getButton, { opacity: isChecked ? 1 : 0.5 }]}
-            onPress={navigateToCreateAccount}
-            disabled={!isChecked} // Prevents clicking when unchecked
-          >
-            <Text style={styles.GetText}>Create Account</Text>
-          </TouchableOpacity> */}
-      
         </View>
       </View>
       </SafeAreaView>
@@ -281,4 +258,15 @@ const styles = StyleSheet.create({
     color: "blue",
     textDecorationLine: "underline",
   },
+  checkboxContainer2: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginTop: 10,
+    paddingLeft: 28,
+  },
+  ptext: {
+    paddingTop: 5,
+    paddingRight: 5,
+  }
 });
