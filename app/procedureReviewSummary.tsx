@@ -1,7 +1,7 @@
 
 import { router, useRouter, useLocalSearchParams } from "expo-router";
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert, SafeAreaView } from "react-native";
 import { getDeviceID } from "../components/deviceInfo";
 import CryptoJS from "crypto-js";
 import { XMLParser } from "fast-xml-parser";
@@ -123,7 +123,7 @@ export default function ProcedureReviewSummary() {
   const navigateToLibrary = () => {
     router.push({
       pathname: "library",
-      params: { name },
+      params: { name: procedureName },
     });
 
   }
@@ -145,7 +145,7 @@ export default function ProcedureReviewSummary() {
   //   router.push("loading");
   // }
 
-  };
+  // };
   const navigateToAddPearls = () =>{
     router.push("addPearls")
   };
@@ -165,7 +165,7 @@ export default function ProcedureReviewSummary() {
       </TouchableOpacity>
 
       <View style={styles.titleSection}>
-        <Text style={styles.procedureName}>{name}</Text>
+        <Text style={styles.procedureName}>{procedureName}</Text>
         <Text style={styles.subtitle}>Review Summary</Text>
       </View>
 
