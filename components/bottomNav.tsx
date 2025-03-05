@@ -1,14 +1,16 @@
 
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { router } from "expo-router";
 import { usePathname } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const BottomNavigation: React.FC = () => {
     const router = useRouter();
     const pathname = usePathname();
-
+    const [userType, setUserType] = useState<string | null>(null); //
+    
     const navigateToLibrary = () => {
         router.push('library');
         // router.push('mainAccountPage');
@@ -19,7 +21,7 @@ const BottomNavigation: React.FC = () => {
     //
 
     ///Alberto 02/21/2024 fixed router
-    const navigateToTeamMember = () => {
+    const navigateToTeamMember = async () => {
         //MLI 02/28/2025 for the Surgical Staff role, it will navigate to the enterTeamMember page
         // if (userRole === "SurgicalStaff") {
         //     router.push("enterTeamMember");
@@ -27,6 +29,16 @@ const BottomNavigation: React.FC = () => {
         // else {
         router.push("/teamMember");
         // }
+
+       //RHCM 3/5/2025 Adjusted the routings 
+                  const storedType = await AsyncStorage.getItem("type");
+                  setUserType(storedType);
+                  if (storedType === "SurgicalStaff") {
+                    router.replace('/enterTeamMember');
+                  } else if (storedType === "Physician") {
+                    router.replace('/teamMember');
+                  }
+               
     };
 
     // const isTeamActive = pathname === "/teamMember";
