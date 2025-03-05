@@ -23,6 +23,7 @@ export default function EditPictureText() {
   const [descriptionText, setDescriptionText] = useState<string>("");
   const [notesText, setNotesText] = useState<string>("");
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
+  const [isSurgicalStaff, setIsSurgicalStaff] = useState(false);
 
   const { photoUri, procedureName, updatedDescription, updatedNotes } = useLocalSearchParams<{
     photoUri: string;
@@ -57,12 +58,88 @@ export default function EditPictureText() {
     }
   }, [updatedDescription, updatedNotes]);
 
-  const navigateToCamera = () => {
-    setPhotoUriState(null);
-    router.replace({
-      pathname: "camera",
-      params: { procedureName, notesText },
-    });
+  const deletePicture = async () => {
+    try {
+      console.log("🔹 Starting Delete API call...");
+  
+      const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
+      if (!procedureSerial) {
+        Alert.alert("Error", "Procedure not found. Please create a procedure first.");
+        return;
+      }
+      console.log("🔹 Procedure Serial:", procedureSerial);
+  
+      if (!deviceID) {
+        Alert.alert("Error", "Device ID not found.");
+        return;
+      }
+      console.log("🔹 Device ID:", deviceID);
+  
+      const authorizationCode = await AsyncStorage.getItem("authorizationCode");
+      if (!authorizationCode) {
+        Alert.alert("Authorization Error", "Please log in again.");
+        return;
+      }
+      console.log("🔹 Authorization Code:", authorizationCode);
+  
+      const currentDate = new Date();
+      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
+        currentDate.getDate()
+      ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
+        currentDate.getMinutes()
+      ).padStart(2, "0")}`;
+  
+      const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
+      console.log("🔹 Key String:", keyString);
+      const key = CryptoJS.SHA1(keyString).toString();
+      console.log("🔹 Generated Key:", key);
+  
+      const url = "https://prefpic.com/dev/PPService/DeletePicture.php";
+      const formData = new FormData();
+      formData.append("DeviceID", deviceID.id);
+      formData.append("Date", formattedDate);
+      formData.append("Key", key);
+      formData.append("AC", authorizationCode);
+      formData.append("PrefPicVersion", "1");
+      formData.append("Picture", procedureSerial);
+  
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+        },
+      });
+  
+      const data = await response.text();
+      console.log("🔹 API Response Body:", data);
+      console.log("🔹 API Response Status:", response.status);
+  
+      if (response.ok) {
+      
+  
+        // Remove the image from AsyncStorage
+        const storedImages = await AsyncStorage.getItem("capturedImages");
+        if (storedImages) {
+          const images = JSON.parse(storedImages);
+          const updatedImages = images.filter((img: string) => img !== photoUriState);
+          await AsyncStorage.setItem("capturedImages", JSON.stringify(updatedImages));
+        }
+  
+        setPhotoUriState(null); // Clear the photo URI state
+        router.push({
+          pathname: "camera",
+          params: { procedureName, notesText },
+        }); // Navigate to the camera screen
+      } else {
+        const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Delete failed.";
+        Alert.alert("Delete Failed", errorMessage);
+      }
+    } catch (error) {
+      console.error("🔹 Error during Delete API call:", error);
+      Alert.alert("Delete Failed", "An error occurred during the delete.");
+    }
   };
 
   const navigateToEditPicture = async () => {
@@ -222,7 +299,14 @@ export default function EditPictureText() {
       Alert.alert("Update Failed", "An error occurred during the update.");
     }
   };
-
+  useEffect(() => {
+    const checkUserType = async () => {
+      const value = await AsyncStorage.getItem("isSurgicalStaff");
+      setIsSurgicalStaff(value === "true");
+    };
+    checkUserType();
+  }, []);
+  
   
   
   return (
@@ -245,7 +329,7 @@ export default function EditPictureText() {
             </Text>
           )}
 
-          <TouchableOpacity style={styles.retakePicture} onPress={navigateToCamera}>
+          <TouchableOpacity style={styles.retakePicture} onPress={deletePicture}>
             <Text style={styles.retakePictureText}>Retake pic</Text>
           </TouchableOpacity>
 
@@ -268,7 +352,7 @@ export default function EditPictureText() {
               multiline
             />
           </View>
-
+      {!isSurgicalStaff && (
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.delete} onPress={handleAddMorePictures}>
               <Text style={styles.deletebuttonText}>Take more pictures</Text>
@@ -278,6 +362,7 @@ export default function EditPictureText() {
               <Text style={styles.buttonText}>Done with this procedure</Text>
             </TouchableOpacity>
           </View>
+             )}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

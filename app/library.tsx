@@ -107,10 +107,9 @@ const LibraryScreen: React.FC = () => {
         pathname: "procedureReviewSummary",
         params: { 
             name:procedure.name, 
-            serial:procedure.serial,
-            alwaysDo:procedure.alwaysDo,
-            watchFor:procedure.watchFor,
-            neverDo:procedure.neverDo,
+
+            serial:procedure.serial
+
         },
     });
     const navigateToMainAccountPage = () => {
@@ -163,10 +162,9 @@ const LibraryScreen: React.FC = () => {
             const proceduresArray = Array.isArray(procedureList) ? procedureList : procedureList ? [procedureList] : [];
             const updatedProcedures = proceduresArray.map((procedure : any) => ({
                 name:procedure?.Name,
-                serial:procedure?.Serial,
-                alwaysDo:procedure?.Always,
-                watchFor:procedure?.Watch,
-                neverDo:procedure?.Never
+
+                serial:procedure?.Serial
+
             }));
             console.log("parsedProcedures", updatedProcedures);
 
