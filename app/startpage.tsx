@@ -134,9 +134,7 @@ export default function StartScreen() {
         <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} resizeMode="contain"/>
 
         <Text style={styles.pref}>PrefPic Demo</Text>
-        <Text style={styles.description}>There is no sign-in required for </Text>
-        <Text style= {styles.description1}> this demo version. The live </Text>
-        <Text style = {styles.description2}>version is password protected. </Text>
+        <Text style={styles.description}>There is no sign-in required for this demo version. The live version is password protected. </Text>
 
         {/* Checkbox */}
         <View style={styles.checkboxContainer}>
@@ -172,7 +170,10 @@ export default function StartScreen() {
           </TouchableOpacity>
         </View>
       </View>
+
       </SafeAreaView>
+      <Text style={styles.footerText}>© 2025 Symphatic LLC, All Rights Reserved</Text>
+
     </ImageBackground>
   );
 }
@@ -268,5 +269,10 @@ const styles = StyleSheet.create({
   ptext: {
     paddingTop: 5,
     paddingRight: 5,
-  }
+  },
+  footerText: {
+    fontSize: 12,
+    textAlign: "center",
+    marginBottom: -130
+  },
 });

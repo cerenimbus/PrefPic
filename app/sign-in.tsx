@@ -284,6 +284,8 @@ export default function Signin() {
 
         </ScrollView>
       </KeyboardAvoidingView>
+            <Text style={styles.footerText}>© 2025 Symphatic LLC, All Rights Reserved</Text>
+      
     </ImageBackground>
   );
 }
@@ -413,6 +415,11 @@ const styles = StyleSheet.create({
   },
   ptext: {
     paddingTop: 5,
-    paddingRight: 5,
-  }
+    paddingRight: 3
+  },
+  footerText: {
+    fontSize: 12,
+    textAlign: "center",
+    marginBottom: 20
+  },
 });
