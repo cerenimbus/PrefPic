@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert, ActivityIndicator } from 'react-native';
 import BottomNavigation from '../components/bottomNav';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -234,7 +234,12 @@ const feedbackScreen: React.FC = () => {
             style={[styles.submitButton, !isSubmitEnabled && styles.submitButtonDisabled]} 
             onPress={submitFeedback}
             disabled={!isSubmitEnabled}>
+              {/* MLI - 03/05/2025 added an Activity Indicator */}
+              {isLoading ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
             <Text style={styles.submitButtonText}>Submit</Text>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>
