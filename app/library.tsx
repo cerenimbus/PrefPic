@@ -12,9 +12,11 @@ import { getDeviceID } from '../components/deviceInfo';
 const LibraryScreen: React.FC = () => {
     const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
     const [selectedProcedure, setSelectedProcedure] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false); // Added state for loading
+    const [isAddProcedureLoading, setIsAddProcedureLoading] = useState(false); // Added state for loading
+    const [isFinishDemoLoading, setIsFinishDemoLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [authorizationCode, setAuthorizationCode] = useState<string | null>(null); // Added state for authorization code
-    const [procedures, setProcedures] = useState<string[]>([]); // Updated state for procedures
+    const [procedures, setProcedures] = useState<{name:string;serial:string}[]>([]); // Updated state for procedures
     const [alwaysDo, setAlwaysDo] = useState(""); // Added state for alwaysDo
     const [watchFor, setWatchFor] = useState(""); // Added state for watchFor
     const [neverDo, setNeverDo] = useState(""); // Added state for neverDo
@@ -89,26 +91,40 @@ const LibraryScreen: React.FC = () => {
     }, [authorizationCode]); // Added useEffect to call GetProcedureList API
 
     // Update the procedure list when procedureName is passed
-    useEffect(() => {
-        if (procedureName && !procedures.includes(procedureName)) {
-            setProcedures((prevProcedures) => [...prevProcedures, procedureName]);
-        }
-    }, [procedureName]);
+    // useEffect(() => {
+    //     if (procedureName && !procedures.includes(procedureName)) {
+    //         setProcedures((prevProcedures) => [...prevProcedures, procedureName]);
+    //     }
+    // }, [procedureName]);
 
     const navigateToAddProcedure = () => {
         router.push('addProcedure');
     };
     
-    const navigateToviewProcedure = (procedureName: string, alwaysDo:string, watchFor:string, neverDo:string) => {
+    const navigateToviewProcedure = (procedure: any) => {
+        console.log("Navigating with procedure:", procedure); // Debugging log
         router.push({
         pathname: "procedureReviewSummary",
-        params: { procedureName, alwaysDo, watchFor, neverDo },
+        params: { 
+            name:procedure.name, 
+            serial:procedure.serial,
+            alwaysDo:procedure.alwaysDo,
+            watchFor:procedure.watchFor,
+            neverDo:procedure.neverDo,
+        },
     });
     const navigateToMainAccountPage = () => {
         router.push('mainAccountPage');
     };    
       
 };
+    const handleNextPressCompleteDemo =  () => {
+        setIsFinishDemoLoading(true);
+        setTimeout(() => {
+            navigateToCompleteDemo(); // Navigate after the delay
+            setIsFinishDemoLoading(false); // Reset loading state after navigation
+        }, 1000); // 1000 milliseconds = 1 second 
+    };
     const navigateToCompleteDemo = () => {
         router.push('completeDemo');
     };  
@@ -143,18 +159,26 @@ const LibraryScreen: React.FC = () => {
             const result = parser.parse(data);
     
             // Correctly extract the procedure list
-            const procedureList = result?.ResultInfo?.Selections?.Procedure || [];
-            const proceduresArray = Array.isArray(procedureList) ? procedureList : [procedureList];
-            console.log('Parsed procedure list:', proceduresArray); // Debugging statement
-    
-            // Update the procedures state
-            setProcedures(proceduresArray.map((procedure: any) => procedure.Name));
-        } catch (error) {
-            console.error('Error fetching procedure list:', error);
-            Alert.alert('Error', 'An error occurred while fetching the procedure list');
-        } finally {
-            setIsLoading(false);
-        }
+            const procedureList = result?.ResultInfo?.Selections?.Procedure;
+            const proceduresArray = Array.isArray(procedureList) ? procedureList : procedureList ? [procedureList] : [];
+            const updatedProcedures = proceduresArray.map((procedure : any) => ({
+                name:procedure?.Name,
+                serial:procedure?.Serial,
+                alwaysDo:procedure?.Always,
+                watchFor:procedure?.Watch,
+                neverDo:procedure?.Never
+            }));
+            console.log("parsedProcedures", updatedProcedures);
+
+            
+            setProcedures(updatedProcedures);
+        console.log('Parsed procedure list:', updatedProcedures); // Debugging statement
+    } catch (error) {
+        console.error('Error fetching procedure list:', error);
+        Alert.alert('Error', 'An error occurred while fetching the procedure list');
+    } finally {
+        setIsLoading(false);
+    }
     };// Added getProcedureList function
 
     const handleCodeSubmit = async () => {
@@ -221,6 +245,13 @@ const LibraryScreen: React.FC = () => {
         //throw new Error('Function not implemented.');
     //}
     
+    const handleNextPress =  () => {
+            setIsAddProcedureLoading(true);
+            setTimeout(() => {
+                navigateToAddProcedure(); // Navigate after the delay
+                setIsAddProcedureLoading(false); // Reset loading state after navigation
+              }, 1000); // 1000 milliseconds = 1 second 
+      };
     
 
     return (
@@ -236,15 +267,16 @@ const LibraryScreen: React.FC = () => {
                 </Text>
                 <View style={styles.card}>
                     {!isSurgicalStaff && (
-                    <TouchableOpacity style={styles.addButton} onPress={navigateToAddProcedure}>
-                        <Text style={styles.addProcedureButtonText}>Add Procedure   +</Text>
+                    <TouchableOpacity style={styles.addButton} onPress={handleNextPress}>
+                        <Text style={styles.addProcedureButtonText}>{isAddProcedureLoading ? "Loading..." : "Add Procedure"}</Text>
+                        {/* <Text style={styles.addProcedureButtonText}>Add Procedure   +</Text> */}
                     </TouchableOpacity>
                     )}
                     {procedures.length >= 5 ? (
                         <ScrollView style = {{flex: 1}}>
                             {procedures.map((procedure, index) => (
-                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={() => navigateToviewProcedure(procedure, alwaysDo, watchFor, neverDo)}>
-                                    <Text style={styles.procedureNameButtonText}>{procedure}</Text>
+                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={()=>navigateToviewProcedure(procedure)}>
+                                    <Text style={styles.procedureNameButtonText}>{procedure.name}</Text>
                                     <TouchableOpacity style={styles.procedureButton}>
                                         <Text style={styles.item}>{'>'}</Text>
                                     </TouchableOpacity>
@@ -254,8 +286,8 @@ const LibraryScreen: React.FC = () => {
                     ) : (
                         <View>
                             {procedures.map((procedure, index) => (
-                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={() => navigateToviewProcedure(procedure, alwaysDo, watchFor, neverDo)}>
-                                    <Text style={styles.procedureNameButtonText}>{procedure}</Text>
+                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={()=>navigateToviewProcedure(procedure)}>
+                                    <Text style={styles.procedureNameButtonText}>{procedure.name}</Text>
                                     <TouchableOpacity style={styles.procedureButton}>
                                         <Text style={styles.item}>{'>'}</Text>
                                     </TouchableOpacity>
@@ -264,8 +296,8 @@ const LibraryScreen: React.FC = () => {
                         </View>
                     )}
                 </View> 
-                <TouchableOpacity style={styles.finishButton} onPress={navigateToCompleteDemo}>
-                    <Text style={styles.FinishButtonText}>Finish Demo</Text>
+                <TouchableOpacity style={styles.finishButton} onPress={handleNextPressCompleteDemo}>
+                    <Text style={styles.FinishButtonText}>{isFinishDemoLoading ? "Loading..." : "Finish Demo"}</Text>
                 </TouchableOpacity>
             </View>
             <BottomNavigation />

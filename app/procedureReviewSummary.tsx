@@ -1,20 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { XMLParser } from 'fast-xml-parser';
 import { getDeviceID } from '../components/deviceInfo';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProcedureReviewSummary() {
   const router = useRouter();
-  const { procedureSerial } = useLocalSearchParams();
-  const [alwaysDo, setAlwaysDo] = useState("");
-  const [watchFor, setWatchFor] = useState("");
-  const [neverDo, setNeverDo] = useState("");
-  const [procedureName, setProcedureName] = useState('');
+  // const { 
+  //   procedureSerial, 
+  //   alwaysDo: initialAlwaysDo, 
+  //   watchFor: initialWatchFor, 
+  //   neverDo: initialNeverDo 
+  // } = useLocalSearchParams();
+  // State for alwaysDo, watchFor, and neverDo
+  // const [alwaysDo, setAlwaysDo] = useState<string>(Array.isArray(initialAlwaysDo) ? initialAlwaysDo[0] : initialAlwaysDo || "");
+  // const [watchFor, setWatchFor] = useState<string>(Array.isArray(initialWatchFor) ? initialWatchFor[0] : initialWatchFor || "");
+  // const [neverDo, setNeverDo] = useState<string>(Array.isArray(initialNeverDo) ? initialNeverDo[0] : initialNeverDo || "");
+  // const params = useLocalSearchParams();
+  // const{procedureName, procedureSerial} = params;
+  //const [procedureName, setProcedureName] = useState('');
+  
+  const { name,serial,alwaysDo,watchFor,neverDo } = useLocalSearchParams();
+  useEffect(() => {
+    console.log("Received parameters:", { name, serial, alwaysDo, watchFor, neverDo }); // Debugging log
+}, [name, serial, alwaysDo, watchFor, neverDo])
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
   const [authorizationCode, setAuthorizationCode] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [procedures, setProcedures] = useState<{name:string;serial:string}[]>([]);
 
   useEffect(() => {
     const fetchDeviceID = async () => {
@@ -37,74 +53,105 @@ export default function ProcedureReviewSummary() {
     fetchAuthorizationCode();
   }, []);
 
-  useEffect(() => {
-    const fetchProcedureDetails = async () => {
-      console.log("Device ID:", deviceID);
-      console.log("Authorization Code:", authorizationCode);
-      console.log("Procedure Serial:", procedureSerial);
-
-      if (!deviceID || !deviceID.id || !authorizationCode || !procedureSerial) {
+  useFocusEffect(
+    useCallback(() => {
+      let didCallAPI = false;
+        const fetchProcedureDetails = async () => {
+      if (!deviceID || !deviceID.id || !authorizationCode || !serial) {
         Alert.alert("Error", "Device ID, Authorization Code, or Procedure Serial is missing.");
         return; // Exit early if values are not valid
       }
 
-      // Ensure procedureSerial is a string
-      const validProcedureSerial = Array.isArray(procedureSerial) ? procedureSerial[0] : procedureSerial;
+      const procedureSerialString = Array.isArray(serial) ? serial.join(",") : serial;
+
+      //const validProcedureSerial = Array.isArray(procedureSerial) ? procedureSerial[0] : procedureSerial;
 
       try {
         const currentDate = new Date();
-        const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, '0')}/${String(currentDate.getDate()).padStart(2, '0')}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, '0')}:${String(currentDate.getMinutes()).padStart(2, '0')}`;
+        const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, '0')}/${String(
+          currentDate.getDate()
+        ).padStart(2, '0')}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, '0')}:${String(
+          currentDate.getMinutes()
+        ).padStart(2, '0')}`;
+            
         const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
         const key = CryptoJS.SHA1(keyString).toString();
 
-        const url = `https://PrefPic.com/dev/PPService/GetProcedure.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&PrefPicVersion=1&Procedure=${encodeURIComponent(validProcedureSerial)}`;
-
+        const url = `https://PrefPic.com/dev/PPService/GetProcedure.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&PrefPicVersion=1&Procedure=${encodeURIComponent(procedureSerialString)}`;
+        console.log('Fetching Getprocedure from URL:', url); // Debugging statement
+        console.log('Serial Number', procedureSerialString);
         const response = await fetch(url);
         const data = await response.text();
-        console.log("API Response Data:", data); // Log the raw response data
+        //console.log('API response:', data); // Debugging statement
 
-        // Parse the response XML using fast-xml-parser
         const parser = new XMLParser();
-        const xmlDocument = parser.parse(data);
-        console.log("Parsed XML Document:", xmlDocument); // Log parsed XML
+        const result = parser.parse(data);
 
-        const result = xmlDocument.ResultInfo.Result;
+            const resultInfo = result?.ResultInfo;
 
-        if (result === "Success") {
-          setProcedureName(xmlDocument.ResultInfo.Procedure.ProcedureName);
-          setAlwaysDo(xmlDocument.ResultInfo.Selections.Procedure.Always);
-          setWatchFor(xmlDocument.ResultInfo.Selections.Procedure.Watch);
-          setNeverDo(xmlDocument.ResultInfo.Selections.Procedure.Never);
-        } else {
-          const message = xmlDocument.ResultInfo.Message || "Failed to retrieve procedure details.";
-          Alert.alert("Error", message);
-        }
+        // const result = xmlDocument.ResultInfo.Result;
+
+        // if (result === "Success") {
+        //   setProcedureName(result.ResultInfo.Procedure.ProcedureName);
+        //   // Update alwaysDo, watchFor, and neverDo with the unique values
+        //   const fetchedAlwaysDo = result.ResultInfo.Selections.Procedure.Always || "";
+        //   const fetchedWatchFor = result.ResultInfo.Selections.Procedure.Watch || "";
+        //   const fetchedNeverDo = result.ResultInfo.Selections.Procedure.Never || "";
+
+        //   // Avoid duplicates
+        //   if (!fetchedAlwaysDo.includes(alwaysDo)) {
+        //     setAlwaysDo(fetchedAlwaysDo);
+        //   }
+        //   if (!fetchedWatchFor.includes(watchFor)) {
+        //     setWatchFor(fetchedWatchFor);
+        //   }
+        //   if (!fetchedNeverDo.includes(neverDo)) {
+        //     setNeverDo(fetchedNeverDo);
+        //   }
+        // } else {
+        //   const message = result.ResultInfo.Message || "Failed to retrieve procedure details.";
+        //   Alert.alert("Error", message);
+        // }
       } catch (error) {
         console.error("Error fetching procedure details:", error);
         Alert.alert("Error", "An error occurred while fetching procedure details.");
-      }
-    };
-
-    if (deviceID && authorizationCode && procedureSerial) { // Ensure all values are available before fetching
+        } finally {
+          didCallAPI = true; // Ensure we do not call the API again during this focus
+        }
+      };
+  
       fetchProcedureDetails();
-    }
-  }, [deviceID, authorizationCode, procedureSerial]);
-
+  
+      return () => {
+        didCallAPI = false; // Reset flag on component unmount or focus change
+      };
+    }, [deviceID, authorizationCode, serial])
+  );
   const navigateToLibrary = () => {
     router.push({
       pathname: "library",
-      params: { procedureName, alwaysDo, watchFor, neverDo },
+      params: { name },
     });
   };
+  const navigateToAddPearls = () =>{
+    router.push("addPearls")
+  };
+  const handleNextPress =  () => {
+    setIsLoading(true);
+    setTimeout(() => {
+        navigateToLibrary(); // Navigate after the delay
+        setIsLoading(false); // Reset loading state after navigation
+      }, 1000); // 1000 milliseconds = 1 second 
+};
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TouchableOpacity onPress={() => router.back()}>
         <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
 
       <View style={styles.titleSection}>
-        <Text style={styles.procedureName}>{procedureName}</Text>
+        <Text style={styles.procedureName}>{name}</Text>
         <Text style={styles.subtitle}>Review Summary</Text>
       </View>
 
@@ -123,10 +170,12 @@ export default function ProcedureReviewSummary() {
         </View>
 
         {/* Procedure Pearls Section */}
-        <View style={styles.card}>
+        <SafeAreaView style={styles.card}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardTitle}>Procedure Pearls</Text>
+            <TouchableOpacity onPress={navigateToAddPearls}>
             <Text style={styles.editText}>Edit</Text>
+            </TouchableOpacity>
           </View>
           <View>
             <Text style={[styles.label, { color: "green" }]}>● Always Do</Text>
@@ -138,13 +187,15 @@ export default function ProcedureReviewSummary() {
             <Text style={[styles.label, { color: "red" }]}>● Never Do</Text>
             <Text style={styles.description}>{neverDo}</Text>
           </View>
-        </View>
+        </SafeAreaView>
       </ScrollView>
-
-      <TouchableOpacity style={styles.button} onPress={navigateToLibrary}>
+      <TouchableOpacity style={styles.button} onPress={handleNextPress}>
+                              <Text style={styles.buttonText}>{isLoading ? "Loading..." : "Done"}</Text>
+                          </TouchableOpacity>
+      {/* <TouchableOpacity style={styles.button} onPress={navigateToLibrary}>
         <Text style={styles.buttonText}>Done</Text>
-      </TouchableOpacity>
-    </View>
+      </TouchableOpacity> */}
+    </SafeAreaView>
   );
 }
 
@@ -164,12 +215,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   procedureName: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: "bold",
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 20,
     color: "#6b7280",
   },
   card: {
