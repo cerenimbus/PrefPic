@@ -8,12 +8,13 @@ import { XMLParser } from 'fast-xml-parser';
 import { getDeviceID } from '../components/deviceInfo';
 
 
+
 const LibraryScreen: React.FC = () => {
     const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
     const [selectedProcedure, setSelectedProcedure] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false); // Added state for loading
     const [authorizationCode, setAuthorizationCode] = useState<string | null>(null); // Added state for authorization code
-    const [procedures, setProcedures] = useState<string[]>([]); // Updated state for procedures
+    const [procedures, setProcedures] = useState<{name:string;serial:string}[]>([]); // Updated state for procedures
     const [alwaysDo, setAlwaysDo] = useState(""); // Added state for alwaysDo
     const [watchFor, setWatchFor] = useState(""); // Added state for watchFor
     const [neverDo, setNeverDo] = useState(""); // Added state for neverDo
@@ -88,20 +89,24 @@ const LibraryScreen: React.FC = () => {
     }, [authorizationCode]); // Added useEffect to call GetProcedureList API
 
     // Update the procedure list when procedureName is passed
-    useEffect(() => {
-        if (procedureName && !procedures.includes(procedureName)) {
-            setProcedures((prevProcedures) => [...prevProcedures, procedureName]);
-        }
-    }, [procedureName]);
+    // useEffect(() => {
+    //     if (procedureName && !procedures.includes(procedureName)) {
+    //         setProcedures((prevProcedures) => [...prevProcedures, procedureName]);
+    //     }
+    // }, [procedureName]);
 
     const navigateToAddProcedure = () => {
         router.push('addProcedure');
     };
     
-    const navigateToviewProcedure = (procedureName: string, alwaysDo:string, watchFor:string, neverDo:string) => {
+    const navigateToviewProcedure = (procedure: any) => {
+        console.log("Navigating with procedure:", procedure); // Debugging log
         router.push({
         pathname: "procedureReviewSummary",
-        params: { procedureName, alwaysDo, watchFor, neverDo },
+        params: { 
+            name:procedure.name, 
+            serial:procedure.serial
+        },
     });
     const navigateToMainAccountPage = () => {
         router.push('mainAccountPage');
@@ -142,18 +147,23 @@ const LibraryScreen: React.FC = () => {
             const result = parser.parse(data);
     
             // Correctly extract the procedure list
-            const procedureList = result?.ResultInfo?.Selections?.Procedure || [];
-            const proceduresArray = Array.isArray(procedureList) ? procedureList : [procedureList];
-            console.log('Parsed procedure list:', proceduresArray); // Debugging statement
-    
-            // Update the procedures state
-            setProcedures(proceduresArray.map((procedure: any) => procedure.Name));
-        } catch (error) {
-            console.error('Error fetching procedure list:', error);
-            Alert.alert('Error', 'An error occurred while fetching the procedure list');
-        } finally {
-            setIsLoading(false);
-        }
+            const procedureList = result?.ResultInfo?.Selections?.Procedure;
+            const proceduresArray = Array.isArray(procedureList) ? procedureList : procedureList ? [procedureList] : [];
+            const updatedProcedures = proceduresArray.map((procedure : any) => ({
+                name:procedure?.Name,
+                serial:procedure?.Serial
+            }));
+            console.log("parsedProcedures", updatedProcedures);
+
+            
+            setProcedures(updatedProcedures);
+        console.log('Parsed procedure list:', updatedProcedures); // Debugging statement
+    } catch (error) {
+        console.error('Error fetching procedure list:', error);
+        Alert.alert('Error', 'An error occurred while fetching the procedure list');
+    } finally {
+        setIsLoading(false);
+    }
     };// Added getProcedureList function
 
     const handleCodeSubmit = async () => {
@@ -223,6 +233,7 @@ const LibraryScreen: React.FC = () => {
     
 
     return (
+        
         <SafeAreaView style={styles.container}>
             <View style={styles.container}>
 
@@ -241,8 +252,8 @@ const LibraryScreen: React.FC = () => {
                     {procedures.length >= 5 ? (
                         <ScrollView style = {{flex: 1}}>
                             {procedures.map((procedure, index) => (
-                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={() => navigateToviewProcedure(procedure, alwaysDo, watchFor, neverDo)}>
-                                    <Text style={styles.procedureNameButtonText}>{procedure}</Text>
+                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={()=>navigateToviewProcedure(procedure)}>
+                                    <Text style={styles.procedureNameButtonText}>{procedure.name}</Text>
                                     <TouchableOpacity style={styles.procedureButton}>
                                         <Text style={styles.item}>{'>'}</Text>
                                     </TouchableOpacity>
@@ -252,8 +263,8 @@ const LibraryScreen: React.FC = () => {
                     ) : (
                         <View>
                             {procedures.map((procedure, index) => (
-                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={() => navigateToviewProcedure(procedure, alwaysDo, watchFor, neverDo)}>
-                                    <Text style={styles.procedureNameButtonText}>{procedure}</Text>
+                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={()=>navigateToviewProcedure(procedure)}>
+                                    <Text style={styles.procedureNameButtonText}>{procedure.name}</Text>
                                     <TouchableOpacity style={styles.procedureButton}>
                                         <Text style={styles.item}>{'>'}</Text>
                                     </TouchableOpacity>
