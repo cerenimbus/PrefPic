@@ -18,6 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CryptoJS from "crypto-js";
 import { getDeviceID } from "../components/deviceInfo";
 
+
 interface PearlEntry {
   id: number; // Unique identifier
   always: string;
@@ -31,7 +32,7 @@ const AddPearls: React.FC = () => {
   const alwaysDoRef = useRef<TextInput | null>(null);
   const watchForRef = useRef<TextInput | null>(null);
   const neverDoRef = useRef<TextInput | null>(null);
-
+  const [isLoading, setIsLoading] = useState(false);
   const params = useLocalSearchParams();
   const procedureName = Array.isArray(params.procedureName) ? params.procedureName[0] : params.procedureName;
 
@@ -121,7 +122,7 @@ const AddPearls: React.FC = () => {
       const data = await response.text();
 
       if (response.ok) {
-        Alert.alert('Success', 'Procedure updated successfully');
+        //Alert.alert('Success', 'Procedure updated successfully');
         // Clear input fields after successful submission
         setAlwaysDo("");
         setWatchFor("");
@@ -140,6 +141,13 @@ const AddPearls: React.FC = () => {
       params: { procedureName, alwaysDo, watchFor, neverDo },
     });
   };
+  const handleNextPress =  () => {
+    setIsLoading(true);
+    setTimeout(() => {
+        navigateToProcedureReviewSummary(); // Navigate after the delay
+        setIsLoading(false); // Reset loading state after navigation
+      }, 1000); // 1000 milliseconds = 1 second 
+};
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -217,9 +225,20 @@ const AddPearls: React.FC = () => {
             )}
             
             {/* Next Button */}
-            <TouchableOpacity style={styles.button} onPress={navigateToProcedureReviewSummary}>
+            <TouchableOpacity
+                    style={[
+                      styles.button, 
+                      alwaysDo.trim() === "" && styles.disabledButton,
+                      watchFor.trim() === "" && styles.disabledButton,
+                      neverDo.trim() ==="" && styles.disabledButton]}
+                    onPress={handleNextPress}
+                    //disabled={alwaysDo.trim() === "" || isLoading}
+                  >
+                    <Text style={styles.buttonText}>{isLoading ? "Loading..." : "Next"}</Text>
+                  </TouchableOpacity>
+            {/* <TouchableOpacity style={styles.button} onPress={navigateToProcedureReviewSummary}>
               <Text style={styles.buttonText}>Next</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
@@ -237,6 +256,9 @@ const AddPearls: React.FC = () => {
       fontSize: 18,
       color: "#007AFF",
       marginBottom: 20,
+    },
+    disabledButton: {
+      backgroundColor: "#A0A0A0", // Greyed out when disabled
     },
     header: {
       fontSize: 24,

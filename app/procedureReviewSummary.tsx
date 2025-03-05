@@ -5,6 +5,7 @@ import CryptoJS from 'crypto-js';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { XMLParser } from 'fast-xml-parser';
 import { getDeviceID } from '../components/deviceInfo';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProcedureReviewSummary() {
   const router = useRouter();
@@ -21,12 +22,14 @@ export default function ProcedureReviewSummary() {
   // const params = useLocalSearchParams();
   // const{procedureName, procedureSerial} = params;
   //const [procedureName, setProcedureName] = useState('');
+  
   const { name,serial,alwaysDo,watchFor,neverDo } = useLocalSearchParams();
   useEffect(() => {
     console.log("Received parameters:", { name, serial, alwaysDo, watchFor, neverDo }); // Debugging log
 }, [name, serial, alwaysDo, watchFor, neverDo])
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
   const [authorizationCode, setAuthorizationCode] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [procedures, setProcedures] = useState<{name:string;serial:string}[]>([]);
 
   useEffect(() => {
@@ -130,9 +133,19 @@ export default function ProcedureReviewSummary() {
       params: { name },
     });
   };
+  const navigateToAddPearls = () =>{
+    router.push("addPearls")
+  };
+  const handleNextPress =  () => {
+    setIsLoading(true);
+    setTimeout(() => {
+        navigateToLibrary(); // Navigate after the delay
+        setIsLoading(false); // Reset loading state after navigation
+      }, 1000); // 1000 milliseconds = 1 second 
+};
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TouchableOpacity onPress={() => router.back()}>
         <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
@@ -157,10 +170,12 @@ export default function ProcedureReviewSummary() {
         </View>
 
         {/* Procedure Pearls Section */}
-        <View style={styles.card}>
+        <SafeAreaView style={styles.card}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardTitle}>Procedure Pearls</Text>
+            <TouchableOpacity onPress={navigateToAddPearls}>
             <Text style={styles.editText}>Edit</Text>
+            </TouchableOpacity>
           </View>
           <View>
             <Text style={[styles.label, { color: "green" }]}>● Always Do</Text>
@@ -172,13 +187,15 @@ export default function ProcedureReviewSummary() {
             <Text style={[styles.label, { color: "red" }]}>● Never Do</Text>
             <Text style={styles.description}>{neverDo}</Text>
           </View>
-        </View>
+        </SafeAreaView>
       </ScrollView>
-
-      <TouchableOpacity style={styles.button} onPress={navigateToLibrary}>
+      <TouchableOpacity style={styles.button} onPress={handleNextPress}>
+                              <Text style={styles.buttonText}>{isLoading ? "Loading..." : "Done"}</Text>
+                          </TouchableOpacity>
+      {/* <TouchableOpacity style={styles.button} onPress={navigateToLibrary}>
         <Text style={styles.buttonText}>Done</Text>
-      </TouchableOpacity>
-    </View>
+      </TouchableOpacity> */}
+    </SafeAreaView>
   );
 }
 
@@ -198,12 +215,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   procedureName: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: "bold",
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 20,
     color: "#6b7280",
   },
   card: {

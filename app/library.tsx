@@ -12,7 +12,9 @@ import { getDeviceID } from '../components/deviceInfo';
 const LibraryScreen: React.FC = () => {
     const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
     const [selectedProcedure, setSelectedProcedure] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false); // Added state for loading
+    const [isAddProcedureLoading, setIsAddProcedureLoading] = useState(false); // Added state for loading
+    const [isFinishDemoLoading, setIsFinishDemoLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [authorizationCode, setAuthorizationCode] = useState<string | null>(null); // Added state for authorization code
     const [procedures, setProcedures] = useState<{name:string;serial:string}[]>([]); // Updated state for procedures
     const [alwaysDo, setAlwaysDo] = useState(""); // Added state for alwaysDo
@@ -116,6 +118,13 @@ const LibraryScreen: React.FC = () => {
     };    
       
 };
+    const handleNextPressCompleteDemo =  () => {
+        setIsFinishDemoLoading(true);
+        setTimeout(() => {
+            navigateToCompleteDemo(); // Navigate after the delay
+            setIsFinishDemoLoading(false); // Reset loading state after navigation
+        }, 1000); // 1000 milliseconds = 1 second 
+    };
     const navigateToCompleteDemo = () => {
         router.push('completeDemo');
     };  
@@ -236,6 +245,13 @@ const LibraryScreen: React.FC = () => {
         //throw new Error('Function not implemented.');
     //}
     
+    const handleNextPress =  () => {
+            setIsAddProcedureLoading(true);
+            setTimeout(() => {
+                navigateToAddProcedure(); // Navigate after the delay
+                setIsAddProcedureLoading(false); // Reset loading state after navigation
+              }, 1000); // 1000 milliseconds = 1 second 
+      };
     
 
     return (
@@ -251,8 +267,9 @@ const LibraryScreen: React.FC = () => {
                 </Text>
                 <View style={styles.card}>
                     {!isSurgicalStaff && (
-                    <TouchableOpacity style={styles.addButton} onPress={navigateToAddProcedure}>
-                        <Text style={styles.addProcedureButtonText}>Add Procedure   +</Text>
+                    <TouchableOpacity style={styles.addButton} onPress={handleNextPress}>
+                        <Text style={styles.addProcedureButtonText}>{isAddProcedureLoading ? "Loading..." : "Add Procedure"}</Text>
+                        {/* <Text style={styles.addProcedureButtonText}>Add Procedure   +</Text> */}
                     </TouchableOpacity>
                     )}
                     {procedures.length >= 5 ? (
@@ -279,8 +296,8 @@ const LibraryScreen: React.FC = () => {
                         </View>
                     )}
                 </View> 
-                <TouchableOpacity style={styles.finishButton} onPress={navigateToCompleteDemo}>
-                    <Text style={styles.FinishButtonText}>Finish Demo</Text>
+                <TouchableOpacity style={styles.finishButton} onPress={handleNextPressCompleteDemo}>
+                    <Text style={styles.FinishButtonText}>{isFinishDemoLoading ? "Loading..." : "Finish Demo"}</Text>
                 </TouchableOpacity>
             </View>
             <BottomNavigation />
