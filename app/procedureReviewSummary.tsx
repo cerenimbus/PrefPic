@@ -1,3 +1,4 @@
+
 import { router, useRouter, useLocalSearchParams } from "expo-router";
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert } from "react-native";
@@ -29,6 +30,7 @@ export default function ProcedureReviewSummary() {
   useEffect(() => {
     const fetchDeviceID = async () => {
       const id = await getDeviceID();
+
       setDeviceID(id);
     };
     fetchDeviceID();
@@ -117,11 +119,13 @@ export default function ProcedureReviewSummary() {
     }
   };
 
+
   const navigateToLibrary = () => {
     router.push({
       pathname: "library",
-      params: { procedureName, alwaysDo, watchFor, neverDo },
+      params: { name },
     });
+
   }
 
   const handleImagePress = (index: number) => {
@@ -140,23 +144,33 @@ export default function ProcedureReviewSummary() {
   // const navigateToLoading = () => {
   //   router.push("loading");
   // }
-  return (
-    <View style={styles.container}>
-     
-        <TouchableOpacity onPress={() => router.back()}>
-            <Text style={styles.backText}>←  Back</Text>
-        </TouchableOpacity>
 
-      
+  };
+  const navigateToAddPearls = () =>{
+    router.push("addPearls")
+  };
+  const handleNextPress =  () => {
+    setIsLoading(true);
+    setTimeout(() => {
+        navigateToLibrary(); // Navigate after the delay
+        setIsLoading(false); // Reset loading state after navigation
+      }, 1000); // 1000 milliseconds = 1 second 
+};
+
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <TouchableOpacity onPress={() => router.back()}>
+        <Text style={styles.backText}>← Back</Text>
+      </TouchableOpacity>
+
       <View style={styles.titleSection}>
-        <Text style={styles.procedureName}>{procedureName}</Text>
-        <Text style={styles.subtitle}>Review summary</Text>
+        <Text style={styles.procedureName}>{name}</Text>
+        <Text style={styles.subtitle}>Review Summary</Text>
       </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-        {/* 
-        //RHCM 
-        //Images Section */}
+        {/* Images Section */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardTitle}>Images</Text>
@@ -177,16 +191,17 @@ export default function ProcedureReviewSummary() {
             </View>
         </View>
 
-        {/* 
-        //RHCM 
-        //Procedure Pearls Section */}
-        <View style={styles.card}>
+        {/* Procedure Pearls Section */}
+        <SafeAreaView style={styles.card}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardTitle}>Procedure Pearls</Text>
+            <TouchableOpacity onPress={navigateToAddPearls}>
             <Text style={styles.editText}>Edit</Text>
+            </TouchableOpacity>
           </View>
           <View>
             <Text style={[styles.label, { color: "green" }]}>● Always Do</Text>
+
             <Text style={styles.description}>
             {procedureDetails.alwaysDo}
             </Text>
@@ -200,15 +215,17 @@ export default function ProcedureReviewSummary() {
             <Text style={styles.description}>
             {procedureDetails.neverDo}
             </Text>
+
           </View>
-        </View>
+        </SafeAreaView>
       </ScrollView>
-
-      <TouchableOpacity style={styles.button} onPress={navigateToLibrary}>
-
+      <TouchableOpacity style={styles.button} onPress={handleNextPress}>
+                              <Text style={styles.buttonText}>{isLoading ? "Loading..." : "Done"}</Text>
+                          </TouchableOpacity>
+      {/* <TouchableOpacity style={styles.button} onPress={navigateToLibrary}>
         <Text style={styles.buttonText}>Done</Text>
-      </TouchableOpacity>
-    </View>
+      </TouchableOpacity> */}
+    </SafeAreaView>
   );
 }
 
@@ -228,12 +245,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   procedureName: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: "bold",
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 20,
     color: "#6b7280",
   },
   card: {
@@ -294,6 +311,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+
   centerBox: {
     marginTop: 20,
     width: 280,
@@ -328,3 +346,4 @@ const styles = StyleSheet.create({
   image: { width: "100%", height: "100%", resizeMode: "cover" },
   imagePreview: { width: 80, height: 80, borderRadius: 10 },
 });
+

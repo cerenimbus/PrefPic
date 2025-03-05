@@ -1,7 +1,7 @@
 // Add_1.tsx page
 import { router } from "expo-router";
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ScrollView } from "react-native";
 import CryptoJS from 'crypto-js';
 import { XMLParser } from 'fast-xml-parser';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -161,6 +161,8 @@ const AddProcedure: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* MLI - 03/03/2025 Added a ScrollView as per Kirby's suggestion, but left it commented out since the UI will be changed. */}
+      {/* <ScrollView contentContainerStyle={styles.scrollViewContent}> */}
       <TouchableOpacity style={styles.backButton} onPress={navigateToLibrary}>
         <Text style={styles.backTextArrow}>← </Text>
         <Text style={styles.backText}>Cancel</Text>
@@ -184,6 +186,7 @@ const AddProcedure: React.FC = () => {
       >
         <Text style={styles.nextButtonText}>{isLoading ? "Loading..." : "Next"}</Text>
       </TouchableOpacity>
+      {/* </ScrollView> */}
     </SafeAreaView>
   );
 };
@@ -194,6 +197,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F8FF",
     padding: 16,
   },
+  // scrollViewContent: {
+  //   flexGrow: 1,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   padding: 16,
+  // },
   backTextArrow: {
     fontSize: 20,
     color: '#007AFF',

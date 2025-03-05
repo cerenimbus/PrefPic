@@ -77,28 +77,34 @@ const feedbackScreen: React.FC = () => {
     setIsSubmitEnabled(formData.comment.trim().length > 0);
   }, [formData.comment]);
 
-  const validateEmail = (email: string) => {
+// const validateEmail = (email: string) => {
+//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//     if (email && !emailRegex.test(email)) {
+//       Alert.alert('Invalid Email', 'Must enter a validly formatted email');
+//     }
+//   };
+
+  const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
   };
 
-
-  const validatePhoneNumber = (phone: string) => {
+  //const validatePhoneNumber = (phone: string) => {
+  const validatePhoneNumber = (phone: string): boolean => {
     const phoneRegex = /^\d{10}$/;
     return phoneRegex.test(phone);
   };
 
- 
   // MG 02/26/2025
   // adjust the alert if the email is invalid
-
   const submitFeedback = async () => {
     if (!deviceID || !authorizationCode) {
       console.error('Device ID or Authorization Code not found');
       return;
-
       //MLI 02/28/2025 allow feedback submission even when an email is not provided.
       //Fixed the issue where entering a phone number exceeding 10 digits caused an error.
+    //} else if (formData.email && !validateEmail(formData.email)) {
     } else if (formData.email && !validateEmail(formData.email)) {
       Alert.alert('Invalid Email', 'Must enter a validly formatted email');
       return;
@@ -107,7 +113,6 @@ const feedbackScreen: React.FC = () => {
       return;
     } else {
       setPhoneError(null);
-
     }
 
     setIsLoading(true);
@@ -171,7 +176,7 @@ const feedbackScreen: React.FC = () => {
             value={formData.email}
             onChangeText={(text) => {
               setFormData(prev => ({ ...prev, email: text }));
-              //validateEmail(text);
+              validateEmail(text);
             }}
             keyboardType="email-address"
             placeholderTextColor="#999999"
@@ -182,7 +187,14 @@ const feedbackScreen: React.FC = () => {
             style={styles.inputPhone}
             placeholder="Phone"
             value={formData.phone}
-            onChangeText={(text) => setFormData(prev => ({ ...prev, phone: text }))}
+            onChangeText={(text) => {
+              setFormData(prev => ({ ...prev, phone: text }));
+              if (text.length !== 10) {
+                setPhoneError('Phone number must be exactly 10 digits');
+              } else {
+                setPhoneError(null);
+              }
+            }}
             keyboardType="phone-pad"
             placeholderTextColor="#999999"
           />
@@ -218,7 +230,7 @@ const feedbackScreen: React.FC = () => {
             placeholderTextColor="#999999"
           />
 
-          <TouchableOpacity
+          <TouchableOpacity 
             style={[styles.submitButton, !isSubmitEnabled && styles.submitButtonDisabled]} 
             onPress={submitFeedback}
             disabled={!isSubmitEnabled}>

@@ -5,6 +5,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ProcedureReviewSummary() {
   const {procedureName, alwaysDo: alwaysDoParam, watchFor: watchForParam, neverDo: neverDoParam}= useLocalSearchParams();
+  const [alwaysDo, setAlwaysDo] = useState(alwaysDoParam || "");
+  const [watchFor, setWatchFor] = useState(watchForParam || "");
+  const [neverDo, setNeverDo] = useState(neverDoParam || "");
   const router =  useRouter();
 
   const navigateToLibrary = () => {
@@ -13,6 +16,7 @@ export default function ProcedureReviewSummary() {
       params: { procedureName, alwaysDo, watchFor, neverDo },
     });
   }
+
   const params = useLocalSearchParams();
     const [descriptionText, setDescriptionText] = useState<string>(""); // Added state for description
     const [notesText, setNotesText] = useState<string>(""); // Added state for notes
@@ -20,6 +24,7 @@ export default function ProcedureReviewSummary() {
   const [alwaysDo, setAlwaysDo] = useState(alwaysDoParam || "");
   const [watchFor, setWatchFor] = useState(watchForParam || "");
   const [neverDo, setNeverDo] = useState(neverDoParam || "");
+
   const navigatetoaddpearls = () => {
     router.push({
       pathname: "viewEditPicture",   
