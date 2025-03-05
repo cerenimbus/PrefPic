@@ -153,6 +153,22 @@ const navigateToCamera = () => {
         if (response.ok) {
             Alert.alert("Success!", "Image uploaded successfully.");
 
+            //--------------------------------------------------------------------------------------
+            //RJP <---store picture_serial to the async storage
+            //  Extract PictureSerial from the API response
+            const pictureSerialMatch = data.match(/<PictureSerial>(.*?)<\/PictureSerial>/);
+        if (pictureSerialMatch) {
+            const pictureSerial = pictureSerialMatch[1];
+
+        //  Store PictureSerial in AsyncStorage
+            await AsyncStorage.setItem("picture_serial", pictureSerial);
+            console.log(" Picture Serial Stored:", pictureSerial);
+        } else {
+            console.log(" No Picture Serial found in API response.");
+        }
+        //END RJP 3/4/2025
+        //--------------------------------------------------------------------------------------------------
+
             // RHCM 2/22/2025 Store the image in AsyncStorage
             const storedImages = await AsyncStorage.getItem("capturedImages");
             const imageList = storedImages ? JSON.parse(storedImages) : [];

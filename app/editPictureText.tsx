@@ -40,6 +40,25 @@ export default function EditPictureText() {
     fetchDeviceID();
   }, []);
 
+  //-----------------------------------------------------------------------------------------------------
+  //RJP 03/4/2025<-- debug to show all async storage key value
+  useEffect(() => {
+    // Debugging: Log all AsyncStorage keys
+    AsyncStorage.getAllKeys()
+      .then(async (keys) => {
+        console.log("🔹 AsyncStorage Keys:", keys);
+        
+        // Retrieve values for each key
+        const keyValues = await AsyncStorage.multiGet(keys);
+        keyValues.forEach(([key, value]) => {
+          console.log(`🔹 ${key}: ${value}`);
+        });
+      })
+      .catch(error => console.error("⚠️ Error fetching AsyncStorage keys:", error));
+  }, []);
+  //end
+  //---------------------------------------------------------------------------------------
+
   useEffect(() => {
     if (photoUri) {
       const cleanedUri = decodeURIComponent(photoUri);
@@ -153,6 +172,18 @@ export default function EditPictureText() {
       }
       console.log("🔹 Procedure Serial:", procedureSerial);
 
+      //----------------------------------------------------------------------------------------------
+      //RJP <---- change to picture_serial 3/4/2025
+      const picture_serial = await AsyncStorage.getItem("picture_serial");
+      if (!picture_serial) {
+        Alert.alert("Error", "Picture_serial not found. ");
+        return;
+      }
+      console.log("🔹 Picture Serial:", picture_serial);
+      //End RJP 3/4/2025
+      //-------------------------------------------------------------------------------------------------
+
+
       if (!deviceID) {
         Alert.alert("Error", "Device ID not found.");
         return;
@@ -185,7 +216,7 @@ export default function EditPictureText() {
       formData.append("Key", key);
       formData.append("AC", authorizationCode);
       formData.append("PrefPicVersion", "1");
-      formData.append("Picture", procedureSerial);
+      formData.append("Picture", picture_serial); //RJP 3/4/2025 <------- change picture_serial from procedureserial
       formData.append("Name", descriptionText);
       formData.append("Note", notesText);
 
@@ -195,7 +226,7 @@ export default function EditPictureText() {
         Key: key,
         AC: authorizationCode,
         PrefPicVersion: "1",
-        Picture: procedureSerial,
+        Picture: picture_serial, //RJP 3/4/2025 <------- change picture_serial from procedureserial
         Name: descriptionText,
         Note: notesText,
       });
@@ -239,6 +270,17 @@ export default function EditPictureText() {
         return;
       }
 
+      //-------------------------------------------------------------------------------
+      //RJP 3/4/2025<-- change to picture serial
+      const picture_serial = await AsyncStorage.getItem("picture_serial");
+      if (!picture_serial) {
+        Alert.alert("Error", "Picture not found.");
+        return;
+      }
+      //End RJP 3/4/2025
+      //--------------------------------------------------------------------------------
+      
+
       if (!deviceID) {
         Alert.alert("Error", "Device ID not found.");
         return;
@@ -267,7 +309,7 @@ export default function EditPictureText() {
       formData.append("Key", key);
       formData.append("AC", authorizationCode);
       formData.append("PrefPicVersion", "1");
-      formData.append("Picture", procedureSerial);
+      formData.append("Picture", picture_serial); //RJP 3/4/2025 <------- change picture_serial from procedureserial
       formData.append("Name", descriptionText);
       formData.append("Note", notesText);
       
