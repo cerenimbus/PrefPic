@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Alert, TextInput } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Alert, TextInput, ActivityIndicator } from 'react-native';
 import BottomNavigation from '../components/bottomNav';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -98,22 +98,22 @@ const TeamMembersScreen: React.FC = () => {
   // MLI 02/28/2025
   // Added this to check the user type and navigate to the appropriate screen
   //This will be here for the meantime because it will not route to the proper screen, I will added the proper routing in the bottonNav.tsx
-  useEffect(() => {
-    const fetchUserType = async () => {
-      try {
-        const storedType = await AsyncStorage.getItem("type");
-        setUserType(storedType);
-        if (storedType === "SurgicalStaff") {
-          router.replace('/enterTeamMember');
-        } else if (storedType === "Physician") {
-          router.replace('/teamMember');
-        }
-      } catch (error) {
-        console.error('Error fetching user type:', error);
-      }
-    };
-    fetchUserType();
-  }, []);
+  // useEffect(() => {
+  //   const fetchUserType = async () => {
+  //     try {
+  //       const storedType = await AsyncStorage.getItem("type");
+  //       setUserType(storedType);
+  //       if (storedType === "SurgicalStaff") {
+  //         router.replace('/enterTeamMember');
+  //       } else if (storedType === "Physician") {
+  //         router.replace('/teamMember');
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching user type:', error);
+  //     }
+  //   };
+  //   fetchUserType();
+  // }, []);
   //
 
   const getTeamList = async () => {
@@ -147,7 +147,7 @@ const TeamMembersScreen: React.FC = () => {
             console.warn('No CurrentTeam found in API response.');
         }
          // RHCM 2/28/2025 Extract Team Number (Phone)
-         const teamNumber = result?.ResultInfo?.Selections?.Member?.Phone;
+        const teamNumber = result?.ResultInfo?.Selections?.Member?.Phone;
          if (teamNumber) {
              setTeamNumber(teamNumber);
          } else {
@@ -234,6 +234,7 @@ const navigateToViewTeamMember = (teamNumber: string) => {
   };
 
   const navigateToAddTeamMember = () => {
+     setIsAddingMember(true); // Show loading icon
     router.push({
       pathname: "addTeamMember"
     });
@@ -259,8 +260,13 @@ const navigateToViewTeamMember = (teamNumber: string) => {
       </Text>
       
       <View style={styles.card}>
-        <TouchableOpacity style={styles.addButton} onPress={navigateToAddTeamMember}>
+        <TouchableOpacity style={styles.addButton} onPress={navigateToAddTeamMember} disabled={isAddingMember}>
+          {/* MLI - 03/05/2025 added an Activity Indicator */}
+          {isAddingMember ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
           <Text style={styles.addButtonText}>Add Team Member +</Text>
+          )}
           </TouchableOpacity>
           {teamMembers.length >= 5 ? (
             <ScrollView style = {{flex: 1}}>

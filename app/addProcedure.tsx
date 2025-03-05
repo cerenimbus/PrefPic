@@ -1,7 +1,7 @@
 // Add_1.tsx page
 import { router } from "expo-router";
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ScrollView, ActivityIndicator } from "react-native";
 import CryptoJS from 'crypto-js';
 import { XMLParser } from 'fast-xml-parser';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -184,7 +184,12 @@ const AddProcedure: React.FC = () => {
         onPress={handleNextPress}
         disabled={procedureName.trim() === "" || isLoading}
       >
-        <Text style={styles.nextButtonText}>{isLoading ? "Loading..." : "Next"}</Text>
+        {/* MLI - 03/05/2025 added an Activity Indicator */}
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#FFFFFF" />
+        ) : (
+        <Text style={styles.nextButtonText}>Next</Text>
+      )}
       </TouchableOpacity>
       {/* </ScrollView> */}
     </SafeAreaView>
