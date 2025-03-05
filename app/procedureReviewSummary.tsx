@@ -14,11 +14,12 @@ export default function ProcedureReviewSummary() {
   const [watchFor, setWatchFor] = useState("");
   const [neverDo, setNeverDo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-   const [authorizationCode, setAuthorizationCode] = useState<string | null>(null); // Added state for authorization code
+  const [authorizationCode, setAuthorizationCode] = useState<string | null>(null); // Added state for authorization code
   
   const router = useRouter();
   const params = useLocalSearchParams();
   const { serial } = params;
+  const [imageDetails, setImageDetails] = useState<{ pictureName: string; pictureNote: string }[]>([]);
 
   const [procedureDetails, setProcedureDetails] = useState({
     alwaysDo: '',
@@ -59,63 +60,75 @@ export default function ProcedureReviewSummary() {
     fetchAuthorizationCode();
 }, []); // Added useEffect to fetch authorization code
 
-  const getProcedureList = async () => {
+const getProcedureList = async () => {
     setIsLoading(true);
     try {
-      if (!deviceID) {
-          console.log('Device ID:', deviceID);
-          throw new Error('Device information not found');
-      }
-      console.log('DeviceID:', deviceID.id); // Debugging statement
-      const currentDate = new Date();
-      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, '0')}/${String(
-          currentDate.getDate()
-      ).padStart(2, '0')}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, '0')}:${String(
-          currentDate.getMinutes()
-      ).padStart(2, '0')}`;
+        if (!deviceID) {
+            console.log('Device ID:', deviceID);
+            throw new Error('Device information not found');
+        }
+        console.log('DeviceID:', deviceID.id);
 
-      const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
-      const key = CryptoJS.SHA1(keyString).toString();
-         
-      const url = `https://PrefPic.com/dev/PPService/GetProcedure.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&PrefPicVersion=1&Procedure=${serial}`;
+        const currentDate = new Date();
+        const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, '0')}/${String(
+            currentDate.getDate()
+        ).padStart(2, '0')}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, '0')}:${String(
+            currentDate.getMinutes()
+        ).padStart(2, '0')}`;
 
-      console.log("URL:", url);
-      
-      const response = await fetch(url);
-      const data = await response.text();
-      // console.log("Raw XML Response:", data);
-      const parser = new XMLParser();
-      const result = parser.parse(data);
-      const procedureList = result?.ResultInfo?.Selections?.Procedure;
-      
-      if (procedureList) {
-        const alwaysDo = procedureList?.Always || '';
-      const watchFor = procedureList?.Watch || '';
-      const neverDo = procedureList?.Never || '';
+        const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
+        const key = CryptoJS.SHA1(keyString).toString();
 
-      
-        const proceduresArray = Array.isArray(procedureList) ? procedureList : [procedureList];
+        const url = `https://PrefPic.com/dev/PPService/GetProcedure.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&PrefPicVersion=1&Procedure=${serial}`;
 
-            const images = proceduresArray.flatMap(proc => {
+        console.log("URL:", url);
+
+        const response = await fetch(url);
+        const data = await response.text();
+
+        const parser = new XMLParser();
+        const result = parser.parse(data);
+        const procedureList = result?.ResultInfo?.Selections?.Procedure;
+
+        if (procedureList) {
+            const procedureName = procedureList?.ProcedureName || '';
+            const alwaysDo = procedureList?.Always || '';
+            const watchFor = procedureList?.Watch || '';
+            const neverDo = procedureList?.Never || '';
+
+            const proceduresArray = Array.isArray(procedureList) ? procedureList : [procedureList];
+
+            const extractedImages: string[] = [];
+            const extractedImageDetails: { pictureName: string; pictureNote: string }[] = [];
+
+            proceduresArray.forEach(proc => {
                 const pictures = proc?.Pictures?.Picture;
-                if (!pictures) return [];
+                if (!pictures) return;
 
                 const pictureArray = Array.isArray(pictures) ? pictures : [pictures];
-                return pictureArray.map(picture => `data:image/jpeg;base64,${picture.Media}`);
+
+                pictureArray.forEach(picture => {
+                    extractedImages.push(`data:image/jpeg;base64,${picture.Media}`);
+                    extractedImageDetails.push({
+                        pictureName: picture.PictureName || '',
+                        pictureNote: picture.PictureNote || '',
+                    });
+                });
             });
 
-            // console.log("Extracted Media URLs:", images);
+            setProcedureName(procedureName);
             setProcedureDetails({ alwaysDo, watchFor, neverDo });
-            setImages(images); // Use the extracted base64 image URLs
-      // setImages(images); // Use the extracted image URLs from the `flatMap`
-      }
+            setImages(extractedImages);
+            setImageDetails(extractedImageDetails); // Store image details separately
+        }
     } catch (error) {
-      console.error("Error fetching procedure list:", error);
-      Alert.alert("Error", "An error occurred while fetching the procedure list");
+        console.error("Error fetching procedure list:", error);
+        Alert.alert("Error", "An error occurred while fetching the procedure list");
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
+
 
   const navigateToLibrary = () => {
     router.push({
@@ -126,12 +139,21 @@ export default function ProcedureReviewSummary() {
 
   const handleImagePress = (index: number) => {
     if (images[index]) {
+
+      const pictureName = imageDetails[index]?.pictureName || '';
+      const pictureNote = imageDetails[index]?.pictureNote || '';
+
+      console.log("Picture Name:", pictureName);
+      console.log("Picture Note:", pictureNote);
+
       router.push({
         pathname: "editPictureText",
         params: {
           photoUri: images[index],
           imageIndex: index,
-          procedureName
+          procedureName: procedureName,
+          updatedDescription: pictureName,
+          updatedNotes: pictureNote
         },
       });
     }
