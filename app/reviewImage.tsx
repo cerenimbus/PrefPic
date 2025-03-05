@@ -1,12 +1,12 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, Dimensions} from "react-native";
+import { SafeAreaView,View, Text, StyleSheet, TouchableOpacity, Image, Alert, Dimensions} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CryptoJS from "crypto-js";
 import { getDeviceID } from '../components/deviceInfo';
 import { Modal } from "react-native";
 
-
+//Add SafeAreaView RJP <--3/5/2025
 
 export default function ReviewImage() {
   const router = useRouter();
@@ -149,9 +149,9 @@ const navigateToCamera = () => {
         const data = await response.text();
         console.log("🔹 API Response Body:", data);
         console.log("🔹 API Response Status:", response.status);
-
+        
         if (response.ok) {
-            Alert.alert("Success!", "Image uploaded successfully.");
+            //Alert.alert("Success!", "Image uploaded successfully.");
 
             //--------------------------------------------------------------------------------------
             //RJP <---store picture_serial to the async storage
@@ -198,86 +198,121 @@ const navigateToCamera = () => {
 };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style ={styles.backButtonContainer} onPress={navigateToCamera}>
-        <Text style={styles.backText}>← Back</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.header}>Image for: {procedureName}</Text>
-
-  {/* RJP -> 2/8/2025
-        change image source to retrieve image taken from camera
-      */}
-
-
-       {/*Alberto -> 2/11/2025 
-      use photoUri instead of decodedPhotoUri
-      */}
-      {/* Change photoUri to photoUriState lookup for the function -> RJP 2/11/2025 */}
-      {photoUriState ? (
-        <TouchableOpacity onPress={handleImageClick}>
-          <Image style={styles.image} source={{ uri: photoUriState }} />
-        </TouchableOpacity>
-      ) : (
-        <Text>No image available</Text>// Show this if the URI is invalid or missing
-      )}
-
-
-        {/* Full Image Overlay */}
-      {/* fix photoUri to show only one image on display or full image -> RJP 02/11/2025*/}
-
-      {isPreview && (
-  <Modal visible={isPreview} transparent={true} animationType="fade">
-    <View style={{ flex: 1, backgroundColor: "rgba(41, 41, 41, 0.8)", justifyContent: "center", alignItems: "center" }}>
-      <TouchableOpacity onPress={handleClosePreview} style={styles.closeButton}>
-        <Text style={styles.closeButtonText}>X</Text>
-      </TouchableOpacity>
-      <Image style={styles.fullImage} source={photoUriState ? { uri: photoUriState } : undefined} />
-    </View>
-  </Modal>
-)}
-
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.retakebutton} onPress={navigateToCamera}>
-          <Text style={styles.retakebuttonText}>Retake</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <TouchableOpacity style ={styles.backButtonContainer} onPress={navigateToCamera}>
+          <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-  style={styles.nextbutton}
-  onPress={() => navigateToReviewSummary(photoUriState || "", "image/jpeg")}
->
-  <Text style={styles.buttonText}>Next</Text>
-</TouchableOpacity>
+        <Text style={styles.header}>Image for: {procedureName}</Text>
+
+    {/* RJP -> 2/8/2025
+          change image source to retrieve image taken from camera
+        */}
+
+
+        {/*Alberto -> 2/11/2025 
+        use photoUri instead of decodedPhotoUri
+        */}
+        {/* Change photoUri to photoUriState lookup for the function -> RJP 2/11/2025 */}
+        {photoUriState ? (
+          <TouchableOpacity onPress={handleImageClick}>
+            <Image style={styles.image} source={{ uri: photoUriState }} />
+          </TouchableOpacity>
+        ) : (
+          <Text>No image available</Text>// Show this if the URI is invalid or missing
+        )}
+
+
+          {/* Full Image Overlay */}
+        {/* fix photoUri to show only one image on display or full image -> RJP 02/11/2025*/}
+
+        {isPreview && (
+    <Modal visible={isPreview} transparent={true} animationType="fade">
+      <View style={{ flex: 1, backgroundColor: "rgba(41, 41, 41, 0.8)", justifyContent: "center", alignItems: "center" }}>
+        <TouchableOpacity onPress={handleClosePreview} style={styles.closeButton}>
+          <Text style={styles.closeButtonText}>X</Text>
+        </TouchableOpacity>
+        <Image style={styles.fullImage} source={photoUriState ? { uri: photoUriState } : undefined} />
       </View>
-    </View>
+    </Modal>
+  )}
+
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.retakebutton} onPress={navigateToCamera}>
+            <Text style={styles.retakebuttonText}>Retake</Text>
+          </TouchableOpacity>
+
+  {/*
+  <TouchableOpacity
+    style={styles.nextbutton}
+    onPress={() => navigateToReviewSummary(photoUriState || "", "image/jpeg")}
+  >
+    <Text style={styles.buttonText}>Next</Text>
+  </TouchableOpacity>
+  */}
+
+{/*=======================================================================================*/}
+{/*RJP <-3/5/2025 add feedback button*/}
+<TouchableOpacity
+  style={[styles.nextbutton, isLoading && styles.disabledButton]}
+  onPress={() => {
+    if (!isLoading) {
+      setIsLoading(true);
+      navigateToReviewSummary(photoUriState || "", "image/jpeg").finally(() => {
+        setIsLoading(false); // Re-enable the button after the API call
+      });
+    }
+  }}
+  disabled={isLoading} // Prevent clicking while loading
+>
+  <Text style={styles.buttonText}>{isLoading ? "Loading..." : "Next"}</Text>
+</TouchableOpacity>
+{/*End*/}
+{/*=======================================================================================*/}
+
+        </View>
+      </View>
+    </SafeAreaView>  
   );
 }
 //Alberto -> 2/19/2025
 const  {width, height} = Dimensions.get("window");
 
 const styles = StyleSheet.create({
+  //RJP add safe Area 3/5/2025
+  safeArea: {
+    flex: 1,
+    backgroundColor: "white", // Ensures the background matches your screen
+  },
+
+  //RJP 3/5/2025 <-- add style to the button when disabled
+  disabledButton: {
+    backgroundColor: "#A0A0A0", // Gray color when disabled
+  },
+  
   container: {
     flex: 1,
     backgroundColor: "#F5F8FF",
     padding: 16,
-    paddingTop: 40,
+    paddingTop: 30,
   },
   backButtonContainer: {
     position: 'absolute',
-    top: 50, // Adjust this value to lower the button
-    left: 20,
+    top: 10, // Adjust this value to lower the button
+    left: 5,
     zIndex: 1,
   },
   backText: {
-    fontSize: 20,
+    fontSize: 18,
     color: '#007AFF',
   },
   header: {
     fontSize: 20,
     textAlign: "center",
     marginVertical: 16,
-    paddingTop: 30,
+    paddingTop: 15,
   },
   buttonContainer: {
     flex: 1,
@@ -317,8 +352,8 @@ const styles = StyleSheet.create({
   },
   image: {
     width: width * 0.9, // 90% of screen width
-    height: height * 0.5, // 50% of screen height
-    marginTop: 16,
+    height: height * 0.69, // 50% of screen height
+    marginTop: 1,
     borderRadius: 20,
     alignSelf: "center",
   },
