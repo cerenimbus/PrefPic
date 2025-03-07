@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function ProcedureReviewSummary() {
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
   const [procedureName, setProcedureName] = useState("");
+  const [procedureSerial, setProcedureSerial] = useState(""); // State for Serial
   const [images, setImages] = useState<string[]>([]);
   const [alwaysDo, setAlwaysDo] = useState("");
   const [watchFor, setWatchFor] = useState("");
@@ -87,10 +88,15 @@ const getProcedureList = async () => {
 
         const response = await fetch(url);
         const data = await response.text();
+        console.log("Response",response);
+        console.log("Data",data);
 
         const parser = new XMLParser();
         const result = parser.parse(data);
         const procedureList = result?.ResultInfo?.Selections?.Procedure;
+        const procedureName = result?.resultInfo?.Selections?.Name;
+        const procedureSerial = result?.resultInfo?.Selections?.Serial;
+
 
         if (procedureList) {
             const procedureName = procedureList?.ProcedureName || '';
@@ -119,6 +125,7 @@ const getProcedureList = async () => {
             });
 
             setProcedureName(procedureName);
+            setProcedureSerial(procedureSerial);
             setProcedureDetails({ alwaysDo, watchFor, neverDo });
             setImages(extractedImages);
             setImageDetails(extractedImageDetails); // Store image details separately

@@ -42,6 +42,8 @@ const AddPearls: React.FC = () => {
   const [watchFor, setWatchFor] = useState<string>("");
   const [neverDo, setNeverDo] = useState<string>("");
   const [activeField, setActiveField] = useState<React.RefObject<TextInput> | null>(null);
+  const procedureSerial = Array.isArray(params.serial) ? params.serial[0] : params.serial;
+
 
   useEffect(() => {
     const fetchDeviceID = async () => {
@@ -115,12 +117,15 @@ const AddPearls: React.FC = () => {
     const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
     const key = CryptoJS.SHA1(keyString).toString();
 
-    const url = `https://PrefPic.com/dev/PPService/UpdateProcedure.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&PrefPicVersion=1&Serial=${encodeURIComponent(procedureName)}&Name=${encodeURIComponent(procedureName)}&Always=${encodeURIComponent(alwaysDo)}&Watch=${encodeURIComponent(watchFor)}&Never=${encodeURIComponent(neverDo)}`;
-
+    const url = `https://PrefPic.com/dev/PPService/UpdateProcedure.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&PrefPicVersion=1&Serial=${encodeURIComponent(procedureSerial)}&Name=${encodeURIComponent(procedureName)}&Always=${encodeURIComponent(alwaysDo)}&Watch=${encodeURIComponent(watchFor)}&Never=${encodeURIComponent(neverDo)}`;
+    console.log('API URL:', url);
     try {
       const response = await fetch(url);
       const data = await response.text();
 
+      console.log("Serial", procedureSerial);
+      console.log('API Response Status:', response.status); // Log the response status
+      console.log('API Response Data:', data); // Log the response data
       if (response.ok) {
         //Alert.alert('Success', 'Procedure updated successfully');
         // Clear input fields after successful submission
