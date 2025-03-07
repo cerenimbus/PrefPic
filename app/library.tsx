@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     newCard: {
         width: '100%', // or maxWidth: 400
         maxWidth: 500,
-        height: 508, // Adjust height as needed
+        height: 28, // Adjust height as needed
         backgroundColor: '#gray',
         borderRadius: 10,
         padding: 20, // Padding for inner content
@@ -392,10 +392,10 @@ const styles = StyleSheet.create({
         fontSize: 20, // Adjust arrow size as needed
     },
     card: {
-        flex: 1,
+        // flex: 1,
         width: '100%', // or maxWidth: 400
         maxWidth: 400,
-        height: 508, // Adjust height as needed
+        height: 520, // Adjust height as needed
         backgroundColor: '#ffffff',
         borderRadius: 10,
         padding: 20, // Padding for inner content
@@ -451,7 +451,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 30,
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 5,
     },
     input: {
         flexDirection: 'row',
@@ -473,13 +473,13 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 30,
         alignItems: 'center',
-        position: "absolute",
-        bottom: 27,
-        left: 18,
-        right: 18,
+        // position: "absolute",
+        // bottom: 27,
+        // left: 18,
+        // right: 18,
         borderColor: "#3A5A8C",
         borderWidth: 2,
-       marginTop: 'auto'
+        marginTop: 5,
     },
 });
 
