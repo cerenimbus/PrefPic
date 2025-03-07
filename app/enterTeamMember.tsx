@@ -1,25 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ImageBackground,
-  Alert,
-  ScrollView,
-  Keyboard,
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  Platform,
-  ActivityIndicator,
-} from "react-native";
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import BottomNavigation from '../components/bottomNav';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { getDeviceID } from '../components/deviceInfo';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const enterTeamMember = () => {
   const router = useRouter();
@@ -27,9 +12,6 @@ const enterTeamMember = () => {
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [authorizationCode, setAuthorizationCode] = useState<string | null>(null);
-  const [activeField, setActiveField] = useState<React.RefObject<TextInput | View> | null>(null);
-  const scrollViewRef = useRef<ScrollView | null>(null);
-
 
   // Fetch authorization code
   useEffect(() => {
@@ -58,16 +40,6 @@ const enterTeamMember = () => {
     };
     fetchDeviceID();
   }, []);
-
-  ////////////////////
-  const handleBlur = () => {
-    setActiveField(null);
-  };
-  const dismissKeyboard = () => {
-    Keyboard.dismiss();
-    handleBlur();
-  };
-  ///////////
 
   // Join Team Function
   const joinTeam = async () => {
@@ -98,8 +70,13 @@ const enterTeamMember = () => {
 
       // Handle API response (assuming success message in response)
       if (data.includes('<Success>')) {
-        Alert.alert('Success', 'You have successfully joined the team!');
+        //Alert.alert('Success', 'You have successfully joined the team!');
         setTeamNumber(''); // Clear input field after success
+
+        //router.push({
+        //  pathname: "",
+        //});
+
       } else {
         Alert.alert('Error', 'Failed to join the team. Please try again.');
       }
@@ -112,46 +89,34 @@ const enterTeamMember = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-        <TouchableWithoutFeedback onPress={dismissKeyboard}>
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => router.back()}>
+        <Text style={styles.backText}>← Back</Text>
+      </TouchableOpacity>
 
+      <Text style={styles.title}>Enter Team Number to Join</Text>
+      <Text style={styles.description}>
+        The physician will supply a team code for you. Enter the Team Code and your join request will be sent to the physician.
+      </Text>
 
-          <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollcontainer}>
+      <TextInput
+        style={styles.input}
+        placeholder="Team Number"
+        value={teamNumber}
+        onChangeText={setTeamNumber}
+        keyboardType="numeric"
+      />
 
-            <View style={styles.container}>
-              <TouchableOpacity onPress={() => router.back()}>
-                <Text style={styles.backText}>← Back</Text>
-              </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={joinTeam} disabled={isLoading}>
+        {isLoading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Submit</Text>
+        )}
+      </TouchableOpacity>
 
-              <Text style={styles.title}>Enter Team Number to Join</Text>
-              <Text style={styles.description}>
-                The physician will supply a team code for you. Enter the Team Code and your join request will be sent to the physician.
-              </Text>
-
-              <TextInput
-                style={styles.input}
-                placeholder="Team Number"
-                value={teamNumber}
-                onChangeText={setTeamNumber}
-                keyboardType="numeric"
-              />
-
-              <TouchableOpacity style={styles.button} onPress={joinTeam} disabled={isLoading}>
-                {isLoading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.buttonText}>Submit</Text>
-                )}
-              </TouchableOpacity>
-
-
-            </View>
-          </ScrollView>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
       <BottomNavigation />
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -173,7 +138,7 @@ const styles = StyleSheet.create({
     color: "#3b82f6",
     marginBottom: 40,
     //marginRight: 300,
-    //marginTop: 30,
+    marginTop: 30,
   },
   scrollcontainer: {
     flexGrow: 1,
