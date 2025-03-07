@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     newCard: {
         width: '100%', // or maxWidth: 400
         maxWidth: 500,
-        height: 400, // Adjust height as needed
+        height: 508, // Adjust height as needed
         backgroundColor: '#gray',
         borderRadius: 10,
         padding: 20, // Padding for inner content
