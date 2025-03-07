@@ -7,6 +7,10 @@ import CryptoJS from 'crypto-js';
 import { XMLParser } from 'fast-xml-parser';
 import { getDeviceID } from '../components/deviceInfo';
 
+interface UserDetails {
+    firstName: string;
+    lastName: string;
+  }
 
 
 const LibraryScreen: React.FC = () => {
@@ -24,6 +28,7 @@ const LibraryScreen: React.FC = () => {
     const searchParams = useLocalSearchParams();
     const procedureName = Array.isArray(searchParams.procedureName) ? searchParams.procedureName[0] : searchParams.procedureName;
     const [isSurgicalStaff, setIsSurgicalStaff] = useState(false);
+    const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
     // MG 02/21/2025
     // added parameters for title, firstName, and lastName
     // const title = Array.isArray(searchParams.title) ? searchParams.title[0] : searchParams.title;
@@ -44,6 +49,21 @@ const LibraryScreen: React.FC = () => {
             setNeverDo(Array.isArray(neverDoParam) ? neverDoParam[0] : neverDoParam);
         }
     }, [searchParams.alwaysDo, searchParams.watchFor, searchParams.neverDo]);
+
+    useEffect(() => {
+        const fetchUserDetails = async () => {
+          try {
+            const jsonValue = await AsyncStorage.getItem('userDetails');
+            if (jsonValue != null) {
+              setUserDetails(JSON.parse(jsonValue));
+            }
+          } catch (error) {
+            console.error("Error fetching user details:", error);
+          }
+        };
+    
+        fetchUserDetails();
+      }, []);
     
     useEffect(() => {
         const checkUserType = async () => {
@@ -258,6 +278,7 @@ const LibraryScreen: React.FC = () => {
             <View style={styles.container}>
 
                 {/*<Text style={styles.title}>{title}{firstName}{lastName}</Text>*/}
+                <Text style={styles.username}>{userDetails?.firstName}{" "}{userDetails?.lastName}</Text>
                 <Text style={styles.subtitle}>Procedures Library</Text>
                 <Text style={styles.description}>
                     On this screen you create or edit your medical procedures practices.
@@ -293,10 +314,11 @@ const LibraryScreen: React.FC = () => {
                             ))}
                         </View>
                     )}
+                    <TouchableOpacity style={styles.finishButton} onPress={handleNextPressCompleteDemo}>
+                        <Text style={styles.FinishButtonText}>{isFinishDemoLoading ? "Loading..." : "Finish Demo"}</Text>
+                    </TouchableOpacity>
                 </View> 
-                <TouchableOpacity style={styles.finishButton} onPress={handleNextPressCompleteDemo}>
-                    <Text style={styles.FinishButtonText}>{isFinishDemoLoading ? "Loading..." : "Finish Demo"}</Text>
-                </TouchableOpacity>
+                
             </View>
             <BottomNavigation />
         </SafeAreaView>
@@ -309,10 +331,15 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#E7EFFF',
     },
+    username: {
+        fontSize: 18,
+        textAlign: 'center',
+        fontFamily: 'Darker Grotesque',
+    },
     newCard: {
         width: '100%', // or maxWidth: 400
         maxWidth: 500,
-        height: 400, // Adjust height as needed
+        height: 28, // Adjust height as needed
         backgroundColor: '#gray',
         borderRadius: 10,
         padding: 20, // Padding for inner content
@@ -365,10 +392,10 @@ const styles = StyleSheet.create({
         fontSize: 20, // Adjust arrow size as needed
     },
     card: {
-        flex: 1,
+        // flex: 1,
         width: '100%', // or maxWidth: 400
         maxWidth: 400,
-        height: 508, // Adjust height as needed
+        height: 520, // Adjust height as needed
         backgroundColor: '#ffffff',
         borderRadius: 10,
         padding: 20, // Padding for inner content
@@ -378,6 +405,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 10,
         shadowOffset: { width: 0, height: 2 },
+        // flexDirection: 'column',
     },
     bottomNav: {
         width: '100%', // or maxWidth: 400
@@ -423,7 +451,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 30,
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 5,
     },
     input: {
         flexDirection: 'row',
@@ -445,12 +473,13 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 30,
         alignItems: 'center',
-        position: "absolute",
-        bottom: 50,
-        left: 40,
-        right: 40,
+        // position: "absolute",
+        // bottom: 27,
+        // left: 18,
+        // right: 18,
         borderColor: "#3A5A8C",
         borderWidth: 2,
+        marginTop: 5,
     },
 });
 

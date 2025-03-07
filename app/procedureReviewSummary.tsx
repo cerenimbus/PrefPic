@@ -278,12 +278,15 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#ffffff",
     borderRadius: 10,
-    padding: 15,
+    padding: 20,
     marginBottom: 20,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    width: '100%', 
+    maxWidth: 400,
+
   },
   cardHeader: {
     flexDirection: "row",
