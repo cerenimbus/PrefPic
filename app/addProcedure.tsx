@@ -53,12 +53,17 @@ const styles = StyleSheet.create({
   backText: {
     fontSize: 16,
     color: '#007AFF',
-  },
-  header: {
-    fontSize: 36,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginVertical: 16,
+    fontFamily: "Darker Grotesque", //
+    width: 58,
+    height: 27,
+    marginLeft: 20,
+    marginTop: -23.5,
+    marginRight: 25, //added MLI 02/28/2025 for ui purposes
+  }, 
+  backButton: {
+    padding: 10,
+    marginBottom: 10,
+    alignSelf: 'flex-start', //added MLI 02/28/2025 for ui purposes
   },
   title: {
     color: "#000000",

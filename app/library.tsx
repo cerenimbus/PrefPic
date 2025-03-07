@@ -5,9 +5,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { XMLParser } from 'fast-xml-parser';
+import Ionicons from "react-native-vector-icons/Ionicons"; 
 import { getDeviceID } from '../components/deviceInfo';
-
-
 
 const LibraryScreen: React.FC = () => {
     const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
@@ -184,7 +183,7 @@ const LibraryScreen: React.FC = () => {
                                 <TouchableOpacity key={index} style={styles.procedureContainer} onPress={() => setSelectedProcedure(procedure)}>
                                     <Text style={styles.procedureNameButtonText}>{procedure}</Text>
                                     <TouchableOpacity style={styles.procedureButton}>
-                                        <Text style={styles.item}>{'>'}</Text>
+                                        <Text style={styles.item}><Ionicons name="chevron-forward" size={24} color="yourColor" /></Text>
                                     </TouchableOpacity>
                                 </TouchableOpacity>
                             ))}
@@ -195,7 +194,7 @@ const LibraryScreen: React.FC = () => {
                                 <TouchableOpacity key={index} style={styles.procedureContainer} onPress={() => setSelectedProcedure(procedure)}>
                                     <Text style={styles.procedureNameButtonText}>{procedure}</Text>
                                     <TouchableOpacity style={styles.procedureButton}>
-                                        <Text style={styles.item}>{'>'}</Text>
+                                        <Text style={styles.item}><Ionicons name="chevron-forward" size={24} color="yourColor" /></Text>
                                     </TouchableOpacity>
                                 </TouchableOpacity>
                             ))}
@@ -279,9 +278,10 @@ const styles = StyleSheet.create({
         fontSize: 20, // Adjust arrow size as needed
     },
     card: {
+        flex: 1,
         width: '100%', // or maxWidth: 400
         maxWidth: 400,
-        height: 508, // Adjust height as needed
+        height: '80%', // Adjust height as needed
         backgroundColor: '#ffffff',
         borderRadius: 10,
         padding: 20, // Padding for inner content
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         alignItems: 'center',
         position: "absolute",
-        bottom: 50,
+        bottom: 60,
         left: 40,
         right: 40,
         borderColor: "#3A5A8C",
