@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDeviceID } from '../components/deviceInfo';
 import CryptoJS from "crypto-js";
 import {
+  SafeAreaView,
   View,
   Text,
   StyleSheet,
@@ -14,6 +15,8 @@ import {
   ScrollView,
   Platform,
   Alert,
+  Keyboard,
+  TouchableWithoutFeedback 
 } from "react-native";
 
 
@@ -23,7 +26,6 @@ export default function EditPictureText() {
   const [descriptionText, setDescriptionText] = useState<string>("");
   const [notesText, setNotesText] = useState<string>("");
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
-  const [isSurgicalStaff, setIsSurgicalStaff] = useState(false);
 
   const { photoUri, procedureName, updatedDescription, updatedNotes } = useLocalSearchParams<{
     photoUri: string;
@@ -77,88 +79,12 @@ export default function EditPictureText() {
     }
   }, [updatedDescription, updatedNotes]);
 
-  const deletePicture = async () => {
-    try {
-      console.log("🔹 Starting Delete API call...");
-  
-      const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
-      if (!procedureSerial) {
-        Alert.alert("Error", "Procedure not found. Please create a procedure first.");
-        return;
-      }
-      console.log("🔹 Procedure Serial:", procedureSerial);
-  
-      if (!deviceID) {
-        Alert.alert("Error", "Device ID not found.");
-        return;
-      }
-      console.log("🔹 Device ID:", deviceID);
-  
-      const authorizationCode = await AsyncStorage.getItem("authorizationCode");
-      if (!authorizationCode) {
-        Alert.alert("Authorization Error", "Please log in again.");
-        return;
-      }
-      console.log("🔹 Authorization Code:", authorizationCode);
-  
-      const currentDate = new Date();
-      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
-        currentDate.getDate()
-      ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
-        currentDate.getMinutes()
-      ).padStart(2, "0")}`;
-  
-      const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
-      console.log("🔹 Key String:", keyString);
-      const key = CryptoJS.SHA1(keyString).toString();
-      console.log("🔹 Generated Key:", key);
-  
-      const url = "https://prefpic.com/dev/PPService/DeletePicture.php";
-      const formData = new FormData();
-      formData.append("DeviceID", deviceID.id);
-      formData.append("Date", formattedDate);
-      formData.append("Key", key);
-      formData.append("AC", authorizationCode);
-      formData.append("PrefPicVersion", "1");
-      formData.append("Picture", procedureSerial);
-  
-      const response = await fetch(url, {
-        method: "POST",
-        body: formData,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "multipart/form-data",
-        },
-      });
-  
-      const data = await response.text();
-      console.log("🔹 API Response Body:", data);
-      console.log("🔹 API Response Status:", response.status);
-  
-      if (response.ok) {
-      
-  
-        // Remove the image from AsyncStorage
-        const storedImages = await AsyncStorage.getItem("capturedImages");
-        if (storedImages) {
-          const images = JSON.parse(storedImages);
-          const updatedImages = images.filter((img: string) => img !== photoUriState);
-          await AsyncStorage.setItem("capturedImages", JSON.stringify(updatedImages));
-        }
-  
-        setPhotoUriState(null); // Clear the photo URI state
-        router.push({
-          pathname: "camera",
-          params: { procedureName, notesText },
-        }); // Navigate to the camera screen
-      } else {
-        const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Delete failed.";
-        Alert.alert("Delete Failed", errorMessage);
-      }
-    } catch (error) {
-      console.error("🔹 Error during Delete API call:", error);
-      Alert.alert("Delete Failed", "An error occurred during the delete.");
-    }
+  const navigateToCamera = () => {
+    setPhotoUriState(null);
+    router.replace({
+      pathname: "camera",
+      params: { procedureName, notesText },
+    });
   };
 
   const navigateToEditPicture = async () => {
@@ -341,22 +267,19 @@ export default function EditPictureText() {
       Alert.alert("Update Failed", "An error occurred during the update.");
     }
   };
-  useEffect(() => {
-    const checkUserType = async () => {
-      const value = await AsyncStorage.getItem("isSurgicalStaff");
-      setIsSurgicalStaff(value === "true");
-    };
-    checkUserType();
-  }, []);
-  
+
   
   
   return (
+<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+  <SafeAreaView style={styles.safeArea}>
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}
+      keyboardShouldPersistTaps="handled">
+
         <View style={styles.container}>
           <TouchableOpacity  style= {styles.backButtonContainer} onPress={() => router.back()}>
             <Text style={styles.backText}>← Back</Text>
@@ -371,7 +294,7 @@ export default function EditPictureText() {
             </Text>
           )}
 
-          <TouchableOpacity style={styles.retakePicture} onPress={deletePicture}>
+          <TouchableOpacity style={styles.retakePicture} onPress={navigateToCamera}>
             <Text style={styles.retakePictureText}>Retake pic</Text>
           </TouchableOpacity>
 
@@ -394,7 +317,7 @@ export default function EditPictureText() {
               multiline
             />
           </View>
-      {!isSurgicalStaff && (
+
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.delete} onPress={handleAddMorePictures}>
               <Text style={styles.deletebuttonText}>Take more pictures</Text>
@@ -404,14 +327,21 @@ export default function EditPictureText() {
               <Text style={styles.buttonText}>Done with this procedure</Text>
             </TouchableOpacity>
           </View>
-             )}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
+
+  safeArea: {
+    flex: 1,
+    backgroundColor: "white", // Ensures the background matches your screen
+  },
+
   scrollContainer: {
     flexGrow: 1,
     justifyContent: "center",
@@ -420,33 +350,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F5F8FF",
-    padding: 16,
+    padding: 15,
   },
   backButtonContainer: {
     position: 'absolute',
-    top: 50, // Adjust this value to lower the button
-    left: 20,
+    top: 10, // Adjust this value to lower the button
+    left: 5,
     zIndex: 1,
   },
   backText: {
-    fontSize: 20,
+    fontSize: 18,
     color: '#007AFF',
   },
   header: {
     fontSize: 20,
     textAlign: "center",
     marginVertical: 16,
-    paddingTop: 60,
-    fontWeight: "600",
+    paddingTop: 15,
+    //fontWeight: "600",
   },
 
   buttonContainer: {
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "flex-end",
-    paddingBottom: 20,
+    paddingBottom: 15,
     flexDirection: "row",
-    width: "100%",
+    width: "106%",
   },
 
   save: {
@@ -456,7 +386,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: 20,
     width: 170,
-    right: 10,
+    right: 11,
   },
 
   delete: {
@@ -467,30 +397,32 @@ const styles = StyleSheet.create({
     borderColor: "#375894",
     width: 170,
     borderWidth: 2,
-    right: 10,
+    right: 1,
   },
 
   deletebuttonText: {
     color: "#375894",
     fontSize: 16,
     fontWeight: "600",
+    textAlign: "center",
   },
 
   buttonText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
+    textAlign: "center",
   },
 
   centerBox: {
-    marginTop: 30,
+    marginTop: 15,
     width: "100%",
     backgroundColor: "#FFFFFF",
     alignSelf: "center",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
-    padding: 10,
+    padding: 5,
     position: "relative",
   },
 
@@ -506,7 +438,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#000",
     width: "100%",
-    paddingVertical: 5,
+    paddingVertical: 2,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
   },
@@ -531,7 +463,7 @@ const styles = StyleSheet.create({
   image: {
     height: 300,
     borderRadius: 30,
-    marginTop: 10,
+    marginTop: 5,
     alignSelf: "center",
     width: "100%",
     
