@@ -278,12 +278,28 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#ffffff",
     borderRadius: 10,
-    padding: 15,
+    padding: 20,
     marginBottom: 20,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    width: '100%', 
+    maxWidth: 400,
+
+    // flex: 1,
+    //     width: '100%', // or maxWidth: 400
+    //     maxWidth: 400,
+    //     height: 508, // Adjust height as needed
+    //     backgroundColor: '#ffffff',
+    //     borderRadius: 10,
+    //     padding: 20, // Padding for inner content
+    //     borderWidth: 2, // Add border
+    //     borderColor: 'white', // Border color
+    //     shadowColor: '#000', // Shadow for iOS
+    //     shadowOpacity: 0.1,
+    //     shadowRadius: 10,
+    //     shadowOffset: { width: 0, height: 2 },
   },
   cardHeader: {
     flexDirection: "row",

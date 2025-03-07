@@ -261,6 +261,7 @@ const AddPearls: React.FC = () => {
       backgroundColor: "#A0A0A0", // Greyed out when disabled
     },
     header: {
+      marginTop: 20,
       fontSize: 24,
       fontWeight: "bold",
       marginBottom: 20,
