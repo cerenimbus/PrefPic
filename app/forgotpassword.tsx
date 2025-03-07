@@ -119,7 +119,7 @@ export default function ForgotPassword()  {
            <Text style={styles.backText}>← Back</Text>
             </TouchableOpacity>
           <View style={styles.imageTextContainer}>
-            <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
+            <Image source={require("../assets/logo.png")} style={styles.imagestyle} />
             <Text style={styles.signintxt}>Forgot </Text>
             <Text style={styles.signintxt1}> Password? </Text>
           </View>
@@ -165,12 +165,12 @@ const styles = StyleSheet.create({
   imageTextContainer: {
     alignItems: "center",
     marginBottom: 30,
-    marginTop: -20,
+    marginTop: 20,
   },
   imagestyle: {
-    width: 70,
-    height: 70,
-    borderRadius: 50,
+    width: 250,
+    height: 50,
+
     marginBottom: -40,
   },
   first: {
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
   },
   container: {
     width: 294,
-    height: 420,
+    height: 450,
     justifyContent: "center",
     padding: 15,
     backgroundColor: "#FFFFFF",

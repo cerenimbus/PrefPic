@@ -33,7 +33,8 @@ export default function Signin() {
 
   useEffect(() => {
     console.log("is Checked updated:", isChecked);
-  }, [isChecked]);
+    console.log("is Checked1 updated:", isChecked1);
+  }, [isChecked, isChecked1]);
 
 
     // useEffect(() => {
@@ -208,7 +209,7 @@ export default function Signin() {
                       {/* Centered Image and Text */}
 
           <View style={styles.imageTextContainer}>
-            <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
+            <Image source={require("../assets/logo.png")} style={styles.imagestyle} />
             <Text style={styles.signintxt}>Sign in</Text>
           </View>
 
@@ -316,19 +317,19 @@ const styles = StyleSheet.create({
   },
   imageTextContainer: {
     alignItems: "center",
-    marginTop: 30,
+    marginTop: 15,
   },
   imagestyle: {
-    width: 70,
-    height: 70,
-    borderRadius: 50,
+    width: 200,
+    height: 50,
+  
   },
   signintxt: {
     fontSize: 36,
     fontWeight: "600",
     marginBottom: 10,
     textAlign: "center",
-    marginTop: 15,
+    marginTop: 25,
     fontFamily: "DarkerGrotesque_600SemiBold",
 
 
@@ -367,7 +368,8 @@ const styles = StyleSheet.create({
     gap: 4,
     marginTop: 10,
     justifyContent: "center",
-    paddingRight: 49,
+
+
   },
   background: {
     flex: 1,
@@ -411,7 +413,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 4,
     marginTop: 10,
-    paddingLeft: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
   ptext: {
     paddingTop: 5,
