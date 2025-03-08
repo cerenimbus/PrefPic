@@ -288,6 +288,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f2f6fc",
     padding: 20,
+    alignContent: 'center',
   },
   backText: {
     fontSize: 16,
@@ -318,6 +319,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     width: '100%', 
     maxWidth: 400,
+    alignSelf: 'center',
 
   },
   cardHeader: {

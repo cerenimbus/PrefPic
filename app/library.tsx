@@ -274,7 +274,7 @@ const LibraryScreen: React.FC = () => {
 
     return (
         
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={{flex:1}}>
             <View style={styles.container}>
 
                 {/*<Text style={styles.title}>{title}{firstName}{lastName}</Text>*/}
@@ -318,7 +318,6 @@ const LibraryScreen: React.FC = () => {
                         <Text style={styles.FinishButtonText}>{isFinishDemoLoading ? "Loading..." : "Finish Demo"}</Text>
                     </TouchableOpacity>
                 </View> 
-                
             </View>
             <BottomNavigation />
         </SafeAreaView>
@@ -335,20 +334,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         textAlign: 'center',
         fontFamily: 'Darker Grotesque',
-    },
-    newCard: {
-        width: '100%', // or maxWidth: 400
-        maxWidth: 500,
-        height: 28, // Adjust height as needed
-        backgroundColor: '#gray',
-        borderRadius: 10,
-        padding: 20, // Padding for inner content
-        borderWidth: 2, // Add border
-        borderColor: 'white', // Border color
-        shadowColor: '#000', // Shadow for iOS
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
-        shadowOffset: { width: 0, height: 2 },
     },
     procedureContainer: {
         flexDirection: 'row',
@@ -392,10 +377,10 @@ const styles = StyleSheet.create({
         fontSize: 20, // Adjust arrow size as needed
     },
     card: {
-        // flex: 1,
+        flex: 1,
         width: '100%', // or maxWidth: 400
         maxWidth: 400,
-        height: 520, // Adjust height as needed
+        //height: 520, // Adjust height as needed
         backgroundColor: '#ffffff',
         borderRadius: 10,
         padding: 20, // Padding for inner content
@@ -474,12 +459,12 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         alignItems: 'center',
         // position: "absolute",
-        // bottom: 27,
+        bottom: 30,
         // left: 18,
         // right: 18,
         borderColor: "#3A5A8C",
         borderWidth: 2,
-        marginTop: 5,
+        marginTop: 20,
     },
 });
 
