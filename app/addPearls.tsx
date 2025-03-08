@@ -42,7 +42,11 @@ const AddPearls: React.FC = () => {
   const [watchFor, setWatchFor] = useState<string>("");
   const [neverDo, setNeverDo] = useState<string>("");
   const [activeField, setActiveField] = useState<React.RefObject<TextInput> | null>(null);
+
   const procedureSerial = Array.isArray(params.serial) ? params.serial[0] : params.serial;
+
+
+  const [updatedProcedureSerial, setUpdatedProcedureSerial] = useState<string | null>(null);
 
 
   useEffect(() => {
@@ -52,6 +56,19 @@ const AddPearls: React.FC = () => {
     };
     fetchDeviceID();
   }, []);
+
+  useEffect(() => {
+    if (params.updatedProcedureSerial) {
+      const serial = Array.isArray(params.updatedProcedureSerial) 
+        ? params.updatedProcedureSerial[0]  // Take the first element if it's an array
+        : params.updatedProcedureSerial;    // Otherwise, use it directly
+  
+      setUpdatedProcedureSerial(serial);
+    }
+  }, [params]);
+  
+  console.log("Updated Procedure Serial:", updatedProcedureSerial);
+  
 
   useEffect(() => {
     const fetchAuthorizationCode = async () => {
@@ -143,7 +160,7 @@ const AddPearls: React.FC = () => {
     // Navigate to ProcedureReviewSummary with the new entry
     router.push({
       pathname: "procedureReviewSummary",
-      params: { procedureName, alwaysDo, watchFor, neverDo },
+      params: { serial: updatedProcedureSerial },
     });
   };
   const handleNextPress =  () => {

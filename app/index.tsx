@@ -110,7 +110,7 @@ export default function start(){
                 
 
                   <View style={styles.imageTextContainer}>
-                             <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
+                             <Image source={require("../assets/logo.png")} style={styles.imagestyle} />
                            </View>
                  <View>
                     <TouchableOpacity  style={styles.getButton} onPress={handlePhysicianPress}>
@@ -157,9 +157,9 @@ const styles = StyleSheet.create({
         marginTop: -10,
       },
       imagestyle: {
-        width: 99,
-        height: 99,
-        borderRadius: 50,
+        width: 200,
+        height: 50,
+
       },
       getButton: {
         backgroundColor: "#375894", 

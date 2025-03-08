@@ -112,7 +112,8 @@ export default function StartScreen() {
 
   useEffect(() => {
     console.log("is Checked updated:", isChecked);
-  }, [isChecked]);
+    console.log("is Checked1 updated:", isChecked1);
+  }, [isChecked,isChecked1]);
 
   const navigateToIndex = () => {
     if (!isChecked) {
@@ -131,7 +132,7 @@ export default function StartScreen() {
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background} >
       <SafeAreaView style={{ flex: .7 }}>
       <View style={[styles.container]}>
-        <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} resizeMode="contain"/>
+        <Image source={require("../assets/logo.png")} style={styles.imagestyle}/>
 
         <Text style={styles.pref}>PrefPic Demo</Text>
         <Text style={styles.description}>There is no sign-in required for this demo version. The live version is password protected. </Text>
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
   },
   container: {
     width: wp(85),
-    backgroundColor: "#E7EFFF",
+    backgroundColor: "#FFFFFF",
     borderRadius: 10,
     padding: wp(5),
     alignItems: "center",
@@ -249,11 +250,11 @@ const styles = StyleSheet.create({
     paddingTop: 50,
   },
   imagestyle: {
-    width: 75,
-    height: 75,
-    borderRadius: 37.5,
+    width: 230,
+    height: 50,
+
     paddingTop: 61,
-    overflow: "hidden"
+
   },
   link: {
     color: "blue",

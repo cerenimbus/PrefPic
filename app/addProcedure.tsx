@@ -212,16 +212,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#007AFF',
     fontFamily: "Darker Grotesque", //
+    // flexDirection: 'row',
   }, 
   backText: {
     fontSize: 20,
     color: '#007AFF',
     fontFamily: "Darker Grotesque", //
-    width: 58,
+    width: 65, //
     height: 27,
     marginLeft: 20,
     marginTop: -23.5,
-    marginRight: 25, //added MLI 02/28/2025 for ui purposes
+    marginRight: 40, //changed MLI 03/07/2025 for ui purposes
   }, 
   backButton: {
     padding: 10,

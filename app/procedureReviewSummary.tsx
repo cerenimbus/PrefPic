@@ -16,6 +16,9 @@ export default function ProcedureReviewSummary() {
   const [watchFor, setWatchFor] = useState("");
   const [neverDo, setNeverDo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [navigateIndex, setNavigateIndex] = useState<number | null>(null);
+  
   const [authorizationCode, setAuthorizationCode] = useState<string | null>(null); // Added state for authorization code
   
   const router = useRouter();
@@ -148,27 +151,39 @@ const getProcedureList = async () => {
 
   }
 
-  const handleImagePress = (index: number) => {
+
+useEffect(() => {
+  if (isNavigating && navigateIndex !== null) {
+      const timer = setTimeout(() => {
+          const pictureName = imageDetails[navigateIndex]?.pictureName || '';
+          const pictureNote = imageDetails[navigateIndex]?.pictureNote || '';
+
+          router.push({
+              pathname: "editPictureText",
+              params: {
+                  photoUri: images[navigateIndex],            
+                  imageIndex: navigateIndex,
+                  procedureName: procedureName,
+                  updatedDescription: pictureName,
+                  updatedNotes: pictureNote
+              },
+          });
+
+          setIsNavigating(false); // Reset loading after navigation
+          setNavigateIndex(null);
+      }, 300); // Short delay to let the loading screen render
+
+      return () => clearTimeout(timer); // Cleanup
+  }
+}, [isNavigating, navigateIndex]);
+
+ const handleImagePress = async (index: number) => {
     if (images[index]) {
-
-      const pictureName = imageDetails[index]?.pictureName || '';
-      const pictureNote = imageDetails[index]?.pictureNote || '';
-
-      console.log("Picture Name:", pictureName);
-      console.log("Picture Note:", pictureNote);
-
-      router.push({
-        pathname: "editPictureText",
-        params: {
-          photoUri: images[index],
-          imageIndex: index,
-          procedureName: procedureName,
-          updatedDescription: pictureName,
-          updatedNotes: pictureNote
-        },
-      });
+      setIsNavigating(true); // Show loading screen
+      setNavigateIndex(index); // Store index to use in effect
     }
-  };
+};
+
 
   // const navigateToLoading = () => {
   //   router.push("loading");
@@ -187,25 +202,33 @@ const getProcedureList = async () => {
 };
 
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <TouchableOpacity onPress={() => router.back()}>
-        <Text style={styles.backText}>← Back</Text>
-      </TouchableOpacity>
-
-      <View style={styles.titleSection}>
-        <Text style={styles.procedureName}>{procedureName}</Text>
-        <Text style={styles.subtitle}>Review Summary</Text>
+return (
+  <SafeAreaView style={styles.container}>
+    {isLoading || isNavigating ? (
+      // Loading Screen
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading...</Text>
       </View>
+    ) : (
+      // Main Content
+      <>
+        <TouchableOpacity onPress={() => router.back()}>
+          <Text style={styles.backText}>← Back</Text>
+        </TouchableOpacity>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-        {/* Images Section */}
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Images</Text>
-            <Text style={styles.editText}>Edit</Text>
-          </View>
-           <View style={styles.centerBox}>
+        <View style={styles.titleSection}>
+          <Text style={styles.procedureName}>{procedureName}</Text>
+          <Text style={styles.subtitle}>Review Summary</Text>
+        </View>
+
+        <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+          {/* Images Section */}
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>Images</Text>
+              <Text style={styles.editText}>Edit</Text>
+            </View>
+            <View style={styles.centerBox}>
               <View style={styles.boxContainer}>
                 {Array.from({ length: 5 }).map((_, index) => (
                   <TouchableOpacity key={index} style={styles.smallBox} onPress={() => handleImagePress(index)}>
@@ -218,47 +241,49 @@ const getProcedureList = async () => {
                 ))}
               </View>
             </View>
-        </View>
-
-        {/* Procedure Pearls Section */}
-        <SafeAreaView style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Procedure Pearls</Text>
-            <TouchableOpacity onPress={navigateToAddPearls}>
-            <Text style={styles.editText}>Edit</Text>
-            </TouchableOpacity>
           </View>
-          <View>
-            <Text style={[styles.label, { color: "green" }]}>● Always Do</Text>
 
-            <Text style={styles.description}>
-            {procedureDetails.alwaysDo}
-            </Text>
+          {/* Procedure Pearls Section */}
+          <SafeAreaView style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>Procedure Pearls</Text>
+              <TouchableOpacity onPress={navigateToAddPearls}>
+                <Text style={styles.editText}>Edit</Text>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <Text style={[styles.label, { color: "green" }]}>● Always Do</Text>
+              <Text style={styles.description}>{procedureDetails.alwaysDo}</Text>
 
-            <Text style={[styles.label, { color: "orange" }]}>● Watch For</Text>
-            <Text style={styles.description}>
-            {procedureDetails.watchFor}
-            </Text>
+              <Text style={[styles.label, { color: "orange" }]}>● Watch For</Text>
+              <Text style={styles.description}>{procedureDetails.watchFor}</Text>
 
-            <Text style={[styles.label, { color: "red" }]}>● Never Do</Text>
-            <Text style={styles.description}>
-            {procedureDetails.neverDo}
-            </Text>
+              <Text style={[styles.label, { color: "red" }]}>● Never Do</Text>
+              <Text style={styles.description}>{procedureDetails.neverDo}</Text>
+            </View>
+          </SafeAreaView>
+        </ScrollView>
+        <TouchableOpacity style={styles.button} onPress={handleNextPress}>
+          <Text style={styles.buttonText}>{isLoading ? "Loading..." : "Done"}</Text>
+        </TouchableOpacity>
+      </>
+    )}
+  </SafeAreaView>
+);
 
-          </View>
-        </SafeAreaView>
-      </ScrollView>
-      <TouchableOpacity style={styles.button} onPress={handleNextPress}>
-                              <Text style={styles.buttonText}>{isLoading ? "Loading..." : "Done"}</Text>
-                          </TouchableOpacity>
-      {/* <TouchableOpacity style={styles.button} onPress={navigateToLibrary}>
-        <Text style={styles.buttonText}>Done</Text>
-      </TouchableOpacity> */}
-    </SafeAreaView>
-  );
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#375894",
+  },
   container: {
     flex: 1,
     backgroundColor: "#f2f6fc",
