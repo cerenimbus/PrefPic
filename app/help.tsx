@@ -13,6 +13,7 @@ const helpScreen: React.FC = () => {
   const router = useRouter();
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
   const [authorizationCode, setAuthorizationCode] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
   // MG 02/21/2025
   // Added background image to the button
   const buttonHelp = [
@@ -49,6 +50,28 @@ const helpScreen: React.FC = () => {
   };
   const navigateToFeedback = () => {
     router.push('/feedback');
+  };
+
+  useEffect(() => {
+    const fetchUserStatus = async () => {
+      try {
+        const storedStatus = await AsyncStorage.getItem("status");
+        setStatus(storedStatus);
+      } catch (error) {
+        console.error("Error fetching user status:", error);
+      }
+    };
+    fetchUserStatus();
+  }, []);
+
+  const navigateAfterHelp = () => {
+    if (status === 'Demo') {
+      router.push('/library'); // Redirect to Library page
+    } else if (status === 'Active') {
+      router.push('/sign-in'); // Redirect to Account Sign In page
+    } else if (status === 'Verified') {
+      router.push('/mainAccountPage'); // Redirect to Main Account Page
+    }
   };
 
   const getHelp = async (topic: string) => {
@@ -89,8 +112,8 @@ const helpScreen: React.FC = () => {
           `Help About ${topic}`,
           data.ResultInfo.Help,
           [
-            { text: 'Ok', onPress: navigateToMainAccountPage },
-            { text: 'Back', onPress: navigateToMainAccountPage },
+            { text: 'Ok', onPress: navigateAfterHelp },
+            { text: 'Back', onPress: navigateAfterHelp },
           ],
           { cancelable: false }
         );
@@ -122,6 +145,7 @@ const helpScreen: React.FC = () => {
       getHelp(topic);
     }
   };
+  console.log('Status', status);
 
   return (
     <SafeAreaView style={{flex: 1,backgroundColor: '#E7EFFF', }}>

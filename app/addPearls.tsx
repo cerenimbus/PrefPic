@@ -12,6 +12,7 @@ import {
   TouchableWithoutFeedback,
   Alert,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -248,16 +249,19 @@ const AddPearls: React.FC = () => {
             
             {/* Next Button */}
             <TouchableOpacity
-                    style={[
-                      styles.button, 
-                      alwaysDo.trim() === "" && styles.disabledButton,
-                      watchFor.trim() === "" && styles.disabledButton,
-                      neverDo.trim() ==="" && styles.disabledButton]}
-                    onPress={handleNextPress}
-                    //disabled={alwaysDo.trim() === "" || isLoading}
-                  >
-                    <Text style={styles.buttonText}>{isLoading ? "Loading..." : "Next"}</Text>
-                  </TouchableOpacity>
+              style={[
+                styles.button, 
+                (alwaysDo.trim() === "" || watchFor.trim() === "" || neverDo.trim() === "") && styles.disabledButton
+              ]}
+              onPress={handleNextPress}
+              disabled={alwaysDo.trim() === "" || watchFor.trim() === "" || neverDo.trim() === "" || isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Text style={styles.buttonText}>Next</Text>
+              )}
+            </TouchableOpacity>
             {/* <TouchableOpacity style={styles.button} onPress={navigateToProcedureReviewSummary}>
               <Text style={styles.buttonText}>Next</Text>
             </TouchableOpacity> */}
