@@ -69,13 +69,13 @@ const enterTeamMember = () => {
       console.log('JoinTeam API response:', data);
 
       // Handle API response (assuming success message in response)
-      if (data.includes('<Success>')) {
+      if (data.includes("<Result>Success</Result>")) {
         //Alert.alert('Success', 'You have successfully joined the team!');
         setTeamNumber(''); // Clear input field after success
 
-        //router.push({
-        //  pathname: "",
-        //});
+        router.push({
+          pathname: "mainAccountPage",
+        });
 
       } else {
         Alert.alert('Error', 'Failed to join the team. Please try again.');
