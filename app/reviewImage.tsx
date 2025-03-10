@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: width * 0.9, // 90% of screen width
-    height: height * 0.69, // 50% of screen height
+    height: height * 0.60, // 50% of screen height
     marginTop: 1,
     borderRadius: 20,
     alignSelf: "center",
