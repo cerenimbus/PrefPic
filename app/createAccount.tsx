@@ -231,6 +231,19 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
         Alert.alert("Device ID Error", "Unable to retrieve device ID.");
         return;
     }
+// JMF 03-10-2025
+// If the user selected "Surgical Staff", redirect to enterTeamMember page
+  if (form.role === "Surgical Staff") {
+    // Save user details before redirecting
+    await AsyncStorage.setItem('userDetails', JSON.stringify({
+      title: form.title,
+      firstName: form.firstName,
+      lastName: form.lastName,
+      email: form.email,
+    }));
+    router.push("enterTeamMember");
+    return; // Stop execution here to prevent the account creation API call
+  }
 
 
 

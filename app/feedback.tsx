@@ -134,8 +134,24 @@ const feedbackScreen: React.FC = () => {
       const result = parser.parse(data);
 
       if (result.ResultInfo.Result === 'Success') {
+        //MLI 03/10/2025 added a redirect path based on the status of the user
+        const status = await AsyncStorage.getItem('status');
+        console.log('Current user status:', status);
+        let redirectPath = '/mainAccountPage'; // Default path
+
+        if (status === 'Demo') {
+          redirectPath = '/library';
+          console.log('Demo user detected, redirecting to:', redirectPath);
+        } else if (status === 'Active') {
+          redirectPath = '/sign-in';
+          console.log('Active user detected, redirecting to:', redirectPath);
+        } else if (status === 'Verified') {
+          redirectPath = '/mainAccountPage';
+          console.log('Verified user detected, redirecting to:', redirectPath);
+        }
+        
         Alert.alert('Success', result.ResultInfo.Message, [
-          { text: 'OK', onPress: () => router.replace('/mainAccountPage') }
+          { text: 'OK', onPress: () => router.replace(redirectPath) }
         ]);
       } else {
         Alert.alert('Error', result.ResultInfo.Message);
