@@ -251,7 +251,7 @@ return (
                 <Text style={styles.editText}>Edit</Text>
               </TouchableOpacity>
             </View>
-            <View>
+            <View style={{left: 10}}>
               <Text style={[styles.label, { color: "green" }]}>● Always Do</Text>
               <Text style={styles.description}>{procedureDetails.alwaysDo}</Text>
 
@@ -311,14 +311,14 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#ffffff",
     borderRadius: 10,
-    padding: 20,
+    padding: 10,
     marginBottom: 20,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
     width: '100%', 
-    maxWidth: 400,
+    maxWidth: 380,
     alignSelf: 'center',
 
   },

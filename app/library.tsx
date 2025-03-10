@@ -389,13 +389,12 @@ const styles = StyleSheet.create({
     },
     arrow: {
         color: '#4A6FA5', // Arrow color
-        fontSize: 20, // Adjust arrow size as needed
+        fontSize: 20,
     },
     card: {
         flex: 1,
         width: '100%', // or maxWidth: 400
-        maxWidth: 400,
-        //height: 520, // Adjust height as needed
+        height: '100%', // Adjust height as needed
         backgroundColor: '#ffffff',
         borderRadius: 10,
         padding: 20, // Padding for inner content
@@ -405,7 +404,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 10,
         shadowOffset: { width: 0, height: 2 },
-        // flexDirection: 'column',
+        justifyContent: 'space-between',
     },
     bottomNav: {
         width: '100%', // or maxWidth: 400
@@ -452,7 +451,7 @@ const styles = StyleSheet.create({
         height: 60,
         borderRadius: 30,
         alignItems: 'center',
-        marginBottom: 5,
+        marginBottom: 'auto',
         justifyContent: 'center',
     },
     input: {
@@ -475,13 +474,11 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 30,
         alignItems: 'center',
-        position: "absolute",
-        bottom: 50,
-        left: 18,
-        right: 18,
         borderColor: "#3A5A8C",
+        width: '100%', // Ensure it spans the card width
+        marginTop: 'auto',
         borderWidth: 2,
-        marginTop: 20,
+
     },
 });
 

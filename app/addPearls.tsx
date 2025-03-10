@@ -299,7 +299,7 @@ const AddPearls: React.FC = () => {
     labelContainer: {
       flexDirection: "row",
       alignItems: "center",
-      marginBottom: 5,
+      marginBottom: 30,
     },
     dot: {
       width: 10,
@@ -310,6 +310,7 @@ const AddPearls: React.FC = () => {
     label: {
       fontSize: 16,
       fontWeight: "bold",
+      marginTop: 5,
     },
     input: {
       borderWidth: 1,
