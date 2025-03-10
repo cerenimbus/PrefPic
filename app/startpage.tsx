@@ -132,12 +132,19 @@ export default function StartScreen() {
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background} >
       <SafeAreaView style={{ flex: .7 }}>
       <View style={[styles.container]}>
+        <View style= {[styles.imagestyle1]}>
         <Image source={require("../assets/logo.png")} style={styles.imagestyle}/>
+        </View>
 
+
+      <View style={styles.mainDescription}>
         <Text style={styles.pref}>PrefPic Demo</Text>
         <Text style={styles.description}>There is no sign-in required for this demo version. The live version is password protected. </Text>
-
+        </View>
         {/* Checkbox */}
+     
+     <View style={styles.checkboxContainer1}>
+      
         <View style={styles.checkboxContainer}>
           <CheckBox
             value={isChecked}
@@ -145,11 +152,11 @@ export default function StartScreen() {
               setChecked(newValue);
             }}
           />
-          <Text>I accept</Text>
+          <Text style = {styles.iaccept}>I accept</Text>
           <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/terms.html")}>
             Terms
           </Text>
-          <Text> and </Text>
+          <Text style = {styles.and}> and </Text>
           <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/privacypolicy.html")}>
             Privacy Policy
           </Text>
@@ -158,6 +165,7 @@ export default function StartScreen() {
               <CheckBox value={isChecked1} onValueChange={setChecked1} />
               <Text style={styles.ptext}>I will not enter any patient’s Personally Identifiable Information or pictures</Text>
             </View>
+</View>
 
         {/* Button */}
         <View style={styles.bcontainer}>
@@ -167,9 +175,11 @@ export default function StartScreen() {
             disabled={!isChecked || !isChecked1}
              // Prevents clicking when unchecked
           >
+    
             <Text style={styles.GetText}>Get Started</Text>
           </TouchableOpacity>
         </View>
+
       </View>
 
       </SafeAreaView>
@@ -180,6 +190,15 @@ export default function StartScreen() {
 }
 
 const styles = StyleSheet.create({
+  mainDescription:{
+paddingTop: 5,
+  },
+  checkboxContainer1: {
+
+    paddingTop: 40,
+
+  },
+
   GetText: {
     color: "white",
     fontSize: 15,
@@ -194,14 +213,15 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     width: 250,
+    marginBottom: 20,
   },
   pref: {
-    fontSize: 30,
-    paddingTop: 30,
+    fontSize: 35,
+    paddingTop: 20,
     lineHeight: 33,
     fontWeight: "600",
-    paddingLeft: 45,
-    paddingRight: 45,
+
+    textAlign: "center",
   },
   container: {
     width: wp(85),
@@ -209,6 +229,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: wp(5),
     alignItems: "center",
+    height: hp(50),
   },
   background: {
     flex: 1,
@@ -219,7 +240,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    paddingTop: 60,
+    // paddingTop: 40,
+  justifyContent:  "center",
   },
   description: {
     fontSize: 15,
@@ -228,32 +250,21 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingLeft: 44,
     paddingRight: 44,
+    paddingBottom: -50
   },
-  description1: {
-    fontSize: 15,
-    textAlign: "center",
-    fontWeight: "400",
-    paddingTop: 5,
-    paddingLeft: 44,
-    paddingRight: 44,
-  },
-  description2: {
-    fontSize: 15,
-    textAlign: "center",
-    fontWeight: "400",
-    paddingTop: 5,
-    paddingLeft: 44,
-    paddingRight: 44,
-  },
+
   bcontainer: {
-    width: 250,
-    paddingTop: 50,
+    paddingTop: 30,
+    justifyContent: "center",
+    alignItems: "center",
   },
   imagestyle: {
-    width: 230,
-    height: 50,
+    width: 240,
+    height: 70,
 
-    paddingTop: 61,
+  },
+  imagestyle1: {
+    paddingTop: 15
 
   },
   link: {
@@ -267,9 +278,18 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingLeft: 28,
   },
+
   ptext: {
     paddingTop: 5,
     paddingRight: 5,
+    color: "#7C7C7C",
+  },
+  iaccept:{
+
+    color: "#7C7C7C",
+  },
+  and:{ 
+    color: "#7C7C7C",
   },
   footerText: {
     fontSize: 12,

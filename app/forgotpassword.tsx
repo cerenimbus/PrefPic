@@ -124,10 +124,10 @@ export default function ForgotPassword()  {
             <Text style={styles.signintxt1}> Password? </Text>
           </View>
 
-            <Text style={styles.first}>Enter your email to receive</Text>
-            <Text style={styles.second}>your password.</Text>
-            <Text style={styles.third}>If a valid user email is provided,</Text>
-            <Text style={styles.fourth}>your password will be reset.</Text>
+            <Text style={styles.first}>Enter your email to receive your password</Text>
+            {/* <Text style={styles.second}>your password.</Text> */}
+            <Text style={styles.third}>If a valid user email is provided your password will be reset</Text>
+            {/* <Text style={styles.fourth}>your password will be reset.</Text> */}
 
             {/* Email Input */}
             <View style={styles.emailcontainer}>
@@ -178,22 +178,31 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     marginBottom: 5,
     marginTop: -10,
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+    width: "90%",
   },
   second: {
     fontSize: 20,
     fontWeight: "400",
-    marginTop: -15, 
+    marginTop: -5, 
   },
   third: {
     fontSize: 11,
     color: "#A3A3A3",
-    marginTop: 10,
+    marginTop: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+    width: "70%",
   },
   fourth: {
     color: "#A3A3A3",
     fontSize: 11,
-    marginTop: -5,
+    marginTop: 1,
     marginBottom: 20,
+
   },
   GetText: {
     color: "white",
@@ -215,7 +224,7 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   emailcontainer: {
-    marginTop: -10,
+    marginTop: 15,
   },
   background: {
     flex: 1,
@@ -223,7 +232,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   container: {
-    width: 294,
+    width: 310,
     height: 450,
     justifyContent: "center",
     padding: 15,
