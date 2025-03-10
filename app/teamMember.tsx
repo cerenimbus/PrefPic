@@ -212,17 +212,25 @@ const TeamMembersScreen: React.FC = () => {
   };
 // RHCM 2/28/2025 Modified to pass the params teamNumber to be used in addTeamMember.tsx
 const navigateToViewTeamMember = (teamNumber: string) => {
-  if (!teamNumber) {
-      console.warn("No team number available to pass.");
-      return;
+  // if (!teamNumber) {
+  //     console.warn("No team number available to pass.");
+  //     return;
+  // }
+
+  //MLI 03/10/2025 modified in order to pass the params teamCode to the addTeamMember.tsx
+  if (!teamCode) {
+    console.warn("No team code available to pass.");
+    return;
   }
 
   router.push({
       pathname: "/addTeamMember",
-      params: { teamNumber: teamNumber },
+      // params: { teamNumber: teamNumber },
+      params: { teamCode: teamCode },
   });
 
-  console.log("Navigating with teamNumber:", teamNumber); // Debugging
+  // console.log("Navigating with teamNumber:", teamNumber); // Debugging
+  console.log("Navigating with teamCode:", teamCode); // Debugging
 };
 
 
@@ -236,7 +244,8 @@ const navigateToViewTeamMember = (teamNumber: string) => {
   const navigateToAddTeamMember = () => {
      setIsAddingMember(true); // Show loading icon
     router.push({
-      pathname: "addTeamMember"
+      pathname: "addTeamMember",
+      params: { teamCode: teamCode }, //
     });
   };
 
@@ -271,7 +280,8 @@ const navigateToViewTeamMember = (teamNumber: string) => {
           {teamMembers.length >= 5 ? (
             <ScrollView style = {{flex: 1}}>
               {members.map((member, index) => (
-                <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
+                // <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
+                <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamCode)}>
                 <Text style={styles.teamMemberButtonText}>{member.name}</Text>
                 <Text style={styles.item}>{'>'}</Text>
               </TouchableOpacity>
@@ -280,7 +290,8 @@ const navigateToViewTeamMember = (teamNumber: string) => {
                   ) : (
                   <View>
                     {members.map((member, index) => (
-                      <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
+                      // <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
+                      <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamCode)}>
                         <Text style={styles.teamMemberButtonText}>{member.name}</Text>
                         <TouchableOpacity style={styles.teamMemberButton}>
                           <Text style={styles.item}>{'>'}</Text>
