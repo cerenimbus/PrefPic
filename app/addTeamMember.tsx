@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     fontFamily: "Dark Grotesque",
     color: "#000000",
   },
-  teamNumber: {
+  teamCode: {
     fontSize: 20,
     textAlign: "center",
     fontFamily: "Lexend",
@@ -79,6 +79,9 @@ export default function AddTeamMember() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const teamNumber = params.teamNumber;
+  //MLI 03/10/2025
+  const { teamCode } = useLocalSearchParams();
+
   console.log("Params received:", teamNumber);
   return (
     <View style={styles.container}>
@@ -88,8 +91,9 @@ export default function AddTeamMember() {
       </TouchableOpacity>
       <Text style={styles.header}>Add Team Member</Text>
 
-      <Text style={styles.teamNumber}>
-        Team Number: {teamNumber  }
+      <Text style={styles.teamCode}>
+        {/* Team Number: {teamNumber  } */}
+        Team Number: {teamCode}
       </Text>
 
       {/* Center box */}
