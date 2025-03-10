@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import BottomNavigation from '../components/bottomNavDemo';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -286,10 +286,17 @@ const LibraryScreen: React.FC = () => {
                 </Text>
                 <View style={styles.card}>
                     {!isSurgicalStaff && (
-                    <TouchableOpacity style={styles.addButton} onPress={handleNextPress}>
-                        <Text style={styles.addProcedureButtonText}>{isAddProcedureLoading ? "Loading..." : "Add Procedure"}</Text>
-                        {/* <Text style={styles.addProcedureButtonText}>Add Procedure   +</Text> */}
-                    </TouchableOpacity>
+                    <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={handleNextPress}
+                    disabled={isAddProcedureLoading}
+                >
+                    {isAddProcedureLoading ? (
+                        <ActivityIndicator size="small" color="white" />
+                    ) : (
+                        <Text style={styles.addProcedureButtonText}>Add Procedure</Text>
+                    )}
+                </TouchableOpacity>
                     )}
                     {procedures.length >= 5 ? (
                         <ScrollView style = {{flex: 1}}>
@@ -314,8 +321,16 @@ const LibraryScreen: React.FC = () => {
                             ))}
                         </View>
                     )}
-                    <TouchableOpacity style={styles.finishButton} onPress={handleNextPressCompleteDemo}>
-                        <Text style={styles.FinishButtonText}>{isFinishDemoLoading ? "Loading..." : "Finish Demo"}</Text>
+                    <TouchableOpacity
+                        style={styles.finishButton}
+                        onPress={handleNextPressCompleteDemo}
+                        disabled={isFinishDemoLoading}
+                    >
+                        {isFinishDemoLoading ? (
+                            <ActivityIndicator size="small" color="#3A5A8C" />
+                        ) : (
+                            <Text style={styles.FinishButtonText}>Finish Demo</Text>
+                        )}
                     </TouchableOpacity>
                 </View> 
             </View>
@@ -434,9 +449,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#375894',
         color: 'white',
         padding: 15,
+        height: 60,
         borderRadius: 30,
         alignItems: 'center',
         marginBottom: 5,
+        justifyContent: 'center',
     },
     input: {
         flexDirection: 'row',
@@ -458,10 +475,10 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 30,
         alignItems: 'center',
-        // position: "absolute",
-        bottom: 30,
-        // left: 18,
-        // right: 18,
+        position: "absolute",
+        bottom: 50,
+        left: 18,
+        right: 18,
         borderColor: "#3A5A8C",
         borderWidth: 2,
         marginTop: 20,
