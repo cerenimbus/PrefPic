@@ -405,6 +405,7 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
         shadowOffset: { width: 0, height: 2 },
         justifyContent: 'space-between',
+        marginBottom: 33,
     },
     bottomNav: {
         width: '100%', // or maxWidth: 400
@@ -451,8 +452,9 @@ const styles = StyleSheet.create({
         height: 60,
         borderRadius: 30,
         alignItems: 'center',
-        marginBottom: 'auto',
+        marginBottom: 5,
         justifyContent: 'center',
+        
     },
     input: {
         flexDirection: 'row',
@@ -478,6 +480,8 @@ const styles = StyleSheet.create({
         width: '100%', // Ensure it spans the card width
         marginTop: 'auto',
         borderWidth: 2,
+        top: 10,
+        
 
     },
 });
