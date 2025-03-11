@@ -87,12 +87,12 @@ const getProcedureList = async () => {
 
         const url = `https://PrefPic.com/dev/PPService/GetProcedure.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&PrefPicVersion=1&Procedure=${serial}`;
 
-        console.log("URL:", url);
+        // console.log("URL:", url);
 
         const response = await fetch(url);
         const data = await response.text();
-        console.log("Response",response);
-        console.log("Data",data);
+        // console.log("Response",response);
+        // console.log("Data",data);
 
         const parser = new XMLParser();
         const result = parser.parse(data);
@@ -179,20 +179,32 @@ useEffect(() => {
 
  const handleImagePress = async (index: number) => {
     if (images[index]) {
-      setIsNavigating(true); // Show loading screen
-      setNavigateIndex(index); // Store index to use in effect
+      // setIsNavigating(true); // Show loading screen
+      // setNavigateIndex(index); // Store index to use in effect
+    } else {
+      // Navigate to camera
+        
+      router.push({
+        pathname: "camera",
+        params: {
+            procedureName: procedureName
+        },
+    });
     }
 };
 
 
-  // const navigateToLoading = () => {
-  //   router.push("loading");
-  // }
-
-  // };
   const navigateToAddPearls = () =>{
-    router.push("addPearls")
+    console.log('Procedure Serial:', serial);
+    router.push({
+      pathname: "addPearls",
+      params: {
+        updatedProcedureSerial: serial
+      },
+  });
   };
+
+
   const handleNextPress =  () => {
     setIsLoading(true);
     setTimeout(() => {
