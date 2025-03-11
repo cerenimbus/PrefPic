@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import BottomNavigation from "../components/bottomNav";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create({
   container: {
@@ -78,11 +79,64 @@ const styles = StyleSheet.create({
 export default function AddTeamMember() {
   const router = useRouter();
   const params = useLocalSearchParams();
+<<<<<<< HEAD
+  const [userType, setUserType] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
+  // const teamNumber = params.teamNumber;
+  const {teamCode}= useLocalSearchParams();
+  console.log("Params received:", teamCode);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const storedType = await AsyncStorage.getItem("type");
+        const storedStatus = await AsyncStorage.getItem("status");
+
+        setUserType(storedType);
+        setStatus(storedStatus);
+
+        console.log("User Type:", storedType);
+        console.log("Status:", storedStatus);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleDonePress = () => {
+    console.log("Done pressed - userType:", userType, "status:", status);
+    
+    if (userType === "Surgical Staff") {
+      // If Surgical Staff, always go to enterTeamMember
+      console.log("Routing to enterTeamMember (surgical staff)");
+      router.push("/enterTeamMember");
+    } else if (userType === "Physician") {
+      // If Physician
+      if (status === "Demo") {
+        // If Demo status, go to Library page
+        console.log("Routing to library (physician in demo mode)");
+        router.push("/library");
+      } else {
+        // If not Demo, go to Main account page
+        console.log("Routing to account (physician in non-demo mode)");
+        router.push("/account");
+      }
+    } else {
+      // Default fallback if userType is not set
+      console.log("User type not set, defaulting to enterTeamMember");
+      router.push("/enterTeamMember");
+    }
+  };
+
+=======
   const teamNumber = params.teamNumber;
   //MLI 03/10/2025
   const { teamCode } = useLocalSearchParams();
 
   console.log("Params received:", teamNumber);
+>>>>>>> origin/master
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -91,8 +145,12 @@ export default function AddTeamMember() {
       </TouchableOpacity>
       <Text style={styles.header}>Add Team Member</Text>
 
+<<<<<<< HEAD
+      <Text style={styles.teamNumber}>
+=======
       <Text style={styles.teamCode}>
         {/* Team Number: {teamNumber  } */}
+>>>>>>> origin/master
         Team Number: {teamCode}
       </Text>
 
@@ -107,7 +165,7 @@ export default function AddTeamMember() {
         {/* Button*/}
         <TouchableOpacity
           style={styles.doneButton}
-          onPress={() => router.push("/enterTeamMember")}
+          onPress={handleDonePress}
         >
           <Text style={styles.doneButtonText}>Done</Text>
         </TouchableOpacity>
