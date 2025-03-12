@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import BottomNavigation from "../components/bottomNav";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -24,7 +26,11 @@ const styles = StyleSheet.create({
     fontFamily: "Dark Grotesque",
     color: "#000000",
   },
+// jm_branch
+<!--   teamNumber: { -->
+
   teamCode: {
+
     fontSize: 20,
     textAlign: "center",
     fontFamily: "Lexend",
@@ -78,6 +84,14 @@ const styles = StyleSheet.create({
 
 export default function AddTeamMember() {
   const router = useRouter();
+// jm_branch
+<!--   const params = useLocalSearchParams();
+  const teamNumber = params.teamNumber;
+  console.log("Params received:", teamNumber);
+  return (
+    <View style={styles.container}>
+      {/* Header */} -->
+
 // MJ2_new_branch
   const params = useLocalSearchParams();
   const [userType, setUserType] = useState<string | null>(null);
@@ -137,10 +151,33 @@ export default function AddTeamMember() {
 
   return (
     <View style={styles.container}>
+
       <TouchableOpacity onPress={() => router.back()}>
         <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
       <Text style={styles.header}>Add Team Member</Text>
+
+<!-- jm_branch -->
+<!--       <Text style={styles.teamNumber}>
+        Team Number: {teamNumber  }
+      </Text>
+
+      {/* Center box */}
+        <View style={styles.centerBox}>
+          <View style={styles.contentContainer}>
+            <Text style={styles.contents}>
+              Give this Team Number to your Surgical Team with instructions to
+              download this app and create an account.
+            </Text>
+          </View>
+          {/* Button*/}
+          <TouchableOpacity
+            style={styles.doneButton}
+            onPress={() => router.push("/enterTeamMember")}
+          >
+            <Text style={styles.doneButtonText}>Done</Text>
+          </TouchableOpacity>
+        </View> -->
 
 
       <Text style={styles.teamCode}>
@@ -161,6 +198,7 @@ export default function AddTeamMember() {
           <Text style={styles.doneButtonText}>Done</Text>
         </TouchableOpacity>
       </View>
+
 
       <BottomNavigation />
     </View>
