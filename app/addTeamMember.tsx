@@ -78,8 +78,17 @@ const styles = StyleSheet.create({
 
 export default function AddTeamMember() {
   const router = useRouter();
+// MJ2_new_branch
+  const params = useLocalSearchParams();
+  const [userType, setUserType] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
+  // const teamNumber = params.teamNumber;
+  const teamCode = useLocalSearchParams();
+  const teamNumber = params.teamNumber;
+  console.log("Params received:", teamCode);
+
  //MLI 03/10/2025  
-  const { teamCode } = useLocalSearchParams();
+//   const { teamCode } = useLocalSearchParams();
   const [userType, setUserType] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
 
@@ -122,6 +131,10 @@ export default function AddTeamMember() {
     }
   };
 
+//MJ2_new_branch
+
+  console.log("Params received:", teamNumber);
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => router.back()}>
@@ -129,7 +142,13 @@ export default function AddTeamMember() {
       </TouchableOpacity>
       <Text style={styles.header}>Add Team Member</Text>
 
-      <Text style={styles.teamCode}>Team Number: {teamCode}</Text>
+
+      <Text style={styles.teamCode}>
+        Team Number: {teamNumber}
+      </Text>
+
+<!--       <Text style={styles.teamCode}>Team Number: {teamCode}</Text> -->
+
 
       <View style={styles.centerBox}>
         <View style={styles.contentContainer}>
