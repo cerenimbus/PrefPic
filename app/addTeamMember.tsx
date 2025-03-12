@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
 
 export default function AddTeamMember() {
   const router = useRouter();
+// MJ2_new_branch
   const params = useLocalSearchParams();
   const [userType, setUserType] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
@@ -85,6 +86,11 @@ export default function AddTeamMember() {
   const teamCode = useLocalSearchParams();
   const teamNumber = params.teamNumber;
   console.log("Params received:", teamCode);
+
+ //MLI 03/10/2025  
+//   const { teamCode } = useLocalSearchParams();
+  const [userType, setUserType] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -109,44 +115,41 @@ export default function AddTeamMember() {
     console.log("Done pressed - userType:", userType, "status:", status);
     
     if (userType === "Surgical Staff") {
-      // If Surgical Staff, always go to enterTeamMember
       console.log("Routing to enterTeamMember (surgical staff)");
       router.push("/enterTeamMember");
     } else if (userType === "Physician") {
-      // If Physician
       if (status === "Demo") {
-        // If Demo status, go to Library page
         console.log("Routing to library (physician in demo mode)");
         router.push("/library");
       } else {
-        // If not Demo, go to Main account page
-        console.log("Routing to account (physician in non-demo mode)");
-        router.push("/account");
+        console.log("Routing to mainAccount (physician in non-demo mode)");
+        router.push("/mainAccountPage");
       }
     } else {
-      // Default fallback if userType is not set
       console.log("User type not set, defaulting to enterTeamMember");
       router.push("/enterTeamMember");
     }
   };
 
+//MJ2_new_branch
 
   console.log("Params received:", teamNumber);
+
   return (
     <View style={styles.container}>
-      {/* Header */}
       <TouchableOpacity onPress={() => router.back()}>
         <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
       <Text style={styles.header}>Add Team Member</Text>
 
 
-   
       <Text style={styles.teamCode}>
         Team Number: {teamNumber}
       </Text>
 
-      {/* Center box */}
+<!--       <Text style={styles.teamCode}>Team Number: {teamCode}</Text> -->
+
+
       <View style={styles.centerBox}>
         <View style={styles.contentContainer}>
           <Text style={styles.contents}>
@@ -154,11 +157,7 @@ export default function AddTeamMember() {
             download this app and create an account.
           </Text>
         </View>
-        {/* Button*/}
-        <TouchableOpacity
-          style={styles.doneButton}
-          onPress={handleDonePress}
-        >
+        <TouchableOpacity style={styles.doneButton} onPress={handleDonePress}>
           <Text style={styles.doneButtonText}>Done</Text>
         </TouchableOpacity>
       </View>
