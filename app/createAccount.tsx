@@ -232,6 +232,21 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
         return;
     }
 
+// JMF 03-10-2025
+// If the user selected "Surgical Staff", redirect to enterTeamMember page
+  if (form.role === "Surgical Staff") {
+    // Save user details before redirecting
+    await AsyncStorage.setItem('userDetails', JSON.stringify({
+      title: form.title,
+      firstName: form.firstName,
+      lastName: form.lastName,
+      email: form.email,
+    }));
+    router.push("enterTeamMember");
+    return; // Stop execution here to prevent the account creation API call
+  }
+
+
 
 
     const currentDate = new Date();
@@ -288,6 +303,7 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
   
 
   return (
+//  jm_branch
     // edited: JM 2025/03/07*
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
       
@@ -380,6 +396,96 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
             </View>
 
                 {/* <View style={styles.checkboxContainer}>
+
+    <SafeAreaView style={{ flex: 1 }}>
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+      <TouchableWithoutFeedback onPress={dismissKeyboard}>
+        
+            <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
+            <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollcontainer}>
+            <View style={styles.formContainer}>
+                <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+                    <Feather name="arrow-left" size={20} color="#375894" />
+                    <Text style={styles.backText}>Back</Text>
+                </TouchableOpacity>
+                
+                    <Text style={styles.header}>Create Account</Text>
+                    
+                        <TextInput style={styles.input} placeholder="Title" value={form.title}    onChangeText={(text) => handleInputChange("title", text)} />
+                        
+                        <TextInput
+                            ref={firstNameRef}
+                            style={[styles.input, activeField === firstNameRef ? styles.activeInput : {}]}
+                            multiline
+                            placeholder="First Name"
+                            value={form.firstName}
+                            onChangeText={(text) => handleInputChange("firstName", text)}
+                            onFocus={() => handleFocus(firstNameRef)}
+                            onBlur={handleBlur}
+                            returnKeyType="done"
+                            />
+                        <TextInput
+                            ref={lastNameRef}
+                            style={[styles.input, activeField === lastNameRef ? styles.activeInput : {}]}
+                            multiline
+                            placeholder="Last Name"
+                            value={form.lastName}
+                            onChangeText={(text) => handleInputChange("lastName", text)}
+                            onFocus={() => handleFocus(lastNameRef)}
+                            onBlur={handleBlur}
+                            returnKeyType="done"
+                            />
+                        
+                              {phoneError ? <Text style={{ color: "red", marginBottom: 5 }}>{phoneError}</Text> : null}
+
+                              <TextInput
+                                  ref={phoneRef}
+                                  style={[
+                                      styles.input, 
+                                      activeField === phoneRef ? styles.activeInput : {},
+                                      phoneError ? { borderColor: "red", borderWidth: 1 } : {}
+                                  ]}
+                                  multiline
+                                  placeholder="Phone Number"
+                                  value={form.phone}
+                                  keyboardType="phone-pad"
+                                  onChangeText={handlePhoneChange}
+                                  onFocus={() => handleFocus(phoneRef)}
+                                  onBlur={handleBlur}
+                                  returnKeyType="done"
+                              />
+                          
+                        <TextInput
+                            ref={emailRef}
+                            style={[styles.input, activeField === emailRef ? styles.activeInput : {}]}
+                            multiline
+                            placeholder="Email"
+                            value={form.email}
+                            keyboardType="email-address"
+                            onChangeText={(text) => handleInputChange("email", text)}
+                            onFocus={() => handleFocus(emailRef)}
+                            onBlur={handleBlur}
+                            returnKeyType="done"
+                            />
+                <View style={styles.passwordContainer}>
+                    <TextInput
+                        ref={passwordRef}
+                        style={[styles.input, activeField === passwordRef ? styles.activeInput : {}]}
+                        placeholder="Password"
+                        secureTextEntry={!showPassword} // This will now work
+                        value={form.password}
+                        onChangeText={(text) => handleInputChange("password", text)}
+                        onFocus={() => handleFocus(passwordRef)}
+                        onBlur={handleBlur}
+                        returnKeyType="done"
+                    />
+                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+                        <Feather name={showPassword ? "eye" : "eye-off"} size={20} color="gray" />
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.checkboxContainer}>
+
                     <Text style={styles.selectText}>Select Role:</Text>
 
                     <View style={styles.checkboxOption}>
@@ -397,6 +503,7 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                         />
                         <Text>Staff</Text>
                     </View>
+// jm_branch
                 </View> */}
 
                 {/*edited: JM 2025/03/07*/} 
@@ -424,6 +531,7 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                             <Text style={styles.checkboxText}>Staff</Text>
                         </View>
                     </View>
+
                 </View>
                 
                 {/* {form.role && (
@@ -433,7 +541,10 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                     ))}
                 </Picker>
                 )} */}
+<!-- jm_branch -->
                 {/* <View ref={specialtyRef} style={styles.picker}>
+
+
                     <Picker
                         selectedValue={form.specialty}
                         onValueChange={(itemValue) => {
@@ -446,6 +557,7 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                         <Picker.Item key={index} label={spec} value={spec} />
                         ))}
                     </Picker>
+//  jm_branch
                 </View> */}
 
                 {/*edited: JM 2025/03/07*/} 
@@ -464,6 +576,7 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                             <Picker.Item key={index} label={spec} value={spec} />
                         ))}
                     </Picker>
+
                 </View>
 
                 <TouchableOpacity
@@ -478,15 +591,23 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                 
             </View>
             </ScrollView>
+
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
     </SafeAreaView>
     </ImageBackground>
+
+<!--             </ImageBackground>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
+    </SafeAreaView> -->
+
   );
 };
 
 const styles = StyleSheet.create({
     background: {
+//  jm_branch
       flex: 1, 
       justifyContent: 'center',
       alignItems: 'center',
@@ -671,6 +792,63 @@ checkboxOption: {
     fontSize: 16, 
     color: '#333', 
 },
+<!-- 
+        flex: 1, 
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      phoneContainer: {
+        marginBottom: 16, // Space between fields
+        position: "relative", // For precise placement of error text
+    },
+      disabledButton: {
+        backgroundColor: "#A9A9A9", // Gray color for disabled button
+      },
+      activeInput: {
+        borderColor: "#007AFF",
+        backgroundColor: "#e6f0ff",
+      },
+      scrollcontainer: {  flexGrow: 1,
+        padding: 20,
+        marginTop: 100,
+        backgroundColor: "#fff", },
+  container: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#E3F6FC", padding: 20 },
+  backButton: { flexDirection: "row", alignSelf: "flex-start", marginBottom: 10 },
+  backText: { marginLeft: 5, fontSize: 16, color: '#375894' },
+  formContainer: { width: "90%", backgroundColor: "white", borderRadius: 25, alignItems: "center"},
+  header: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
+  input: { width: "100%", padding: 12, backgroundColor: "#F5F5F5", borderRadius: 10, marginBottom: 10 },
+  checkboxContainer: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: 10 },
+  checkboxOption: { flexDirection: "row", alignItems: "center", marginRight: 5},
+  checkboxOption2: { flexDirection: "row", alignItems: "center", marginRight: 50 },
+  selectText: { fontWeight: "bold", marginRight: 10, fontSize: 12, },
+  note: { textAlign: "center", fontSize: 12, color: "gray", marginBottom: 20 },
+  continueButton: { backgroundColor: "#375894", padding: 10, borderRadius: 25, width: "100%", alignItems: "center" },
+  continueText: { color: "white", fontSize: 18, fontWeight: "bold" },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 10,
+    paddingVertical: 12,
+    backgroundColor: "#F5F5F5",
+    borderRadius: 10,
+    marginBottom: 10,
+    justifyContent: "space-between",
+  },
+  eyeIcon: {
+    position: "absolute",
+    right: 15,
+    padding: 10,
+  },
+  picker: {
+    width: "100%",
+    backgroundColor: "#F5F5F5",
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 10,
+  },
+ master -->
 });
 
 export default CreateAccount;

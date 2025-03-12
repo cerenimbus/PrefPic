@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { XMLParser } from 'fast-xml-parser';
 import { getDeviceID } from '../components/deviceInfo';
+
 import Ionicons from "react-native-vector-icons/Ionicons"; 
 
 interface TeamMember {
@@ -213,17 +214,28 @@ const TeamMembersScreen: React.FC = () => {
   };
 // RHCM 2/28/2025 Modified to pass the params teamNumber to be used in addTeamMember.tsx
 const navigateToViewTeamMember = (teamNumber: string) => {
-  if (!teamNumber) {
-      console.warn("No team number available to pass.");
-      return;
+
+  // if (!teamNumber) {
+  //     console.warn("No team number available to pass.");
+  //     return;
+  // }
+
+  //MLI 03/10/2025 modified in order to pass the params teamCode to the addTeamMember.tsx
+  if (!teamCode) {
+    console.warn("No team code available to pass.");
+    return;
   }
 
   router.push({
       pathname: "/addTeamMember",
-      params: { teamNumber: teamNumber },
+
+      // params: { teamNumber: teamNumber },
+      params: { teamCode: teamCode },
   });
 
-  console.log("Navigating with teamNumber:", teamNumber); // Debugging
+  // console.log("Navigating with teamNumber:", teamNumber); // Debugging
+  console.log("Navigating with teamCode:", teamCode); // Debugging
+
 };
 
 
@@ -237,7 +249,10 @@ const navigateToViewTeamMember = (teamNumber: string) => {
   const navigateToAddTeamMember = () => {
      setIsAddingMember(true); // Show loading icon
     router.push({
-      pathname: "addTeamMember"
+
+      pathname: "addTeamMember",
+      params: { teamCode: teamCode }, //
+
     });
   };
 
@@ -272,34 +287,29 @@ const navigateToViewTeamMember = (teamNumber: string) => {
           {teamMembers.length >= 5 ? (
             <ScrollView style = {{flex: 1}}>
               {members.map((member, index) => (
-                <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
+
+                // <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
+                <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamCode)}>
+
                 <Text style={styles.teamMemberButtonText}>{member.name}</Text>
                 <Text style={styles.item}>{'>'}</Text>
               </TouchableOpacity>
                   ))}
                   </ScrollView>
                   ) : (
-                  // <View>
-                  //   {members.map((member, index) => (
-                  //     <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
-                  //       <Text style={styles.teamMemberButtonText}>{member.name}</Text>
-                  //       <TouchableOpacity style={styles.teamMemberButton}>
-                  //         <Text style={styles.item}>{'>'}</Text>
-                  //         </TouchableOpacity>
-                  //         </TouchableOpacity>
-                  //       ))}
-                  // </View>
-                <View>
-                  {[1, 2, 3, 4, 5].map((_, index) => (
-                    <TouchableOpacity 
-                      key={index} 
-                      style={styles.teamMemberContainer} 
-                      onPress={() => navigateToViewTeamMember(teamNumber)}>
-                        <Text style={styles.teamMemberButtonText}>Full Name</Text>
-                        <Text style={styles.item}><Ionicons name="chevron-forward" size={24} color="yourColor" /></Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+
+                  <View>
+                    {members.map((member, index) => (
+                      // <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
+                      <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamCode)}>
+                        <Text style={styles.teamMemberButtonText}>{member.name}</Text>
+                        <TouchableOpacity style={styles.teamMemberButton}>
+                          <Text style={styles.item}>{'>'}</Text>
+                          </TouchableOpacity>
+                          </TouchableOpacity>
+                        ))}
+                  </View>
+
                 )}
                 </View>
                 <BottomNavigation />
@@ -382,6 +392,7 @@ const navigateToViewTeamMember = (teamNumber: string) => {
 
 const styles = StyleSheet.create({
 
+
   staticMemberText: {
     color: '#666',
     fontSize: 20,
@@ -402,38 +413,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginTop: 0,
   },
-//   teamMemberContainer: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     alignItems: 'center',
-//     paddingVertical: 10,
-//     borderBottomWidth: 1,
-//     borderBottomColor: '#B0BEC5',
-//     marginTop: 10,
-// },
+
   teamMemberContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: 'white', // Add white background
-    borderWidth: 1, // Add border
-    borderColor: '#E0E0E0', // Light border color
-    borderRadius: 10, // Rounded corners
-    marginBottom: 5, // Space between rectangles
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    shadowColor: '#000', // Optional: add shadow for depth
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3, // For Android shadow
-  },
+
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#B0BEC5',
+},
   username: {
     color: '#4A6FA5',
-    fontSize: 30,
+    fontSize: 15,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginTop: 30,
+    marginTop: 50,
+
     fontFamily: "Darker Grotesque",
   },
   teamCode: {
@@ -503,11 +499,11 @@ const styles = StyleSheet.create({
     borderRadius: 31,
     minWidth: 92,
     marginRight: -10,
-    marginBottom: 10,
+
   },
   addButtonText: {
-    fontSize: 20,
-    padding: 5,
+    fontSize: 14,
+
     fontFamily: "Inter",
     color: '#fff',
     fontWeight: 'bold',

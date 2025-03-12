@@ -1,7 +1,10 @@
-import React from "react";
+
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import BottomNavigation from "../components/bottomNav";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const styles = StyleSheet.create({
   container: {
@@ -23,7 +26,11 @@ const styles = StyleSheet.create({
     fontFamily: "Dark Grotesque",
     color: "#000000",
   },
-  teamNumber: {
+// jm_branch
+<!--   teamNumber: { -->
+
+  teamCode: {
+
     fontSize: 20,
     textAlign: "center",
     fontFamily: "Lexend",
@@ -77,18 +84,81 @@ const styles = StyleSheet.create({
 
 export default function AddTeamMember() {
   const router = useRouter();
-  const params = useLocalSearchParams();
+// jm_branch
+<!--   const params = useLocalSearchParams();
   const teamNumber = params.teamNumber;
   console.log("Params received:", teamNumber);
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {/* Header */} -->
+
+// MJ2_new_branch
+  const params = useLocalSearchParams();
+  const [userType, setUserType] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
+  // const teamNumber = params.teamNumber;
+  const teamCode = useLocalSearchParams();
+  const teamNumber = params.teamNumber;
+  console.log("Params received:", teamCode);
+
+ //MLI 03/10/2025  
+//   const { teamCode } = useLocalSearchParams();
+  const [userType, setUserType] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const storedType = await AsyncStorage.getItem("type");
+        const storedStatus = await AsyncStorage.getItem("status");
+
+        setUserType(storedType);
+        setStatus(storedStatus);
+
+        console.log("User Type:", storedType);
+        console.log("Status:", storedStatus);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleDonePress = () => {
+    console.log("Done pressed - userType:", userType, "status:", status);
+    
+    if (userType === "Surgical Staff") {
+      console.log("Routing to enterTeamMember (surgical staff)");
+      router.push("/enterTeamMember");
+    } else if (userType === "Physician") {
+      if (status === "Demo") {
+        console.log("Routing to library (physician in demo mode)");
+        router.push("/library");
+      } else {
+        console.log("Routing to mainAccount (physician in non-demo mode)");
+        router.push("/mainAccountPage");
+      }
+    } else {
+      console.log("User type not set, defaulting to enterTeamMember");
+      router.push("/enterTeamMember");
+    }
+  };
+
+//MJ2_new_branch
+
+  console.log("Params received:", teamNumber);
+
+  return (
+    <View style={styles.container}>
+
       <TouchableOpacity onPress={() => router.back()}>
         <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
       <Text style={styles.header}>Add Team Member</Text>
 
-      <Text style={styles.teamNumber}>
+<!-- jm_branch -->
+<!--       <Text style={styles.teamNumber}>
         Team Number: {teamNumber  }
       </Text>
 
@@ -107,7 +177,28 @@ export default function AddTeamMember() {
           >
             <Text style={styles.doneButtonText}>Done</Text>
           </TouchableOpacity>
+        </View> -->
+
+
+      <Text style={styles.teamCode}>
+        Team Number: {teamNumber}
+      </Text>
+
+<!--       <Text style={styles.teamCode}>Team Number: {teamCode}</Text> -->
+
+
+      <View style={styles.centerBox}>
+        <View style={styles.contentContainer}>
+          <Text style={styles.contents}>
+            Give this Team Number to your Surgical Team with instructions to
+            download this app and create an account.
+          </Text>
         </View>
+        <TouchableOpacity style={styles.doneButton} onPress={handleDonePress}>
+          <Text style={styles.doneButtonText}>Done</Text>
+        </TouchableOpacity>
+      </View>
+
 
       <BottomNavigation />
     </View>
