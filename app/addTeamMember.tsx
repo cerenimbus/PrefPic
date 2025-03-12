@@ -103,8 +103,8 @@ export default function AddTeamMember() {
 
  //MLI 03/10/2025  
 //   const { teamCode } = useLocalSearchParams();
-  const [userType, setUserType] = useState<string | null>(null);
-  const [status, setStatus] = useState<string | null>(null);
+  ///const [userType, setUserType] = useState<string | null>(null);
+  //const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -184,7 +184,7 @@ export default function AddTeamMember() {
         Team Number: {teamNumber}
       </Text>
 
-<!--       <Text style={styles.teamCode}>Team Number: {teamCode}</Text> -->
+{/*<!--       <Text style={styles.teamCode}>Team Number: {teamCode}</Text> -->*/}
 
 
       <View style={styles.centerBox}>

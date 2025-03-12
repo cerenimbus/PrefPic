@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState, useEffect } from "react";
-import { SafeAreaView,View, Text, StyleSheet, TouchableOpacity, Image, Alert, Dimensions} from "react-native";
+import { SafeAreaView,View, Text, StyleSheet, TouchableOpacity, Image, Alert, Dimensions,ActivityIndicator} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CryptoJS from "crypto-js";
 import { getDeviceID } from '../components/deviceInfo';
@@ -255,6 +255,29 @@ const navigateToCamera = () => {
 
 {/*=======================================================================================*/}
 {/*RJP <-3/5/2025 add feedback button*/}
+
+<TouchableOpacity
+  style={[styles.nextbutton, isLoading && styles.disabledButton]}
+  onPress={() => {
+    if (!isLoading) {
+      setIsLoading(true);
+      navigateToReviewSummary(photoUriState || "", "image/jpeg").finally(() => {
+        setIsLoading(false); // Re-enable the button after the API call
+      });
+    }
+  }}
+  disabled={isLoading} // Prevent clicking while loading
+>
+  {/* Show ActivityIndicator while loading */}
+  {isLoading ? (
+    <ActivityIndicator size={27} color="#FFFFFF" />
+  ) : (
+    <Text style={styles.buttonText}>Next</Text>
+  )}
+</TouchableOpacity>
+
+
+{/*
 <TouchableOpacity
   style={[styles.nextbutton, isLoading && styles.disabledButton]}
   onPress={() => {
@@ -269,6 +292,7 @@ const navigateToCamera = () => {
 >
   <Text style={styles.buttonText}>{isLoading ? "Loading..." : "Next"}</Text>
 </TouchableOpacity>
+*/}
 {/*End*/}
 {/*=======================================================================================*/}
 
@@ -289,7 +313,8 @@ const styles = StyleSheet.create({
 
   //RJP 3/5/2025 <-- add style to the button when disabled
   disabledButton: {
-    backgroundColor: "#A0A0A0", // Gray color when disabled
+    backgroundColor: "#808080", // Gray color when disabled
+    flex: 1,
   },
   
   container: {
