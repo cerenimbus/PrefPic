@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import BottomNavigation from '../components/bottomNavDemo';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { XMLParser } from 'fast-xml-parser';
-import Ionicons from "react-native-vector-icons/Ionicons"; 
 import { getDeviceID } from '../components/deviceInfo';
-
 
 interface UserDetails {
     firstName: string;
@@ -276,7 +274,7 @@ const LibraryScreen: React.FC = () => {
 
     return (
         
-        <SafeAreaView style={{flex:1}}>
+        <SafeAreaView style={styles.container}>
             <View style={styles.container}>
 
                 {/*<Text style={styles.title}>{title}{firstName}{lastName}</Text>*/}
@@ -288,17 +286,10 @@ const LibraryScreen: React.FC = () => {
                 </Text>
                 <View style={styles.card}>
                     {!isSurgicalStaff && (
-                    <TouchableOpacity
-                    style={styles.addButton}
-                    onPress={handleNextPress}
-                    disabled={isAddProcedureLoading}
-                >
-                    {isAddProcedureLoading ? (
-                        <ActivityIndicator size="small" color="white" />
-                    ) : (
-                        <Text style={styles.addProcedureButtonText}>Add Procedure</Text>
-                    )}
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles.addButton} onPress={handleNextPress}>
+                        <Text style={styles.addProcedureButtonText}>{isAddProcedureLoading ? "Loading..." : "Add Procedure"}</Text>
+                        {/* <Text style={styles.addProcedureButtonText}>Add Procedure   +</Text> */}
+                    </TouchableOpacity>
                     )}
                     {procedures.length >= 5 ? (
                         <ScrollView style = {{flex: 1}}>
@@ -306,7 +297,7 @@ const LibraryScreen: React.FC = () => {
                                 <TouchableOpacity key={index} style={styles.procedureContainer} onPress={()=>navigateToviewProcedure(procedure)}>
                                     <Text style={styles.procedureNameButtonText}>{procedure.name}</Text>
                                     <TouchableOpacity style={styles.procedureButton}>
-                                        <Text style={styles.item}><Ionicons name="chevron-forward" size={24} color="yourColor" /></Text>
+                                        <Text style={styles.item}>{'>'}</Text>
                                     </TouchableOpacity>
                                 </TouchableOpacity>
                             ))}
@@ -317,24 +308,17 @@ const LibraryScreen: React.FC = () => {
                                 <TouchableOpacity key={index} style={styles.procedureContainer} onPress={()=>navigateToviewProcedure(procedure)}>
                                     <Text style={styles.procedureNameButtonText}>{procedure.name}</Text>
                                     <TouchableOpacity style={styles.procedureButton}>
-                                        <Text style={styles.item}><Ionicons name="chevron-forward" size={24} color="yourColor" /></Text>
+                                        <Text style={styles.item}>{'>'}</Text>
                                     </TouchableOpacity>
                                 </TouchableOpacity>
                             ))}
                         </View>
                     )}
-                    <TouchableOpacity
-                        style={styles.finishButton}
-                        onPress={handleNextPressCompleteDemo}
-                        disabled={isFinishDemoLoading}
-                    >
-                        {isFinishDemoLoading ? (
-                            <ActivityIndicator size="small" color="#3A5A8C" />
-                        ) : (
-                            <Text style={styles.FinishButtonText}>Finish Demo</Text>
-                        )}
+                    <TouchableOpacity style={styles.finishButton} onPress={handleNextPressCompleteDemo}>
+                        <Text style={styles.FinishButtonText}>{isFinishDemoLoading ? "Loading..." : "Finish Demo"}</Text>
                     </TouchableOpacity>
                 </View> 
+                
             </View>
             <BottomNavigation />
         </SafeAreaView>
@@ -351,6 +335,20 @@ const styles = StyleSheet.create({
         fontSize: 18,
         textAlign: 'center',
         fontFamily: 'Darker Grotesque',
+    },
+    newCard: {
+        width: '100%', // or maxWidth: 400
+        maxWidth: 500,
+        height: 28, // Adjust height as needed
+        backgroundColor: '#gray',
+        borderRadius: 10,
+        padding: 20, // Padding for inner content
+        borderWidth: 2, // Add border
+        borderColor: 'white', // Border color
+        shadowColor: '#000', // Shadow for iOS
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 2 },
     },
     procedureContainer: {
         flexDirection: 'row',
@@ -391,15 +389,13 @@ const styles = StyleSheet.create({
     },
     arrow: {
         color: '#4A6FA5', // Arrow color
-        fontSize: 20,
+        fontSize: 20, // Adjust arrow size as needed
     },
     card: {
-        flex: 1,
+        // flex: 1,
         width: '100%', // or maxWidth: 400
-
         maxWidth: 400,
-        height: '80%', // Adjust height as needed
-
+        height: 520, // Adjust height as needed
         backgroundColor: '#ffffff',
         borderRadius: 10,
         padding: 20, // Padding for inner content
@@ -409,8 +405,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 10,
         shadowOffset: { width: 0, height: 2 },
-        justifyContent: 'space-between',
-        marginBottom: 33,
+        // flexDirection: 'column',
     },
     bottomNav: {
         width: '100%', // or maxWidth: 400
@@ -454,12 +449,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#375894',
         color: 'white',
         padding: 15,
-        height: 60,
         borderRadius: 30,
         alignItems: 'center',
         marginBottom: 5,
-        justifyContent: 'center',
-        
     },
     input: {
         flexDirection: 'row',
@@ -481,19 +473,13 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 30,
         alignItems: 'center',
-
-        position: "absolute",
-        bottom: 60,
-        left: 40,
-        right: 40,
-
+        // position: "absolute",
+        // bottom: 27,
+        // left: 18,
+        // right: 18,
         borderColor: "#3A5A8C",
-        width: '100%', // Ensure it spans the card width
-        marginTop: 'auto',
         borderWidth: 2,
-        top: 10,
-        
-
+        marginTop: 5,
     },
 });
 

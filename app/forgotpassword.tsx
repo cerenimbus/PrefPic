@@ -10,9 +10,6 @@ import CryptoJS from "crypto-js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { XMLParser } from "fast-xml-parser";
 
-import { Feather } from "@expo/vector-icons";
-import {SafeAreaView} from "react-native";
-
 
 export default function ForgotPassword()  {
   const [email, setEmail] = useState("");
@@ -107,36 +104,11 @@ export default function ForgotPassword()  {
 
   return (
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
-
-      {/* Added: JM 2025/03/07 */}
-      <SafeAreaView style={{ flex: 1 }}>
-        {/* Edited: JM 2025/03/07 */}
-      <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-            <Feather name="arrow-left" size={24} color="#375894" />
-            <Text style={styles.backText}>Back</Text>
-      </TouchableOpacity>
-
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.flexContainer}
       >
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-<!-- jm_branch -->
-          
-<!--           {/* Form Container */}
-          <View style={styles.container}>
-                      {/* Back Button */}
-           
-          <View style={styles.imageTextContainer}>
-            <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
-            <Text style={styles.forgottxt}>Forgot {"\n"} Password?</Text>
-          </View>
-
-           {/* Edited: JM 2025/03/07 */}
-            <Text style={styles.first}>Enter your email to receive {"\n"} your password.</Text>
-            {/* Edited: JM 2025/03/07 */}
-            <Text style={styles.third}>If a valid user email is provided, {"\n"} your password will be reset.</Text>
- -->
 
 
           {/* Form Container */}
@@ -157,7 +129,6 @@ export default function ForgotPassword()  {
             <Text style={styles.third}>If a valid user email is provided your password will be reset</Text>
             {/* <Text style={styles.fourth}>your password will be reset.</Text> */}
 
-
             {/* Email Input */}
             <View style={styles.emailcontainer}>
               <TextInput
@@ -174,29 +145,18 @@ export default function ForgotPassword()  {
             <View style={styles.bcontainer}>
             <TouchableOpacity
                 style={[
-//  jm_branch
-                  styles.sendpass,
-
-//                   styles.getButton,
-
+                  styles.getButton,
                   { backgroundColor: isEmailEntered && isEmailValid ? "#375894" : "#A3A3A3" },
                 ]}
                 onPress={handleSendPassword}
                 disabled={!isEmailEntered || !isEmailValid} // Disable if email is not entered or invalid
               >
-<!--  jm_branch -->
-                <Text style={styles.sendtext}>Send Password</Text>
-
-<!--                 <Text style={styles.GetText}>Send Password</Text> -->
-
+                <Text style={styles.GetText}>Send Password</Text>
               </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-<!--  jm_branch -->
-      </SafeAreaView>
-
     </ImageBackground>
   );
 }
@@ -205,70 +165,48 @@ const styles = StyleSheet.create({
   imageTextContainer: {
     alignItems: "center",
     marginBottom: 30,
-//  jm_branch
-    marginTop: -20,
+    marginTop: 20,
   },
   imagestyle: {
-    width: 70,
-    height: 70,
-    borderRadius: 50,
+    width: 250,
+    height: 50,
+
     marginBottom: -40,
   },
-  // Edited: JM 2025/03/07
   first: {
     fontSize: 20,
     fontWeight: "400",
+    marginBottom: 5,
+    marginTop: -10,
+    justifyContent: "center",
+    alignItems: "center",
     textAlign: "center",
+    width: "90%",
   },
-  // Edited: JM 2025/03/07
+  second: {
+    fontSize: 20,
+    fontWeight: "400",
+    marginTop: -5, 
+  },
   third: {
-    fontSize: 16,
+    fontSize: 11,
     color: "#A3A3A3",
-    marginTop: 10,
+    marginTop: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+    width: "70%",
+  },
+  fourth: {
+    color: "#A3A3A3",
+    fontSize: 11,
+    marginTop: 1,
+    marginBottom: 20,
 
-//     marginTop: 20,
-//   },
-//   imagestyle: {
-//     width: 250,
-//     height: 50,
-
-//     marginBottom: -40,
-//   },
-//   first: {
-//     fontSize: 20,
-//     fontWeight: "400",
-//     marginBottom: 5,
-//     marginTop: -10,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     textAlign: "center",
-//     width: "90%",
-//   },
-//   second: {
-//     fontSize: 20,
-//     fontWeight: "400",
-//     marginTop: -5, 
-//   },
-//   third: {
-//     fontSize: 11,
-//     color: "#A3A3A3",
-//     marginTop: 15,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     textAlign: "center",
-//     width: "70%",
-//   },
-//   fourth: {
-//     color: "#A3A3A3",
-//     fontSize: 11,
-//     marginTop: 1,
-//     marginBottom: 20,
-
-//   },
-//   GetText: {
-//     color: "white",
-//     fontSize: 15,
-//  master
+  },
+  GetText: {
+    color: "white",
+    fontSize: 15,
     textAlign: "center",
   },
   bcontainer: {
@@ -276,133 +214,72 @@ const styles = StyleSheet.create({
     width: 250,
     marginBottom: -20,
   },
-//   jm_branch
-  // Edited: JM 2025/03/07
-  sendpass: {
+  getButton: {
     backgroundColor: "#375894",
     alignItems: "center",
     borderRadius: 31,
-    padding: 15,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
   },
-  // Edited: JM 2025/03/07
-  sendtext: {
-    color: "white",
-    fontSize: 18,
-    textAlign: "center",
-  },
-  // Edited: JM 2025/03/07
   emailcontainer: {
     marginTop: 15,
-    width: "100%",
-  },
-  // Edited: JM 2025/03/07
-  inputemail: {
-    height: 40,
-    backgroundColor: "#F1F5FC",
-    borderRadius: 5,
-    paddingHorizontal: 15,
-
-//   getButton: {
-//     backgroundColor: "#375894",
-//     alignItems: "center",
-//     borderRadius: 31,
-//     paddingTop: 10,
-//     paddingBottom: 10,
-//     paddingLeft: 10,
-//     paddingRight: 10,
-//   },
-//   emailcontainer: {
-//     marginTop: 15,
- 
   },
   background: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-//  jm_branch
-  // Edited: JM 2025/03/07
   container: {
-    width: 294,
-    height: 420,
-
-//   container: {
-//     width: 310,
-//     height: 450,
-//  master
+    width: 310,
+    height: 450,
     justifyContent: "center",
     padding: 15,
     backgroundColor: "#FFFFFF",
     borderRadius: 10,
     alignItems: "center",
-//  jm_branch
-    // marginTop: -20,
+    marginTop: -20,
   },
-  // Edited: JM 2025/03/07
-  forgottxt: {
+  signintxt: {
     fontSize: 36,
     fontWeight: "600",
-    marginTop: 50,
+    marginTop: 40,
     fontFamily: "DarkerGrotesque_600SemiBold",
-    textAlign: "center",
+
   },
-  // Edited: JM 2025/03/07
+  signintxt1: {
+    fontSize: 36,
+    fontWeight: "600",
+    marginTop: -10,
+    fontFamily: "DarkerGrotesque_600SemiBold",
+
+  },
+  inputemail: {
+    height: 40,
+    backgroundColor: "#F1F5FC",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+    width: 262,
+  },
   backButton: { 
-    top: 20,
-    zIndex: 50,
-    flexDirection: "row", 
-    left: -30,
+    position: "absolute",
+    top: 5,
+    left: 5,
+    padding: 10,
+    borderRadius: 5,
+    flexDirection: "row", // Aligns icon and text horizontally
+    alignItems: "center", // Vertically centers icon and text
+    gap: 5, // Optional: Space between icon and text
   },
-  // Edited: JM 2025/03/07
+  
   backText: {
     color: "#375894",
-    fontSize: 25,
+    fontSize: 16,
   },
   flexContainer: {
-    // flex: 1,
-
-//     marginTop: -20,
-//   },
-//   signintxt: {
-//     fontSize: 36,
-//     fontWeight: "600",
-//     marginTop: 40,
-//     fontFamily: "DarkerGrotesque_600SemiBold",
-
-//   },
-//   signintxt1: {
-//     fontSize: 36,
-//     fontWeight: "600",
-//     marginTop: -10,
-//     fontFamily: "DarkerGrotesque_600SemiBold",
-
-//   },
-//   inputemail: {
-//     height: 40,
-//     backgroundColor: "#F1F5FC",
-//     borderRadius: 8,
-//     paddingHorizontal: 10,
-//     marginBottom: 15,
-//     width: 262,
-//   },
-//   backButton: { 
-//     position: "absolute",
-//     top: 5,
-//     left: 5,
-//     padding: 10,
-//     borderRadius: 5,
-//     flexDirection: "row", // Aligns icon and text horizontally
-//     alignItems: "center", // Vertically centers icon and text
-//     gap: 5, // Optional: Space between icon and text
-//   },
-  
-//   backText: {
-//     color: "#375894",
-//     fontSize: 16,
-//   },
-//   flexContainer: {
-//     flex: 1,
-//  master
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },

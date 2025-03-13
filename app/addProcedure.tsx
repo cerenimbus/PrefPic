@@ -225,11 +225,11 @@ const styles = StyleSheet.create({
     marginTop: -23.5,
     marginRight: 25, //added MLI 02/28/2025 for ui purposes
 
-<!--     width: 65, //
-    height: 27,
-    marginLeft: 20,
-    marginTop: -23.5,
-    marginRight: 40, //changed MLI 03/07/2025 for ui purposes -->
+// <!--     width: 65, //
+    // height: 27,
+    // marginLeft: 20,
+    // marginTop: -23.5,
+    // marginRight: 40, //changed MLI 03/07/2025 for ui purposes -->
   }, 
   backButton: {
     padding: 10,

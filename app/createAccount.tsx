@@ -289,7 +289,7 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
           email: form.email,
         }));
         Alert.alert("Success", "A confirmation email has been sent to you.", [
-          { text: "OK", onPress: () => router.push("mainAccountPage") },
+          { text: "OK", onPress: () => router.push("sign-in") },
         ]);
       } else {
         Alert.alert("Error", "Failed to create account.");
@@ -541,7 +541,7 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                     ))}
                 </Picker>
                 )} */}
-<!-- jm_branch -->
+{/* <!-- jm_branch --> */}
                 {/* <View ref={specialtyRef} style={styles.picker}>
 
 
@@ -597,10 +597,10 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
     </SafeAreaView>
     </ImageBackground>
 
-<!--             </ImageBackground>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
-    </SafeAreaView> -->
+// <!--             </ImageBackground>
+//       </TouchableWithoutFeedback>
+//     </KeyboardAvoidingView>
+//     </SafeAreaView> -->
 
   );
 };
@@ -792,63 +792,63 @@ checkboxOption: {
     fontSize: 16, 
     color: '#333', 
 },
-<!-- 
-        flex: 1, 
-        justifyContent: 'center',
-        alignItems: 'center',
-      },
-      phoneContainer: {
-        marginBottom: 16, // Space between fields
-        position: "relative", // For precise placement of error text
-    },
-      disabledButton: {
-        backgroundColor: "#A9A9A9", // Gray color for disabled button
-      },
-      activeInput: {
-        borderColor: "#007AFF",
-        backgroundColor: "#e6f0ff",
-      },
-      scrollcontainer: {  flexGrow: 1,
-        padding: 20,
-        marginTop: 100,
-        backgroundColor: "#fff", },
-  container: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#E3F6FC", padding: 20 },
-  backButton: { flexDirection: "row", alignSelf: "flex-start", marginBottom: 10 },
-  backText: { marginLeft: 5, fontSize: 16, color: '#375894' },
-  formContainer: { width: "90%", backgroundColor: "white", borderRadius: 25, alignItems: "center"},
-  header: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
-  input: { width: "100%", padding: 12, backgroundColor: "#F5F5F5", borderRadius: 10, marginBottom: 10 },
-  checkboxContainer: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: 10 },
-  checkboxOption: { flexDirection: "row", alignItems: "center", marginRight: 5},
-  checkboxOption2: { flexDirection: "row", alignItems: "center", marginRight: 50 },
-  selectText: { fontWeight: "bold", marginRight: 10, fontSize: 12, },
-  note: { textAlign: "center", fontSize: 12, color: "gray", marginBottom: 20 },
-  continueButton: { backgroundColor: "#375894", padding: 10, borderRadius: 25, width: "100%", alignItems: "center" },
-  continueText: { color: "white", fontSize: 18, fontWeight: "bold" },
-  passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    paddingHorizontal: 10,
-    paddingVertical: 12,
-    backgroundColor: "#F5F5F5",
-    borderRadius: 10,
-    marginBottom: 10,
-    justifyContent: "space-between",
-  },
-  eyeIcon: {
-    position: "absolute",
-    right: 15,
-    padding: 10,
-  },
-  picker: {
-    width: "100%",
-    backgroundColor: "#F5F5F5",
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 10,
-  },
- master -->
+// <!-- 
+//         flex: 1, 
+//         justifyContent: 'center',
+//         alignItems: 'center',
+//       },
+//       phoneContainer: {
+//         marginBottom: 16, // Space between fields
+//         position: "relative", // For precise placement of error text
+//     },
+//       disabledButton: {
+//         backgroundColor: "#A9A9A9", // Gray color for disabled button
+//       },
+//       activeInput: {
+//         borderColor: "#007AFF",
+//         backgroundColor: "#e6f0ff",
+//       },
+//       scrollcontainer: {  flexGrow: 1,
+//         padding: 20,
+//         marginTop: 100,
+//         backgroundColor: "#fff", },
+//   container: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#E3F6FC", padding: 20 },
+//   backButton: { flexDirection: "row", alignSelf: "flex-start", marginBottom: 10 },
+//   backText: { marginLeft: 5, fontSize: 16, color: '#375894' },
+//   formContainer: { width: "90%", backgroundColor: "white", borderRadius: 25, alignItems: "center"},
+//   header: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
+//   input: { width: "100%", padding: 12, backgroundColor: "#F5F5F5", borderRadius: 10, marginBottom: 10 },
+//   checkboxContainer: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: 10 },
+//   checkboxOption: { flexDirection: "row", alignItems: "center", marginRight: 5},
+//   checkboxOption2: { flexDirection: "row", alignItems: "center", marginRight: 50 },
+//   selectText: { fontWeight: "bold", marginRight: 10, fontSize: 12, },
+//   note: { textAlign: "center", fontSize: 12, color: "gray", marginBottom: 20 },
+//   continueButton: { backgroundColor: "#375894", padding: 10, borderRadius: 25, width: "100%", alignItems: "center" },
+//   continueText: { color: "white", fontSize: 18, fontWeight: "bold" },
+//   passwordContainer: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     width: "100%",
+//     paddingHorizontal: 10,
+//     paddingVertical: 12,
+//     backgroundColor: "#F5F5F5",
+//     borderRadius: 10,
+//     marginBottom: 10,
+//     justifyContent: "space-between",
+//   },
+//   eyeIcon: {
+//     position: "absolute",
+//     right: 15,
+//     padding: 10,
+//   },
+//   picker: {
+//     width: "100%",
+//     backgroundColor: "#F5F5F5",
+//     borderRadius: 10,
+//     padding: 12,
+//     marginBottom: 10,
+//   },
+//  master -->
 });
 
 export default CreateAccount;
