@@ -15,6 +15,7 @@ export default function ReviewImage() {
   const [isPreview, setIsPreview] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
+  const [retryCount, setRetryCount] = useState(0); // Track retry attempts
 
    //RJP -> 2/7/2025
   // (import) image and procedure name from add_2.tsx 
@@ -87,6 +88,7 @@ const navigateToCamera = () => {
         const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
         if (!procedureSerial) {
             Alert.alert("Error", "Procedure not found. Please create a procedure first.");
+            setIsLoading(false); // Reset loading state on error
             return;
         }
         console.log("🔹 Procedure Serial:", procedureSerial);
@@ -94,6 +96,7 @@ const navigateToCamera = () => {
         // Retrieve deviceID from AsyncStorage
         if (!deviceID) {
             Alert.alert("Error", "Device ID not found.");
+            setIsLoading(false); // Reset loading state on error
             return;
         }
         console.log("🔹 Device ID:", deviceID);
@@ -102,6 +105,7 @@ const navigateToCamera = () => {
         const authorizationCode = await AsyncStorage.getItem("authorizationCode");
         if (!authorizationCode) {
             Alert.alert("Authorization Error", "Please log in again.");
+            setIsLoading(false); // Reset loading state on error
             return;
         }
         console.log("🔹 Authorization Code:", authorizationCode);
@@ -186,16 +190,39 @@ const navigateToCamera = () => {
                 pathname: "editPictureText",
                 params: { procedureName, photoUri: fileUri },
             });
+            setIsLoading(false); // Reset loading state on error
 
         } else {
             const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Upload failed.";
             Alert.alert("Upload Failed", errorMessage);
+            setIsLoading(false); // Reset loading state on error
         }
     } catch (error) {
-    
+      console.error("API call error:", error);
+
+    // Check if the error is a network error
+    if (error instanceof TypeError && error.message === "Network request failed") {
+      Alert.alert("Internet Connection Lost", "Reconnecting... This may take a moment.");
+    } else {
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+    }
      
+      // Retry the API call up to 3 times
+      if (retryCount < 3) {
+        setRetryCount(retryCount + 1);
+        setTimeout(() => navigateToReviewSummary(fileUri, fileType), 1000); // Retry after 1 second
+      } else {
+        Alert.alert("Error", "Failed to upload image after multiple attempts. Please check your network and try again.");
+        setIsLoading(false); // Reset loading state after all retries fail
+      }
     }
 };
+
+useEffect(() => {
+  if (isLoading) {
+    navigateToReviewSummary(photoUriState || "", "image/jpeg");
+  }
+}, [isLoading]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -244,56 +271,22 @@ const navigateToCamera = () => {
             <Text style={styles.retakebuttonText}>Retake</Text>
           </TouchableOpacity>
 
-  {/*
-  <TouchableOpacity
-    style={styles.nextbutton}
-    onPress={() => navigateToReviewSummary(photoUriState || "", "image/jpeg")}
-  >
-    <Text style={styles.buttonText}>Next</Text>
-  </TouchableOpacity>
-  */}
+  
 
 {/*=======================================================================================*/}
 {/*RJP <-3/5/2025 add feedback button*/}
 
 <TouchableOpacity
-  style={[styles.nextbutton, isLoading && styles.disabledButton]}
-  onPress={() => {
-    if (!isLoading) {
-      setIsLoading(true);
-      navigateToReviewSummary(photoUriState || "", "image/jpeg").finally(() => {
-        setIsLoading(false); // Re-enable the button after the API call
-      });
-    }
-  }}
-  disabled={isLoading} // Prevent clicking while loading
->
-  {/* Show ActivityIndicator while loading */}
-  {isLoading ? (
-    <ActivityIndicator size={27} color="#FFFFFF" />
-  ) : (
-    <Text style={styles.buttonText}>Next</Text>
-  )}
-</TouchableOpacity>
-
-
-{/*
-<TouchableOpacity
-  style={[styles.nextbutton, isLoading && styles.disabledButton]}
-  onPress={() => {
-    if (!isLoading) {
-      setIsLoading(true);
-      navigateToReviewSummary(photoUriState || "", "image/jpeg").finally(() => {
-        setIsLoading(false); // Re-enable the button after the API call
-      });
-    }
-  }}
-  disabled={isLoading} // Prevent clicking while loading
->
-  <Text style={styles.buttonText}>{isLoading ? "Loading..." : "Next"}</Text>
-</TouchableOpacity>
-*/}
-{/*End*/}
+            style={[styles.nextbutton, isLoading && styles.disabledButton]}
+            onPress={() => setIsLoading(true)}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator size={27} color="#FFFFFF" />
+            ) : (
+              <Text style={styles.buttonText}>Next</Text>
+            )}
+          </TouchableOpacity>
 {/*=======================================================================================*/}
 
         </View>
