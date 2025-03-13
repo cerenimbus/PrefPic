@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     color: "#000000",
   },
 // jm_branch
-<!--   teamNumber: { -->
+// <!--   teamNumber: { -->
 
   teamCode: {
 
@@ -85,12 +85,12 @@ const styles = StyleSheet.create({
 export default function AddTeamMember() {
   const router = useRouter();
 // jm_branch
-<!--   const params = useLocalSearchParams();
-  const teamNumber = params.teamNumber;
-  console.log("Params received:", teamNumber);
-  return (
-    <View style={styles.container}>
-      {/* Header */} -->
+// <!--   const params = useLocalSearchParams();
+//   const teamNumber = params.teamNumber;
+//   console.log("Params received:", teamNumber);
+//   return (
+//     <View style={styles.container}>
+//       {/* Header */} -->
 
 // MJ2_new_branch
   const params = useLocalSearchParams();
@@ -157,12 +157,12 @@ export default function AddTeamMember() {
       </TouchableOpacity>
       <Text style={styles.header}>Add Team Member</Text>
 
-<!-- jm_branch -->
-<!--       <Text style={styles.teamNumber}>
+{/* <!-- jm_branch --> */}
+{/* <!--       <Text style={styles.teamNumber}>
         Team Number: {teamNumber  }
-      </Text>
-
-      {/* Center box */}
+      </Text> */}
+{/* 
+      Center box
         <View style={styles.centerBox}>
           <View style={styles.contentContainer}>
             <Text style={styles.contents}>
@@ -170,14 +170,14 @@ export default function AddTeamMember() {
               download this app and create an account.
             </Text>
           </View>
-          {/* Button*/}
+          {/* Button*
           <TouchableOpacity
             style={styles.doneButton}
             onPress={() => router.push("/enterTeamMember")}
           >
             <Text style={styles.doneButtonText}>Done</Text>
           </TouchableOpacity>
-        </View> -->
+        </View> */}
 
 
       <Text style={styles.teamCode}>
