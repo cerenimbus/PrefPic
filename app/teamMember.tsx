@@ -79,7 +79,7 @@ const TeamMembersScreen: React.FC = () => {
       };
       fetchDeviceID();
   }, []);
-
+  
   useEffect(() => {
       if (authorizationCode) {
           console.log('Calling getTeamList with authorization code:', authorizationCode);

@@ -283,9 +283,9 @@ export default function Signin() {
             </TouchableOpacity> */}
 
           </View>
-        {/* <TouchableOpacity onPress={navigateToTeamAccount}>
+         <TouchableOpacity onPress={navigateToTeamAccount}>
               <Text style={styles.caccount1}>start</Text>
-            </TouchableOpacity>   */}
+            </TouchableOpacity>  
 
 
         </ScrollView>
