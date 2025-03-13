@@ -7,6 +7,8 @@ import CryptoJS from 'crypto-js';
 import { XMLParser } from 'fast-xml-parser';
 import { getDeviceID } from '../components/deviceInfo';
 
+import Ionicons from "react-native-vector-icons/Ionicons"; 
+
 interface TeamMember {
   id: string;
   name: string;
@@ -212,6 +214,7 @@ const TeamMembersScreen: React.FC = () => {
   };
 // RHCM 2/28/2025 Modified to pass the params teamNumber to be used in addTeamMember.tsx
 const navigateToViewTeamMember = (teamNumber: string) => {
+
   // if (!teamNumber) {
   //     console.warn("No team number available to pass.");
   //     return;
@@ -225,12 +228,14 @@ const navigateToViewTeamMember = (teamNumber: string) => {
 
   router.push({
       pathname: "/addTeamMember",
+
       // params: { teamNumber: teamNumber },
       params: { teamCode: teamCode },
   });
 
   // console.log("Navigating with teamNumber:", teamNumber); // Debugging
   console.log("Navigating with teamCode:", teamCode); // Debugging
+
 };
 
 
@@ -244,8 +249,10 @@ const navigateToViewTeamMember = (teamNumber: string) => {
   const navigateToAddTeamMember = () => {
      setIsAddingMember(true); // Show loading icon
     router.push({
+
       pathname: "addTeamMember",
       params: { teamCode: teamCode }, //
+
     });
   };
 
@@ -280,14 +287,17 @@ const navigateToViewTeamMember = (teamNumber: string) => {
           {teamMembers.length >= 5 ? (
             <ScrollView style = {{flex: 1}}>
               {members.map((member, index) => (
+
                 // <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
                 <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamCode)}>
+
                 <Text style={styles.teamMemberButtonText}>{member.name}</Text>
                 <Text style={styles.item}>{'>'}</Text>
               </TouchableOpacity>
                   ))}
                   </ScrollView>
                   ) : (
+
                   <View>
                     {members.map((member, index) => (
                       // <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
@@ -299,6 +309,7 @@ const navigateToViewTeamMember = (teamNumber: string) => {
                           </TouchableOpacity>
                         ))}
                   </View>
+
                 )}
                 </View>
                 <BottomNavigation />
@@ -380,6 +391,14 @@ const navigateToViewTeamMember = (teamNumber: string) => {
 
 
 const styles = StyleSheet.create({
+
+
+  staticMemberText: {
+    color: '#666',
+    fontSize: 20,
+    marginVertical: 5,
+  },
+
   container: {
     flex: 1,
     backgroundColor: '#E7EFFF',
@@ -394,10 +413,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginTop: 0,
   },
+
   teamMemberContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#B0BEC5',
@@ -408,6 +429,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginTop: 50,
+
     fontFamily: "Darker Grotesque",
   },
   teamCode: {
@@ -477,9 +499,11 @@ const styles = StyleSheet.create({
     borderRadius: 31,
     minWidth: 92,
     marginRight: -10,
+
   },
   addButtonText: {
     fontSize: 14,
+
     fontFamily: "Inter",
     color: '#fff',
     fontWeight: 'bold',

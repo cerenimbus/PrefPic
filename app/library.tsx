@@ -5,7 +5,9 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { XMLParser } from 'fast-xml-parser';
+import Ionicons from "react-native-vector-icons/Ionicons"; 
 import { getDeviceID } from '../components/deviceInfo';
+
 
 interface UserDetails {
     firstName: string;
@@ -304,7 +306,7 @@ const LibraryScreen: React.FC = () => {
                                 <TouchableOpacity key={index} style={styles.procedureContainer} onPress={()=>navigateToviewProcedure(procedure)}>
                                     <Text style={styles.procedureNameButtonText}>{procedure.name}</Text>
                                     <TouchableOpacity style={styles.procedureButton}>
-                                        <Text style={styles.item}>{'>'}</Text>
+                                        <Text style={styles.item}><Ionicons name="chevron-forward" size={24} color="yourColor" /></Text>
                                     </TouchableOpacity>
                                 </TouchableOpacity>
                             ))}
@@ -315,7 +317,7 @@ const LibraryScreen: React.FC = () => {
                                 <TouchableOpacity key={index} style={styles.procedureContainer} onPress={()=>navigateToviewProcedure(procedure)}>
                                     <Text style={styles.procedureNameButtonText}>{procedure.name}</Text>
                                     <TouchableOpacity style={styles.procedureButton}>
-                                        <Text style={styles.item}>{'>'}</Text>
+                                        <Text style={styles.item}><Ionicons name="chevron-forward" size={24} color="yourColor" /></Text>
                                     </TouchableOpacity>
                                 </TouchableOpacity>
                             ))}
@@ -394,7 +396,10 @@ const styles = StyleSheet.create({
     card: {
         flex: 1,
         width: '100%', // or maxWidth: 400
-        height: '100%', // Adjust height as needed
+
+        maxWidth: 400,
+        height: '80%', // Adjust height as needed
+
         backgroundColor: '#ffffff',
         borderRadius: 10,
         padding: 20, // Padding for inner content
@@ -405,6 +410,7 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
         shadowOffset: { width: 0, height: 2 },
         justifyContent: 'space-between',
+        marginBottom: 33,
     },
     bottomNav: {
         width: '100%', // or maxWidth: 400
@@ -451,8 +457,9 @@ const styles = StyleSheet.create({
         height: 60,
         borderRadius: 30,
         alignItems: 'center',
-        marginBottom: 'auto',
+        marginBottom: 5,
         justifyContent: 'center',
+        
     },
     input: {
         flexDirection: 'row',
@@ -474,10 +481,18 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 30,
         alignItems: 'center',
+
+        position: "absolute",
+        bottom: 60,
+        left: 40,
+        right: 40,
+
         borderColor: "#3A5A8C",
         width: '100%', // Ensure it spans the card width
         marginTop: 'auto',
         borderWidth: 2,
+        top: 10,
+        
 
     },
 });
