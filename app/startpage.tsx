@@ -1,13 +1,15 @@
 import { useRouter } from "expo-router";
 import React, { useState, useEffect, useContext } from "react";
 import CheckBox from "expo-checkbox";
-import { Image, ImageBackground, View, Text, StyleSheet, TouchableOpacity, Linking, Alert, Dimensions, ScrollView } from "react-native";
+import { Image, ImageBackground, View, Text, StyleSheet, TouchableOpacity, Linking, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as CryptoJS from "crypto-js"; // SHA-1 hashing
 import { AuthContext } from "./AuthContext"; // Import AuthContext
 import { XMLParser } from "fast-xml-parser";
 import { getDeviceID } from "../components/deviceInfo"; // Import getDeviceID function
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function StartScreen() {
   const [isChecked, setChecked] = useState(false);
@@ -26,6 +28,23 @@ export default function StartScreen() {
     fetchDeviceID();
   }, []);
 
+  // Check if user already completed the demo
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const checkDemoStatus = async () => {
+  //       if (hasCheckedDemo) return; // Avoid redundant checks
+
+  //       const demoStatus = await AsyncStorage.getItem("status");
+  //       if (demoStatus === "Demo" || demoStatus === "Active") {
+  //         router.replace("/sign-in"); // Redirect if demo is done
+  //       }
+  //       setHasCheckedDemo(true); // Mark as checked
+  //     };
+
+  //     checkDemoStatus();
+  //   }, [hasCheckedDemo])
+  // );
+
   const handleGetStarted = async () => {
     try {
       if (!deviceID) {
@@ -35,7 +54,11 @@ export default function StartScreen() {
 
       // Generate formatted date (MM/DD/YYYY-HH:mm)
       const currentDate = new Date();
-      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, '0')}/${String(currentDate.getDate()).padStart(2, '0')}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, '0')}:${String(currentDate.getMinutes()).padStart(2, '0')}`;
+      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, '0')}/${String(
+        currentDate.getDate()
+      ).padStart(2, '0')}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, '0')}:${String(
+        currentDate.getMinutes()
+      ).padStart(2, '0')}`;
 
       const demoStatus = (await AsyncStorage.getItem("Demo")) || "Active";
       const userType = (await AsyncStorage.getItem("UserType")) || "Staff";
@@ -45,7 +68,9 @@ export default function StartScreen() {
       const key = CryptoJS.SHA1(keyString).toString();
 
       // Construct API URL
-      const url = `https://PrefPic.com/dev/PPService/AuthorizeDevice.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&PrefPicVersion=1`;
+      const url = `https://PrefPic.com/dev/PPService/AuthorizeDevice.php?DeviceID=${encodeURIComponent(
+        deviceID.id  
+      )}&Date=${formattedDate}&Key=${key}&PrefPicVersion=1`;
 
       console.log("API Request URL:", url);
 
@@ -103,31 +128,28 @@ export default function StartScreen() {
     handleGetStarted(); // Call API when "Get Started" is clicked
   };
 
-  const { width, height } = Dimensions.get('window'); // Get screen dimensions
-
   return (
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background} >
-      <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <View style={[styles.container, { width: width * 0.85, minHeight: height * 0.5 }]}> {/* Adjust container size based on screen dimensions */}
-            <View style= {[styles.imagestyle1]}>
-              <Image source={require("../assets/logo.png")} style={styles.imagestyle}/>
-            </View>
+      <SafeAreaView style={{ flex: .7 }}>
+      <View style={styles.container}>
+        <View style= {styles.imagestyle1}>
+        <Image source={require("../assets/logo.png")} style={styles.imagestyle}/>
+        </View>
 
-            <View style={styles.mainDescription}>
-              <Text style={styles.pref}>PrefPic Demo</Text>
-              <Text style={styles.description}>There is no sign-in required for this demo version. The live version is password protected. </Text>
-            </View>
-            {/* Checkbox */}
-            <View style={styles.checkboxContainer1}>
-              <View style={styles.checkboxContainer}>
+      <View style={styles.mainDescription}>
+        <Text style={styles.pref}>PrefPic Demo</Text>
+        <Text style={styles.description}>There is no sign-in required for this demo version. The live version is password protected. </Text>
+        </View>
+
+        <View style={styles.checkboxContainer1}>
+            <View style={styles.checkboxContainer}>
                 <CheckBox
                   value={isChecked}
                   onValueChange={(newValue) => {
                     setChecked(newValue);
                   }}
                 />
-                <Text style = {styles.iaccept}>I accept</Text>
+                <Text style = {styles.text}>I accept</Text>
                 <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/terms.html")}>
                   Terms
                 </Text>
@@ -135,25 +157,24 @@ export default function StartScreen() {
                 <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/privacypolicy.html")}>
                   Privacy Policy
                 </Text>
-              </View>
-              <View style={styles.checkboxContainer2}>
-                <CheckBox value={isChecked1} onValueChange={setChecked1} />
-                <Text style={styles.ptext}>I will not enter any patient’s Personally Identifiable Information or pictures</Text>
-              </View>
             </View>
+            <View style={styles.checkboxContainer}>
+                  <CheckBox value={isChecked1} onValueChange={setChecked1} />
+                  <Text style={styles.text}>I will not enter any patient’s Personally Identifiable Information or pictures</Text>
+                </View>
+        </View>
 
-            {/* Button */}
-            <View style={styles.bcontainer}>
-              <TouchableOpacity
-                style={[styles.getButton, { opacity: isChecked && isChecked1 ? 1 : 0.5 }]}
-                onPress={navigateToIndex}
-                disabled={!isChecked || !isChecked1} // Prevents clicking when unchecked
-              >
-                <Text style={styles.GetText}>Get Started</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </ScrollView>
+        {/* Button */}
+        <View style={styles.bcontainer}>
+          <TouchableOpacity
+            style={[styles.getButton, { opacity: isChecked && isChecked1 ? 1 : 0.5 }]}
+            onPress={navigateToIndex}
+            disabled={!isChecked || !isChecked1}
+          >
+            <Text style={styles.GetText}>Get Started</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
       </SafeAreaView>
       <Text style={styles.footerText}>© 2025 Symphatic LLC, All Rights Reserved</Text>
     </ImageBackground>
@@ -161,27 +182,50 @@ export default function StartScreen() {
 }
 
 const styles = StyleSheet.create({
-  mainDescription:{
-    paddingTop: 5,
-  },
-  checkboxContainer1: {
-    paddingTop: 40,
-  },
-  GetText: {
-    color: "white",
-    fontSize: 15,
+  container: {
+    width: wp(85),
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    padding: wp(5),
     alignItems: "center",
+    minHeight: hp(52), // Ensure space for the button
+    justifyContent: "space-between", // Prevent overflow
   },
   getButton: {
     backgroundColor: "#375894",
     alignItems: "center",
     borderRadius: 31,
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingLeft: 10,
-    paddingRight: 10,
-    width: 250,
+    paddingVertical: 10,
+    width: "100%", // Ensure it stays within the container
+    maxWidth: 250,
     marginBottom: 20,
+  },
+  mainDescription:{
+    paddingTop: 5,
+  },
+  checkboxContainer1: {
+    marginVertical: 40,
+    marginHorizontal: 40,
+    gap: 8,
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  text: {
+    left: 5,
+    color: "#7C7C7C",
+  },
+  link: {
+    paddingHorizontal: 5,
+    color: "blue",
+    textDecorationLine: "underline",
+  },
+  GetText: {
+    color: "white",
+    fontSize: 18,
+    alignItems: "center",
+    paddingVertical: 5,
   },
   pref: {
     fontSize: 35,
@@ -190,22 +234,10 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
   },
-  container: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 10,
-    padding: 20,
-    alignItems: "center",
-  },
   background: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    justifyContent: "center",
   },
   description: {
     fontSize: 15,
@@ -216,9 +248,9 @@ const styles = StyleSheet.create({
     paddingRight: 44,
   },
   bcontainer: {
-    paddingTop: 30,
     justifyContent: "center",
     alignItems: "center",
+    width: "100%", // Ensures proper button placement
   },
   imagestyle: {
     width: 240,
@@ -227,36 +259,12 @@ const styles = StyleSheet.create({
   imagestyle1: {
     paddingTop: 15,
   },
-  link: {
-    color: "blue",
-    textDecorationLine: "underline",
-  },
-  checkboxContainer2: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    marginTop: 10,
-    paddingLeft: 28,
-  },
-  ptext: {
-    paddingTop: 5,
-    paddingRight: 5,
-    color: "#7C7C7C",
-  },
-  iaccept:{
-    color: "#7C7C7C",
-  },
   and:{ 
     color: "#7C7C7C",
   },
   footerText: {
     fontSize: 12,
     textAlign: "center",
-    marginBottom: 20,
-  },
-  scrollViewContent: {
-    flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    marginBottom: -130
   },
 });
