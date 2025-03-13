@@ -83,6 +83,8 @@ export default function AddTeamMember() {
   const [userType, setUserType] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
 
+
+  //AJ 3/10/2025 added use effect
   useEffect(() => {
     const fetchUserData = async () => {
       try {
