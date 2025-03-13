@@ -1,7 +1,7 @@
 
 import { router, useRouter, useLocalSearchParams } from "expo-router";
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert, SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert, SafeAreaView, ActivityIndicator } from "react-native";
 import { getDeviceID } from "../components/deviceInfo";
 import CryptoJS from "crypto-js";
 import { XMLParser } from "fast-xml-parser";
@@ -219,7 +219,7 @@ return (
     {isLoading || isNavigating ? (
       // Loading Screen
       <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Loading...</Text>
+        <ActivityIndicator size="small" color="#3A5A8C" />
       </View>
     ) : (
       // Main Content
