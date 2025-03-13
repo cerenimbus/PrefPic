@@ -35,7 +35,7 @@ const AddPearls: React.FC = () => {
   const neverDoRef = useRef<TextInput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const params = useLocalSearchParams();
-  const procedureName = Array.isArray(params.procedureName) ? params.procedureName[0] : params.procedureName;
+  // const procedureName = Array.isArray(params.procedureName) ? params.procedureName[0] : params.procedureName;
 
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
   const [authorizationCode, setAuthorizationCode] = useState<string | null>(null);
@@ -48,7 +48,8 @@ const AddPearls: React.FC = () => {
 
 
   const [updatedProcedureSerial, setUpdatedProcedureSerial] = useState<string | null>(null);
-
+  const [procedureName, setProcedureName] = useState<string | null>(null);
+  
 
   useEffect(() => {
     const fetchDeviceID = async () => {
@@ -67,9 +68,19 @@ const AddPearls: React.FC = () => {
       setUpdatedProcedureSerial(serial);
     }
   }, [params]);
+  //RHCM 3/13/2024 Added for the procedureName to display from other screens
+  //--------------------------------------------------------------------------------
+  useEffect(() => {
+    if (params.procedureName) {
+      const procedureName = Array.isArray(params.procedureName) 
+        ? params.procedureName[0]  // Take the first element if it's an array
+        : params.procedureName;    // Otherwise, use it directly
   
-  console.log("Updated Procedure Serial:", updatedProcedureSerial);
-  
+        setProcedureName(procedureName);
+    }
+  }, [params]);
+  console.log("Updated Procedure Name:", procedureName);
+  //-------------------------------------------------------------------------------- End of modification
 
   useEffect(() => {
     const fetchAuthorizationCode = async () => {
@@ -78,6 +89,23 @@ const AddPearls: React.FC = () => {
     };
     fetchAuthorizationCode();
   }, []);
+
+  useEffect(() => {
+    const loadStoredPearls = async () => {
+      if (!procedureName) return;
+      const existingEntries = await AsyncStorage.getItem(`procedurePearls_${procedureName}`);
+      if (existingEntries) {
+        const pearlsArray: PearlEntry[] = JSON.parse(existingEntries);
+        if (pearlsArray.length > 0) {
+          const lastEntry = pearlsArray[pearlsArray.length - 1];
+          setAlwaysDo(lastEntry.always);
+          setWatchFor(lastEntry.watch);
+          setNeverDo(lastEntry.never);
+        }
+      }
+    };
+    loadStoredPearls();
+  }, [procedureName]);
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();
@@ -98,6 +126,10 @@ const AddPearls: React.FC = () => {
   const navigateToProcedureReviewSummary = async () => {
     if (!deviceID || !deviceID.id || !authorizationCode || !updatedProcedureSerial) {
       Alert.alert("Error", "Device ID or Authorization Code is missing.");
+      return;
+    }
+    if (!procedureName) {
+      Alert.alert("Error", "Procedure Name is missing.");
       return;
     }
 
@@ -125,7 +157,7 @@ const AddPearls: React.FC = () => {
       return;
     }
 
-    // Add new entry
+    // // Add new entry
     pearlsArray.push(newEntry);
     await AsyncStorage.setItem(`procedurePearls_${procedureName}`, JSON.stringify(pearlsArray));
 
@@ -147,9 +179,9 @@ const AddPearls: React.FC = () => {
       if (response.ok) {
         //Alert.alert('Success', 'Procedure updated successfully');
         // Clear input fields after successful submission
-        setAlwaysDo("");
-        setWatchFor("");
-        setNeverDo("");
+        // setAlwaysDo("");
+        // setWatchFor("");
+        // setNeverDo("");
       } else {
         Alert.alert('Error', 'Failed to update procedure');
       }

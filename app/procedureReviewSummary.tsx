@@ -199,7 +199,11 @@ useEffect(() => {
     router.push({
       pathname: "addPearls",
       params: {
-        updatedProcedureSerial: serial
+        updatedProcedureSerial: serial, 
+        procedureName: procedureName,
+        alwaysDo: procedureDetails.alwaysDo,
+        watchFor: procedureDetails.watchFor,
+        neverDo: procedureDetails.neverDo,
       },
   });
   };

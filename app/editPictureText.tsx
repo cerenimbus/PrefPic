@@ -174,7 +174,7 @@ export default function EditPictureText() {
         Alert.alert("Success!", "Picture text updated successfully.");
         router.push({
           pathname: "addPearls",
-          params: { updatedProcedureSerial: procedureSerial },
+          params: { updatedProcedureSerial: procedureSerial, procedureName: procedureName },
         });
       } else {
         const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
