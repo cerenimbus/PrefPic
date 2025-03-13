@@ -87,12 +87,12 @@ const getProcedureList = async () => {
 
         const url = `https://PrefPic.com/dev/PPService/GetProcedure.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&PrefPicVersion=1&Procedure=${serial}`;
 
-        // console.log("URL:", url);
+        console.log("URL:", url);
 
         const response = await fetch(url);
         const data = await response.text();
         // console.log("Response",response);
-        // console.log("Data",data);
+        console.log("Data",data);
 
         const parser = new XMLParser();
         const result = parser.parse(data);

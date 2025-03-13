@@ -36,6 +36,7 @@ export default function start(){
       try {
         const storedAuthCode = await AsyncStorage.getItem("authorizationCode");
         const storedType = await AsyncStorage.getItem("type");
+        // await AsyncStorage.setItem("status", "Demo");
         const storedStatus = await AsyncStorage.getItem("status");
 
         setUserType(storedType);

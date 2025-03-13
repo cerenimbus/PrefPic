@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
 export default function AddTeamMember() {
   const router = useRouter();
   const params = useLocalSearchParams();
-<<<<<<< HEAD
   const [userType, setUserType] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   // const teamNumber = params.teamNumber;
@@ -130,13 +129,11 @@ export default function AddTeamMember() {
     }
   };
 
-=======
   const teamNumber = params.teamNumber;
   //MLI 03/10/2025
-  const { teamCode } = useLocalSearchParams();
+  // const { teamCode } = useLocalSearchParams();
 
   console.log("Params received:", teamNumber);
->>>>>>> origin/master
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -145,12 +142,8 @@ export default function AddTeamMember() {
       </TouchableOpacity>
       <Text style={styles.header}>Add Team Member</Text>
 
-<<<<<<< HEAD
-      <Text style={styles.teamNumber}>
-=======
       <Text style={styles.teamCode}>
         {/* Team Number: {teamNumber  } */}
->>>>>>> origin/master
         Team Number: {teamCode}
       </Text>
 
