@@ -1,5 +1,5 @@
 import { router, useRouter, useLocalSearchParams } from "expo-router";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ImageBackground } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ImageBackground, ScrollView } from "react-native";
 import { useState, useEffect } from "react";
 import React from "react";
 import BottomNavigation from "../components/bottomNav";
@@ -152,6 +152,7 @@ const helpScreen: React.FC = () => {
       <View>
         <Text style={styles.helpText}>Help</Text>
       </View>
+      <ScrollView>
       <View style={styles.container}>
         {buttonHelp.map((item, index) => (
           <TouchableOpacity
@@ -167,6 +168,7 @@ const helpScreen: React.FC = () => {
           </TouchableOpacity>
         ))}
       </View>
+      </ScrollView>
       <BottomNavigation/>
     </SafeAreaView>
   );
