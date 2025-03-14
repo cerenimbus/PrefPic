@@ -120,7 +120,7 @@ const TeamMembersScreen: React.FC = () => {
 
   const getTeamList = async () => {
     if (!deviceID) {
-        console.error('Device information not found');
+        // console.error('Device information not found');
         return;
     }
 
