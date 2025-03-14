@@ -6,6 +6,9 @@ import CryptoJS from "crypto-js";
 import { getDeviceID } from '../components/deviceInfo';
 import { Modal } from "react-native";
 
+///Aj 3/14/2025 
+//import for zoom in and zoom out 
+import ImageViewer from 'react-native-image-zoom-viewer';
 //Add SafeAreaView RJP <--3/5/2025
 
 export default function ReviewImage() {
@@ -253,9 +256,10 @@ useEffect(() => {
 
           {/* Full Image Overlay */}
         {/* fix photoUri to show only one image on display or full image -> RJP 02/11/2025*/}
+                {/* AJ 3/14/2025  */}
+                    {/* added a zoom in/ zoom out functionality  */}
 
-        {isPreview && (
-    <Modal visible={isPreview} transparent={true} animationType="fade">
+                    {/* <Modal visible={isPreview} transparent={true} animationType="fade">
       <View style={{ flex: 1, backgroundColor: "rgba(41, 41, 41, 0.8)", justifyContent: "center", alignItems: "center" }}>
         <TouchableOpacity onPress={handleClosePreview} style={styles.closeButton}>
           <Text style={styles.closeButtonText}>X</Text>
@@ -263,7 +267,25 @@ useEffect(() => {
         <Image style={styles.fullImage} source={photoUriState ? { uri: photoUriState } : undefined} />
       </View>
     </Modal>
-  )}
+  )} */}
+        {isPreview && (
+        <Modal visible={isPreview} transparent={true} animationType="fade">
+          <View style={{ flex: 1, backgroundColor: "rgba(41, 41, 41, 0.8)", justifyContent: "center", alignItems: "center" }}>
+            <TouchableOpacity onPress={handleClosePreview} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>X</Text>
+            </TouchableOpacity>
+            <ImageViewer
+  imageUrls={photoUriState ? [{ url: photoUriState }] : []}
+  enableSwipeDown={true}
+  onSwipeDown={handleClosePreview}
+  enableImageZoom={true}
+  style={styles.fullImage}
+  renderIndicator={() => <></>} // This removes the 1/1 indicator
+/>
+          </View>
+        </Modal>
+)}
+
 
 
         <View style={styles.buttonContainer}>
