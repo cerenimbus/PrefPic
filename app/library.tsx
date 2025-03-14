@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { XMLParser } from 'fast-xml-parser';
 import { getDeviceID } from '../components/deviceInfo';
+import { Dimensions } from 'react-native';
 
 interface UserDetails {
     firstName: string;
@@ -14,6 +15,7 @@ interface UserDetails {
 
 
 const LibraryScreen: React.FC = () => {
+    const { width, height } = Dimensions.get('window');
     const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
     const [selectedProcedure, setSelectedProcedure] = useState<string | null>(null);
     const [isAddProcedureLoading, setIsAddProcedureLoading] = useState(false); // Added state for loading
@@ -321,6 +323,8 @@ const LibraryScreen: React.FC = () => {
                             ))}
                         </View>
                     )}
+                    <View>
+                </View>
                     <TouchableOpacity
                         style={styles.finishButton}
                         onPress={handleNextPressCompleteDemo}
@@ -333,22 +337,27 @@ const LibraryScreen: React.FC = () => {
                         )}
                     </TouchableOpacity>
                 </View> 
-            </View>
+                </View>
             <BottomNavigation />
         </SafeAreaView>
+        
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
+        padding: '5%',
         backgroundColor: '#E7EFFF',
     },
     username: {
         fontSize: 18,
         textAlign: 'center',
         fontFamily: 'Darker Grotesque',
+    },
+    finishDemoContainer: {
+        alignItems: 'center', // Center the button horizontally
+        marginBottom: '5%', // Add spacing from the BottomNavigation
     },
     procedureContainer: {
         flexDirection: 'row',
@@ -394,10 +403,10 @@ const styles = StyleSheet.create({
     card: {
         flex: 1,
         width: '100%', // or maxWidth: 400
-        height: '100%', // Adjust height as needed
+        // height: '100%', // Adjust height as needed
         backgroundColor: '#ffffff',
         borderRadius: 10,
-        padding: 20, // Padding for inner content
+        padding: '5%', // Padding for inner content
         borderWidth: 2, // Add border
         borderColor: 'white', // Border color
         shadowColor: '#000', // Shadow for iOS
@@ -405,7 +414,7 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
         shadowOffset: { width: 0, height: 2 },
         justifyContent: 'space-between',
-        marginBottom: 33,
+        marginBottom: '8%',
     },
     bottomNav: {
         width: '100%', // or maxWidth: 400
@@ -448,8 +457,9 @@ const styles = StyleSheet.create({
     addButton: {
         backgroundColor: '#375894',
         color: 'white',
-        padding: 15,
-        height: 60,
+        paddingVertical: '3%',
+        paddingHorizontal: '10%',
+        height: 50,
         borderRadius: 30,
         alignItems: 'center',
         marginBottom: 5,
@@ -472,16 +482,16 @@ const styles = StyleSheet.create({
     },
     finishButton: {
         backgroundColor: 'white',
+        paddingVertical: '3%',
+        paddingHorizontal: '10%',
         color: 'white',
-        padding: 15,
         borderRadius: 30,
         alignItems: 'center',
         borderColor: "#3A5A8C",
         width: '100%', // Ensure it spans the card width
         marginTop: 'auto',
         borderWidth: 2,
-        top: 10,
-        
+        marginBottom: '9%',
 
     },
 });
