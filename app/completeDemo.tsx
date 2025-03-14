@@ -30,8 +30,7 @@ export default function CompleteDemo() {
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
       <View style={styles.container}>
         {/* Placeholder for profile image */}
-        <Image  style={styles.profileImage} />
-        {/* source={require("../assets/profile_placeholder.png")} */}
+        <Image  source={require("../assets/logo.png")} style = {(styles.profileImage)} />
         <Text style={styles.title}>Demo Complete!</Text>
 
         <Text style={styles.description}>
@@ -70,11 +69,11 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
   },
   profileImage: {
-    width: 50,
+    width: 200,
     height: 50,
-    borderRadius: 25,
+
     marginBottom: 15,
-    backgroundColor: "#ccc",
+
   },
   title: {
     fontSize: 24,
