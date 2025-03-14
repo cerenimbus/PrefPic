@@ -157,8 +157,8 @@ const styles = StyleSheet.create({
   },
   imagestyle: {
     width: 230,
-    height: 50,
-    paddingTop: 61,
+    height: 67,
+    paddingTop: 0,
     marginTop: 40,
   },
   backText: {

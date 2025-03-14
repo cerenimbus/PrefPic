@@ -149,10 +149,9 @@ const helpScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={{flex: 1,backgroundColor: '#E7EFFF', }}>
-      <View>
+      <View style={{marginTop: 5,}}>
         <Text style={styles.helpText}>Help</Text>
       </View>
-      <ScrollView>
       <View style={styles.container}>
         {buttonHelp.map((item, index) => (
           <TouchableOpacity
@@ -168,7 +167,6 @@ const helpScreen: React.FC = () => {
           </TouchableOpacity>
         ))}
       </View>
-      </ScrollView>
       <BottomNavigation/>
     </SafeAreaView>
   );
@@ -179,7 +177,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    marginTop: 30,
+    marginBottom: 10,
   },
   imageBackground: {
     flex: 1,
