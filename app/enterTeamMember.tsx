@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#2c4a92',
     paddingVertical: 11,
-    paddingHorizontal: 140,
+    ///paddingHorizontal: 110, //RJP 3/14/2025 -> comment out padding horizontal fixing submit text
     borderRadius: 20,
   },
   buttonText: {
