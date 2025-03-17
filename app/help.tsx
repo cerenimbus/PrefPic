@@ -149,7 +149,7 @@ const helpScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={{flex: 1,backgroundColor: '#E7EFFF', }}>
-      <View style={{marginTop: 5,}}>
+      <View>
         <Text style={styles.helpText}>Help</Text>
       </View>
       <View style={styles.container}>
@@ -191,12 +191,11 @@ const styles = StyleSheet.create({
   },
   helpText: {
     fontSize: 60,
-    marginBottom: 10,
     textAlign: 'center',
     fontFamily: 'Darker Grotesque',
-    top: 40,
-    paddingTop: 40,
-    paddingBottom: 60,
+    top: 20,
+    paddingTop: 30,
+    paddingBottom: 30,
   },
   bottomNav: {
     width: '100%',
@@ -221,8 +220,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#2E518B',
     margin: 4,
     borderRadius: 10,
-    // alignItems: 'center',
-    // justifyContent: 'center',
     overflow: 'hidden',
   },
   textContainer: {
