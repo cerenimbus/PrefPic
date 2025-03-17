@@ -93,7 +93,7 @@ export default function Signin() {
   };
   
   const navigateToTeamAccount = () => { 
-    router.push("/startpage"); // Adjust the path if your CreateAccount screen is in another folder
+    router.push("/completeDemo"); // Adjust the path if your CreateAccount screen is in another folder
   };
   const navigateToMainAccountPage = () => {
     router.push("/mainAccountPage");
