@@ -145,18 +145,6 @@ const AddPearls: React.FC = () => {
     const existingEntries = await AsyncStorage.getItem(`procedurePearls_${procedureName}`);
     let pearlsArray: PearlEntry[] = existingEntries ? JSON.parse(existingEntries) : [];
 
-    // Check for duplicates
-    const isDuplicate = pearlsArray.some((entry: PearlEntry) => 
-      entry.always === newEntry.always && 
-      entry.watch === newEntry.watch && 
-      entry.never === newEntry.never
-    );
-
-    if (isDuplicate) {
-      Alert.alert("Error", "This entry already exists.");
-      return;
-    }
-
     // // Add new entry
     pearlsArray.push(newEntry);
     await AsyncStorage.setItem(`procedurePearls_${procedureName}`, JSON.stringify(pearlsArray));
@@ -283,10 +271,10 @@ const AddPearls: React.FC = () => {
             <TouchableOpacity
               style={[
                 styles.button, 
-                (alwaysDo.trim() === "" || watchFor.trim() === "" || neverDo.trim() === "") && styles.disabledButton
+                // (alwaysDo.trim() === "" || watchFor.trim() === "" || neverDo.trim() === "") && styles.disabledButton
               ]}
               onPress={handleNextPress}
-              disabled={alwaysDo.trim() === "" || watchFor.trim() === "" || neverDo.trim() === "" || isLoading}
+              // disabled={alwaysDo.trim() === "" || watchFor.trim() === "" || neverDo.trim() === "" || isLoading}
             >
               {isLoading ? (
                 <ActivityIndicator size="small" color="#FFFFFF" />
@@ -322,11 +310,11 @@ const AddPearls: React.FC = () => {
       marginTop: 20,
       fontSize: 24,
       fontWeight: "bold",
-      marginBottom: 20,
+      marginBottom: '5%',
       textAlign: "center",
     },
     section: {
-      marginBottom: 20,
+      marginBottom: '2%',
     },
     labelContainer: {
       flexDirection: "row",
@@ -342,7 +330,6 @@ const AddPearls: React.FC = () => {
     label: {
       fontSize: 16,
       fontWeight: "bold",
-      marginTop: 5,
     },
     input: {
       borderWidth: 1,
@@ -362,7 +349,7 @@ const AddPearls: React.FC = () => {
       padding: 15,
       borderRadius: 8,
       alignItems: "center",
-      marginTop: 20,
+      marginTop: '2%',
     },
     buttonText: {
       color: "#fff",
