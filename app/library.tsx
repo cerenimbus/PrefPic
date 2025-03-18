@@ -323,8 +323,6 @@ const LibraryScreen: React.FC = () => {
                             ))}
                         </View>
                     )}
-                    <View>
-                </View>
                     <TouchableOpacity
                         style={styles.finishButton}
                         onPress={handleNextPressCompleteDemo}
