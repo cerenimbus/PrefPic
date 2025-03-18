@@ -218,17 +218,23 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#007AFF',
     fontFamily: "Darker Grotesque, sans-serif", //
-    width: 'auto', //
+
+    width: 'auto',
     height: 27,
     marginLeft: 20,
     marginTop: -23.5,
-    marginRight: 40, //changed MLI 03/07/2025 for ui purposes
+    marginRight: 25, //added MLI 02/28/2025 for ui purposes
+
+// <!--     width: 65, //
+    // height: 27,
+    // marginLeft: 20,
+    // marginTop: -23.5,
+    // marginRight: 40, //changed MLI 03/07/2025 for ui purposes -->
   }, 
   backButton: {
     padding: 10,
     marginBottom: 10,
     alignSelf: 'flex-start', //added MLI 02/28/2025 for ui purposes
-    flexDirection: 'row',
   },
   title: {
     color: "#000000",
