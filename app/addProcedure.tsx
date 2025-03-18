@@ -217,8 +217,8 @@ const styles = StyleSheet.create({
   backText: {
     fontSize: 20,
     color: '#007AFF',
-    fontFamily: "Darker Grotesque", //
-    width: 65, //
+    fontFamily: "Darker Grotesque, sans-serif", //
+    width: 'auto', //
     height: 27,
     marginLeft: 20,
     marginTop: -23.5,
@@ -228,6 +228,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     alignSelf: 'flex-start', //added MLI 02/28/2025 for ui purposes
+    flexDirection: 'row',
   },
   title: {
     color: "#000000",
