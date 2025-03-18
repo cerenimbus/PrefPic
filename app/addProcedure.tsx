@@ -217,9 +217,14 @@ const styles = StyleSheet.create({
   backText: {
     fontSize: 20,
     color: '#007AFF',
+<<<<<<< Updated upstream
     fontFamily: "Darker Grotesque, sans-serif", //
 
     width: 'auto',
+=======
+    fontFamily: "Darker Grotesque", //
+    width: 58,
+>>>>>>> Stashed changes
     height: 27,
     marginLeft: 20,
     marginTop: -23.5,
