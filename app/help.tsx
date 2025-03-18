@@ -1,5 +1,5 @@
 import { router, useRouter, useLocalSearchParams } from "expo-router";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ImageBackground } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ImageBackground, ScrollView } from "react-native";
 import { useState, useEffect } from "react";
 import React from "react";
 import BottomNavigation from "../components/bottomNav";
@@ -7,11 +7,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { getDeviceID } from '../components/deviceInfo';
 import { XMLParser } from 'fast-xml-parser';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const helpScreen: React.FC = () => {
   const router = useRouter();
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
   const [authorizationCode, setAuthorizationCode] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
   // MG 02/21/2025
   // Added background image to the button
   const buttonHelp = [
@@ -48,6 +50,28 @@ const helpScreen: React.FC = () => {
   };
   const navigateToFeedback = () => {
     router.push('/feedback');
+  };
+
+  useEffect(() => {
+    const fetchUserStatus = async () => {
+      try {
+        const storedStatus = await AsyncStorage.getItem("status");
+        setStatus(storedStatus);
+      } catch (error) {
+        console.error("Error fetching user status:", error);
+      }
+    };
+    fetchUserStatus();
+  }, []);
+
+  const navigateAfterHelp = () => {
+    if (status === 'Demo') {
+      router.push('/library'); // Redirect to Library page
+    } else if (status === 'Active') {
+      router.push('/sign-in'); // Redirect to Account Sign In page
+    } else if (status === 'Verified') {
+      router.push('/mainAccountPage'); // Redirect to Main Account Page
+    }
   };
 
   const getHelp = async (topic: string) => {
@@ -88,8 +112,8 @@ const helpScreen: React.FC = () => {
           `Help About ${topic}`,
           data.ResultInfo.Help,
           [
-            { text: 'Ok', onPress: navigateToMainAccountPage },
-            { text: 'Back', onPress: navigateToMainAccountPage },
+            { text: 'Ok', onPress: navigateAfterHelp },
+            { text: 'Back', onPress: navigateAfterHelp },
           ],
           { cancelable: false }
         );
@@ -121,9 +145,10 @@ const helpScreen: React.FC = () => {
       getHelp(topic);
     }
   };
+  console.log('Status', status);
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{flex: 1,backgroundColor: '#E7EFFF', }}>
       <View>
         <Text style={styles.helpText}>Help</Text>
       </View>
@@ -143,7 +168,7 @@ const helpScreen: React.FC = () => {
         ))}
       </View>
       <BottomNavigation/>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -152,7 +177,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    marginTop: 30,
+    marginBottom: 10,
   },
   imageBackground: {
     flex: 1,
@@ -165,13 +190,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   helpText: {
-    fontSize: 40,
-    marginBottom: 10,
+    fontSize: 60,
     textAlign: 'center',
     fontFamily: 'Darker Grotesque',
-    top: 40,
-    paddingTop: 40,
-    paddingBottom: 80,
+    top: 20,
+    paddingTop: 30,
+    paddingBottom: 30,
   },
   bottomNav: {
     width: '100%',
@@ -196,8 +220,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#2E518B',
     margin: 4,
     borderRadius: 10,
-    // alignItems: 'center',
-    // justifyContent: 'center',
     overflow: 'hidden',
   },
   textContainer: {
@@ -213,7 +235,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'Darker Grotesque',
     padding: 10,
-    fontSize: 14,
+    fontSize: 20,
   },
 });
 

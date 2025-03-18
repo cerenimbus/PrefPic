@@ -69,9 +69,14 @@ const enterTeamMember = () => {
       console.log('JoinTeam API response:', data);
 
       // Handle API response (assuming success message in response)
-      if (data.includes('<Success>')) {
-        Alert.alert('Success', 'You have successfully joined the team!');
+      if (data.includes("<Result>Success</Result>")) {
+        //Alert.alert('Success', 'You have successfully joined the team!');
         setTeamNumber(''); // Clear input field after success
+
+        router.push({
+          pathname: "mainAccountPage",
+        });
+
       } else {
         Alert.alert('Error', 'Failed to join the team. Please try again.');
       }
@@ -135,9 +140,16 @@ const styles = StyleSheet.create({
     //marginRight: 300,
     marginTop: 30,
   },
+  scrollcontainer: {
+    flexGrow: 1,
+    //padding: 20,
+    //marginTop: 100,
+    backgroundColor: "#f0f4fa",
+  },
+
   description: {
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: 16,
     color: '#666',
     marginBottom: 20,
   },
@@ -155,7 +167,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#2c4a92',
     paddingVertical: 11,
-    paddingHorizontal: 140,
+    ///paddingHorizontal: 110, //RJP 3/14/2025 -> comment out padding horizontal fixing submit text
     borderRadius: 20,
   },
   buttonText: {

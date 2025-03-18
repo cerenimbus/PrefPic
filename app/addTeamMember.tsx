@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import BottomNavigation from "../components/bottomNav";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const styles = StyleSheet.create({
   container: {
@@ -77,26 +78,59 @@ const styles = StyleSheet.create({
 
 export default function AddTeamMember() {
   const router = useRouter();
-  const params = useLocalSearchParams();
-  const teamNumber = params.teamNumber;
-  //MLI 03/10/2025
+ //MLI 03/10/2025  
   const { teamCode } = useLocalSearchParams();
+  const [userType, setUserType] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
 
-  console.log("Params received:", teamNumber);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const storedType = await AsyncStorage.getItem("type");
+        const storedStatus = await AsyncStorage.getItem("status");
+
+        setUserType(storedType);
+        setStatus(storedStatus);
+
+        console.log("User Type:", storedType);
+        console.log("Status:", storedStatus);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleDonePress = () => {
+    console.log("Done pressed - userType:", userType, "status:", status);
+    
+    if (userType === "Surgical Staff") {
+      console.log("Routing to enterTeamMember (surgical staff)");
+      router.push("/enterTeamMember");
+    } else if (userType === "Physician") {
+      if (status === "Demo") {
+        console.log("Routing to library (physician in demo mode)");
+        router.push("/library");
+      } else {
+        console.log("Routing to mainAccount (physician in non-demo mode)");
+        router.push("/mainAccountPage");
+      }
+    } else {
+      console.log("User type not set, defaulting to enterTeamMember");
+      router.push("/enterTeamMember");
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* Header */}
       <TouchableOpacity onPress={() => router.back()}>
         <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
       <Text style={styles.header}>Add Team Member</Text>
 
-      <Text style={styles.teamCode}>
-        {/* Team Number: {teamNumber  } */}
-        Team Number: {teamCode}
-      </Text>
+      <Text style={styles.teamCode}>Team Number: {teamCode}</Text>
 
-      {/* Center box */}
       <View style={styles.centerBox}>
         <View style={styles.contentContainer}>
           <Text style={styles.contents}>
@@ -104,11 +138,7 @@ export default function AddTeamMember() {
             download this app and create an account.
           </Text>
         </View>
-        {/* Button*/}
-        <TouchableOpacity
-          style={styles.doneButton}
-          onPress={() => router.push("/enterTeamMember")}
-        >
+        <TouchableOpacity style={styles.doneButton} onPress={handleDonePress}>
           <Text style={styles.doneButtonText}>Done</Text>
         </TouchableOpacity>
       </View>

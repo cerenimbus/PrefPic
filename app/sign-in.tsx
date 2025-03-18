@@ -19,6 +19,7 @@ export default function Signin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isChecked, setChecked] = useState(false);
+  const[isChecked1, setChecked1] = useState(false);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [hasCheckedDemo, setHasCheckedDemo] = useState(false);
@@ -32,7 +33,8 @@ export default function Signin() {
 
   useEffect(() => {
     console.log("is Checked updated:", isChecked);
-  }, [isChecked]);
+    console.log("is Checked1 updated:", isChecked1);
+  }, [isChecked, isChecked1]);
 
 
     // useEffect(() => {
@@ -91,17 +93,21 @@ export default function Signin() {
   };
   
   const navigateToTeamAccount = () => { 
-    router.push("/teamMember"); // Adjust the path if your CreateAccount screen is in another folder
+    router.push("/completeDemo"); // Adjust the path if your CreateAccount screen is in another folder
   };
   const navigateToMainAccountPage = () => {
     router.push("/mainAccountPage");
   };
   // Determine if the "Sign In" button should be enabled or disabled
-  const isFormValid = email && password && isChecked && validateEmail(email);
+  const isFormValid = email && password && isChecked && isChecked1  && validateEmail(email);
 
   const handleSignIn = async () => {
 
-    
+        // Validate form data
+        if (!isFormValid) {
+          Alert.alert("Validation Error", "Please fill out all fields correctly.");
+          return;
+        }
     if (!email || !password) {
       Alert.alert("Validation Error", "Email and Password are required.");
       return;
@@ -122,6 +128,11 @@ export default function Signin() {
     // Check if Terms & Privacy is accepted
     if (!isChecked) {
       Alert.alert("Terms & Privacy", "You must accept the Terms and Privacy Policy to proceed.");
+      return;
+    }
+
+    if(!isChecked1){
+      Alert.alert("You must check the checkbox to proceed");
       return;
     }
 
@@ -151,7 +162,7 @@ export default function Signin() {
       const key = CryptoJS.SHA1(keyString).toString();
 
       // Construct API URL
-      const url = `https://prefpic.com/dev/PPService/AuthorizeUser.php?DeviceID=${encodeURIComponent(deviceID)}&DeviceType=${encodeURIComponent(deviceType)}&DeviceModel=${encodeURIComponent(deviceModel)}&DeviceVersion=${encodeURIComponent(deviceVersion)}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}&PrefPicVersion=10&TestFlag=0&AuthCode=${encodeURIComponent(authCode || "")}`;
+      const url = `https://prefpic.com/dev/PPService/AuthorizeUser.php?DeviceID=${encodeURIComponent(deviceID)}&DeviceType=${encodeURIComponent(deviceType)}&DeviceModel=${encodeURIComponent(deviceModel)}&DeviceVersion=${encodeURIComponent(deviceVersion)}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}&PrefPicVersion=10&TestFlag=0`;
       console.log("Request URL:", url);
 
       // Call API
@@ -201,7 +212,7 @@ export default function Signin() {
                       {/* Centered Image and Text */}
 
           <View style={styles.imageTextContainer}>
-            <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} />
+            <Image source={require("../assets/logo.png")} style={styles.imagestyle} />
             <Text style={styles.signintxt}>Sign in</Text>
           </View>
 
@@ -214,9 +225,9 @@ export default function Signin() {
               keyboardType="email-address"
               autoCapitalize="none"
             />
-                <View style={styles.inputContainer}>
-      <TextInput
-        style={styles.input}
+        <View style={styles.inputContainer}>
+       <TextInput
+        style={styles.inputpass}
         placeholder="Password"
         value={password}
         onChangeText={(text) => setPassword(text)}
@@ -230,19 +241,23 @@ export default function Signin() {
           color="gray"
         />
       </TouchableOpacity>
-    </View>
+       </View>
 
             {/* Terms and Privacy Policy */}
             <View style={styles.checkboxContainer}>
               <CheckBox value={isChecked} onValueChange={setChecked} />
-              <Text>I accept</Text>
+              <Text style = {styles.iaccept}>I accept</Text>
               <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/terms.html")}>
                  Terms
               </Text>
-              <Text> and </Text>
+              <Text style = {styles.and}> and </Text>
               <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/privacypolicy.html")}>
                 Privacy Policy
               </Text>
+            </View>
+            <View style={styles.checkboxContainer2}>
+              <CheckBox value={isChecked1} onValueChange={setChecked1} />
+              <Text style={styles.ptext}>I will not enter any patient’s Personally Identifiable Information or pictures</Text>
             </View>
 
             {/* Sign In Button */}
@@ -268,14 +283,21 @@ export default function Signin() {
             </TouchableOpacity> */}
 
           </View>
-          
+         <TouchableOpacity onPress={navigateToTeamAccount}>
+              <Text style={styles.caccount1}>start</Text>
+            </TouchableOpacity>  
 
 
         </ScrollView>
       </KeyboardAvoidingView>
+            <Text style={styles.footerText}>© 2025 Symphatic LLC, All Rights Reserved</Text>
+      
     </ImageBackground>
   );
 }
+
+const { width, height } = Dimensions.get('window');
+
 
 const styles = StyleSheet.create({
   inputContainer: {
@@ -283,9 +305,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#F1F5FC",
     borderColor: "#ccc",
-    borderRadius: 10,
+    borderRadius: 8,
     paddingHorizontal: 10,
     marginBottom: 10,
+    width: "100%",
+
+  },
+  inputpass: {
+    flex: 1, // Ensure input takes available space
+    height: 40,
+    backgroundColor: "#F1F5FC",
+
+
+
+    
+
   },
   input: {
     flex: 1,
@@ -294,6 +328,9 @@ const styles = StyleSheet.create({
 
   flexContainer: {
     flex: 1,
+    paddingTop: constants.statusBarHeight,
+    justifyContent: "center",
+
   },
   scrollViewContent: {
     paddingBottom: 20,
@@ -303,19 +340,19 @@ const styles = StyleSheet.create({
   },
   imageTextContainer: {
     alignItems: "center",
-    marginTop: 30,
+    marginTop: 15,
   },
   imagestyle: {
-    width: 70,
-    height: 70,
-    borderRadius: 50,
+    width: 200,
+    height: 50,
+  
   },
   signintxt: {
     fontSize: 36,
     fontWeight: "600",
     marginBottom: 10,
     textAlign: "center",
-    marginTop: 15,
+    marginTop: 25,
     fontFamily: "DarkerGrotesque_600SemiBold",
 
 
@@ -340,6 +377,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 10
   },
+  caccount1: {
+    color: "#888888",
+    textDecorationLine: "underline",
+    fontSize: 12,
+    textAlign: "center",
+    marginTop: 10
+  },
   getButton: {
     backgroundColor: "#A3A3A3", // Initially disabled color
     borderRadius: 31,
@@ -353,7 +397,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
     marginTop: 10,
-    justifyContent: "center",
+    justifyContent: "flex-start",
+    width: "100%",
+
+
   },
   background: {
     flex: 1,
@@ -362,8 +409,10 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    width: 294,
-    height: 470,
+    width: 300,
+    height: 500,
+    //  width: width * 0.8, // Adjust width based on screen size
+    // height: height * 0.6, // Adjust height based on screen size
     justifyContent: "center",
     padding: 15,
     backgroundColor: "#FFFFFF",
@@ -380,17 +429,35 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     width: "100%",
   },
-  inputpass: {
-    height: 37,
-    backgroundColor: "#F1F5FC",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 15,
-    width: "100%",
-  },
+
   link: {
     color: "blue",
     textDecorationLine: "underline",
     fontSize: 10,
+  },
+  checkboxContainer2: {
+    flexDirection: "row",
+    gap: 4,
+    marginTop: 10,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    width: "100%",
+  },
+  ptext: {
+    paddingTop: 5,
+    paddingRight: 3,
+    color: "#7C7C7C",
+  },
+  iaccept:{
+
+    color: "#7C7C7C",
+  },
+  and:{ 
+    color: "#7C7C7C",
+  },
+  footerText: {
+    fontSize: 12,
+    textAlign: "center",
+    marginBottom: 20
   },
 });

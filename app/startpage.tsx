@@ -11,57 +11,39 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-nat
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
 
-
 export default function StartScreen() {
   const [isChecked, setChecked] = useState(false);
+  const [isChecked1, setChecked1] = useState(false);
   const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
   const router = useRouter();
   const { saveAuthCode } = useContext(AuthContext) ?? {};
   const [hasCheckedDemo, setHasCheckedDemo] = useState(false);
 
-
   // Fetch the unique device ID dynamically
   useEffect(() => {
-  
-  const fetchDeviceID = async () => {
-    const id = await getDeviceID();
-    setDeviceID(id);
-  };
+    const fetchDeviceID = async () => {
+      const id = await getDeviceID();
+      setDeviceID(id);
+    };
     fetchDeviceID();
   }, []);
-  
 
+  // Check if user already completed the demo
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const checkDemoStatus = async () => {
+  //       if (hasCheckedDemo) return; // Avoid redundant checks
 
-  
-//  // Check if user already completed the demo
-//  useFocusEffect(
-//   React.useCallback(() => {
-//     const checkDemoStatus = async () => {
-//       if (hasCheckedDemo) return; // Avoid redundant checks
+  //       const demoStatus = await AsyncStorage.getItem("status");
+  //       if (demoStatus === "Demo" || demoStatus === "Active") {
+  //         router.replace("/sign-in"); // Redirect if demo is done
+  //       }
+  //       setHasCheckedDemo(true); // Mark as checked
+  //     };
 
-//       const demoStatus = await AsyncStorage.getItem("status");
-//       if (demoStatus === "Demo" || demoStatus === "Active") {
-//         router.replace("/sign-in"); // Redirect if demo is done
-//       }
-//       setHasCheckedDemo(true); // Mark as checked
-//     };
-
-//     checkDemoStatus();
-//   }, [hasCheckedDemo])
-// );
-
-useEffect(() => {
-  const checkUserType = async () => {
-    const userType = await AsyncStorage.getItem("UserType");
-
-    if (!userType) {
-      await AsyncStorage.setItem("UserType", "Staff"); // Default to "Staff" if not set
-    }
-  };
-
-  checkUserType();
-}, []);
-
+  //     checkDemoStatus();
+  //   }, [hasCheckedDemo])
+  // );
 
   const handleGetStarted = async () => {
     try {
@@ -130,7 +112,8 @@ useEffect(() => {
 
   useEffect(() => {
     console.log("is Checked updated:", isChecked);
-  }, [isChecked]);
+    console.log("is Checked1 updated:", isChecked1);
+  }, [isChecked,isChecked1]);
 
   const navigateToIndex = () => {
     if (!isChecked) {
@@ -138,109 +121,123 @@ useEffect(() => {
       Alert.alert("Terms & Privacy", "You must accept the Terms and Privacy Policy to proceed.");
       return;
     }
+    if (!isChecked1) {
+      Alert.alert("PII Agreement", "You must agree not to enter any patient’s Personally Identifiable Information or pictures to proceed.");
+      return;
+    }
     handleGetStarted(); // Call API when "Get Started" is clicked
   };
 
-
-//   const navigateToCreateAccount = () => {
-//     router.push('createAccount');
-// };
-
   return (
-    
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background} >
       <SafeAreaView style={{ flex: .7 }}>
-      <View style={[styles.container]}>
-        <Image source={require("../assets/gray.jpg")} style={styles.imagestyle} resizeMode="contain"/>
+      <View style={styles.container}>
+        <View style= {styles.imagestyle1}>
+        <Image source={require("../assets/logo.png")} style={styles.imagestyle}/>
+        </View>
 
+      <View style={styles.mainDescription}>
         <Text style={styles.pref}>PrefPic Demo</Text>
-        <Text style={styles.description}>There is no sign-in required for </Text>
-        <Text style= {styles.description1}> this demo version. The live </Text>
-        <Text style = {styles.description2}>version is password protected. </Text>
+        <Text style={styles.description}>There is no sign-in required for this demo version. The live version is password protected. </Text>
+        </View>
 
-        {/* Checkbox */}
-        <View style={styles.checkboxContainer}>
-          <CheckBox
-            value={isChecked}
-            onValueChange={(newValue) => {
-              setChecked(newValue);
-            }}
-          />
-          <Text>I accept</Text>
-          <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/terms.html")}>
-            Terms
-          </Text>
-          <Text> and </Text>
-          <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/privacypolicy.html")}>
-            Privacy Policy
-          </Text>
+        <View style={styles.checkboxContainer1}>
+            <View style={styles.checkboxContainer}>
+                <CheckBox
+                  value={isChecked}
+                  onValueChange={(newValue) => {
+                    setChecked(newValue);
+                  }}
+                />
+                <Text style = {styles.text}>I accept</Text>
+                <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/terms.html")}>
+                  Terms
+                </Text>
+                <Text style = {styles.and}> and </Text>
+                <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/privacypolicy.html")}>
+                  Privacy Policy
+                </Text>
+            </View>
+            <View style={styles.checkboxContainer}>
+                  <CheckBox value={isChecked1} onValueChange={setChecked1} />
+                  <Text style={styles.text}>I will not enter any patient’s Personally Identifiable Information or pictures</Text>
+                </View>
         </View>
 
         {/* Button */}
         <View style={styles.bcontainer}>
           <TouchableOpacity
-            style={[styles.getButton, { opacity: isChecked ? 1 : 0.5 }]}
+            style={[styles.getButton, { opacity: isChecked && isChecked1 ? 1 : 0.5 }]}
             onPress={navigateToIndex}
-            disabled={!isChecked} // Prevents clicking when unchecked
+            disabled={!isChecked || !isChecked1}
           >
             <Text style={styles.GetText}>Get Started</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity
-            style={[styles.getButton, { opacity: isChecked ? 1 : 0.5 }]}
-            onPress={navigateToCreateAccount}
-            disabled={!isChecked} // Prevents clicking when unchecked
-          >
-            <Text style={styles.GetText}>Create Account</Text>
-          </TouchableOpacity> */}
-      
         </View>
       </View>
       </SafeAreaView>
+      <Text style={styles.footerText}>© 2025 Symphatic LLC, All Rights Reserved</Text>
     </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  GetText: {
-    color: "white",
-    fontSize: 15,
+  container: {
+    width: wp(85),
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    padding: wp(5),
     alignItems: "center",
+    minHeight: hp(52), // Ensure space for the button
+    justifyContent: "space-between", // Prevent overflow
   },
   getButton: {
     backgroundColor: "#375894",
     alignItems: "center",
     borderRadius: 31,
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingLeft: 10,
-    paddingRight: 10,
-    width: 250,
+    paddingVertical: 10,
+    width: "100%", // Ensure it stays within the container
+    maxWidth: 250,
+    marginBottom: 20,
+  },
+  mainDescription:{
+    paddingTop: 5,
+  },
+  checkboxContainer1: {
+    marginVertical: 40,
+    marginHorizontal: 40,
+    gap: 8,
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  text: {
+    left: 5,
+    color: "#7C7C7C",
+  },
+  link: {
+    paddingHorizontal: 5,
+    color: "blue",
+    textDecorationLine: "underline",
+  },
+  GetText: {
+    color: "white",
+    fontSize: 18,
+    alignItems: "center",
+    paddingVertical: 5,
   },
   pref: {
-    fontSize: 30,
-    paddingTop: 30,
+    fontSize: 35,
+    paddingTop: 20,
     lineHeight: 33,
     fontWeight: "600",
-    paddingLeft: 45,
-    paddingRight: 45,
-  },
-  container: {
-    width: wp(85),
-    backgroundColor: "#E7EFFF",
-    borderRadius: 10,
-    padding: wp(5),
-    alignItems: "center",
+    textAlign: "center",
   },
   background: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingTop: 60,
   },
   description: {
     fontSize: 15,
@@ -250,35 +247,24 @@ const styles = StyleSheet.create({
     paddingLeft: 44,
     paddingRight: 44,
   },
-  description1: {
-    fontSize: 15,
-    textAlign: "center",
-    fontWeight: "400",
-    paddingTop: 5,
-    paddingLeft: 44,
-    paddingRight: 44,
-  },
-  description2: {
-    fontSize: 15,
-    textAlign: "center",
-    fontWeight: "400",
-    paddingTop: 5,
-    paddingLeft: 44,
-    paddingRight: 44,
-  },
   bcontainer: {
-    width: 250,
-    paddingTop: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%", // Ensures proper button placement
   },
   imagestyle: {
-    width: 75,
-    height: 75,
-    borderRadius: 37.5,
-    paddingTop: 61,
-    overflow: "hidden"
+    width: 240,
+    height: 70,
   },
-  link: {
-    color: "blue",
-    textDecorationLine: "underline",
+  imagestyle1: {
+    paddingTop: 15,
+  },
+  and:{ 
+    color: "#7C7C7C",
+  },
+  footerText: {
+    fontSize: 12,
+    textAlign: "center",
+    marginBottom: -130
   },
 });

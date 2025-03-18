@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Alert, Image } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Alert, Image, ImageBackground } from 'react-native';
 import BottomNavigation from '../components/bottomNav';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -131,12 +131,7 @@ const mainAccountPage: React.FC = () => {
         <Text style={styles.backText}>←  Back</Text>
       </TouchableOpacity> */}
       <View style={styles.center}>
-        <View style={styles.imageHolder}>
-          <Image 
-            source={{uri: '../assets/Procedure_blue.png'}}
-            style={styles.image}  
-          />
-        </View>
+      <Image source={require("../assets/logo-cutout.png")} style={styles.imagestyle} ></Image>
         <View style={styles.info}>
           
           <Text style={styles.infoText}>{userDetails?.title}</Text>
@@ -159,6 +154,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f2f6fc',
+  },
+  imagestyle: {
+    width: 230,
+    height: 67,
+    paddingTop: 0,
+    marginTop: 40,
   },
   backText: {
     fontSize: 16,
@@ -189,6 +190,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginHorizontal: 1,
+    top: 25,
+    marginTop: 5,
   },
   infoText: {
     marginRight: 5, 

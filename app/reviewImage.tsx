@@ -1,12 +1,15 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, Dimensions} from "react-native";
+import { SafeAreaView,View, Text, StyleSheet, TouchableOpacity, Image, Alert, Dimensions,ActivityIndicator} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CryptoJS from "crypto-js";
 import { getDeviceID } from '../components/deviceInfo';
 import { Modal } from "react-native";
 
-
+///Aj 3/14/2025 
+//import for zoom in and zoom out 
+import ImageViewer from 'react-native-image-zoom-viewer';
+//Add SafeAreaView RJP <--3/5/2025
 
 export default function ReviewImage() {
   const router = useRouter();
@@ -15,6 +18,7 @@ export default function ReviewImage() {
   const [isPreview, setIsPreview] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
+  const [retryCount, setRetryCount] = useState(0); // Track retry attempts
 
    //RJP -> 2/7/2025
   // (import) image and procedure name from add_2.tsx 
@@ -87,6 +91,7 @@ const navigateToCamera = () => {
         const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
         if (!procedureSerial) {
             Alert.alert("Error", "Procedure not found. Please create a procedure first.");
+            setIsLoading(false); // Reset loading state on error
             return;
         }
         console.log("🔹 Procedure Serial:", procedureSerial);
@@ -94,6 +99,7 @@ const navigateToCamera = () => {
         // Retrieve deviceID from AsyncStorage
         if (!deviceID) {
             Alert.alert("Error", "Device ID not found.");
+            setIsLoading(false); // Reset loading state on error
             return;
         }
         console.log("🔹 Device ID:", deviceID);
@@ -102,6 +108,7 @@ const navigateToCamera = () => {
         const authorizationCode = await AsyncStorage.getItem("authorizationCode");
         if (!authorizationCode) {
             Alert.alert("Authorization Error", "Please log in again.");
+            setIsLoading(false); // Reset loading state on error
             return;
         }
         console.log("🔹 Authorization Code:", authorizationCode);
@@ -149,9 +156,25 @@ const navigateToCamera = () => {
         const data = await response.text();
         console.log("🔹 API Response Body:", data);
         console.log("🔹 API Response Status:", response.status);
-
+        
         if (response.ok) {
-            Alert.alert("Success!", "Image uploaded successfully.");
+            //Alert.alert("Success!", "Image uploaded successfully.");
+
+            //--------------------------------------------------------------------------------------
+            //RJP <---store picture_serial to the async storage
+            //  Extract PictureSerial from the API response
+            const pictureSerialMatch = data.match(/<PictureSerial>(.*?)<\/PictureSerial>/);
+        if (pictureSerialMatch) {
+            const pictureSerial = pictureSerialMatch[1];
+
+        //  Store PictureSerial in AsyncStorage
+            await AsyncStorage.setItem("picture_serial", pictureSerial);
+            console.log(" Picture Serial Stored:", pictureSerial);
+        } else {
+            console.log(" No Picture Serial found in API response.");
+        }
+        //END RJP 3/4/2025
+        //--------------------------------------------------------------------------------------------------
 
             // RHCM 2/22/2025 Store the image in AsyncStorage
             const storedImages = await AsyncStorage.getItem("capturedImages");
@@ -170,91 +193,166 @@ const navigateToCamera = () => {
                 pathname: "editPictureText",
                 params: { procedureName, photoUri: fileUri },
             });
+            setIsLoading(false); // Reset loading state on error
 
         } else {
             const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Upload failed.";
             Alert.alert("Upload Failed", errorMessage);
+            setIsLoading(false); // Reset loading state on error
         }
     } catch (error) {
-    
+      console.error("API call error:", error);
+
+    // Check if the error is a network error
+    if (error instanceof TypeError && error.message === "Network request failed") {
+      Alert.alert("Internet Connection Lost", "Reconnecting... This may take a moment.");
+    } else {
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+    }
      
+      // Retry the API call up to 3 times
+      if (retryCount < 3) {
+        setRetryCount(retryCount + 1);
+        setTimeout(() => navigateToReviewSummary(fileUri, fileType), 1000); // Retry after 1 second
+      } else {
+        Alert.alert("Error", "Failed to upload image after multiple attempts. Please check your network and try again.");
+        setIsLoading(false); // Reset loading state after all retries fail
+      }
     }
 };
 
+useEffect(() => {
+  if (isLoading) {
+    navigateToReviewSummary(photoUriState || "", "image/jpeg");
+  }
+}, [isLoading]);
+
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={navigateToCamera}>
-        <Text style={styles.backText}>← Back</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.header}>Image for: {procedureName}</Text>
-
-  {/* RJP -> 2/8/2025
-        change image source to retrieve image taken from camera
-      */}
-
-
-       {/*Alberto -> 2/11/2025 
-      use photoUri instead of decodedPhotoUri
-      */}
-      {/* Change photoUri to photoUriState lookup for the function -> RJP 2/11/2025 */}
-      {photoUriState ? (
-        <TouchableOpacity onPress={handleImageClick}>
-          <Image style={styles.image} source={{ uri: photoUriState }} />
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <TouchableOpacity style ={styles.backButtonContainer} onPress={navigateToCamera}>
+          <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
-      ) : (
-        <Text>No image available</Text>// Show this if the URI is invalid or missing
-      )}
+
+        <Text style={styles.header}>Image for: {procedureName}</Text>
+
+    {/* RJP -> 2/8/2025
+          change image source to retrieve image taken from camera
+        */}
 
 
-        {/* Full Image Overlay */}
-      {/* fix photoUri to show only one image on display or full image -> RJP 02/11/2025*/}
+        {/*Alberto -> 2/11/2025 
+        use photoUri instead of decodedPhotoUri
+        */}
+        {/* Change photoUri to photoUriState lookup for the function -> RJP 2/11/2025 */}
+        {photoUriState ? (
+          <TouchableOpacity onPress={handleImageClick}>
+            <Image style={styles.image} source={{ uri: photoUriState }} />
+          </TouchableOpacity>
+        ) : (
+          <Text>No image available</Text>// Show this if the URI is invalid or missing
+        )}
 
-      {isPreview && (
-  <Modal visible={isPreview} transparent={true} animationType="fade">
-    <View style={{ flex: 1, backgroundColor: "rgba(41, 41, 41, 0.8)", justifyContent: "center", alignItems: "center" }}>
-      <TouchableOpacity onPress={handleClosePreview} style={styles.closeButton}>
-        <Text style={styles.closeButtonText}>X</Text>
-      </TouchableOpacity>
-      <Image style={styles.fullImage} source={photoUriState ? { uri: photoUriState } : undefined} />
-    </View>
-  </Modal>
+
+          {/* Full Image Overlay */}
+        {/* fix photoUri to show only one image on display or full image -> RJP 02/11/2025*/}
+                {/* AJ 3/14/2025  */}
+                    {/* added a zoom in/ zoom out functionality  */}
+
+                    {/* <Modal visible={isPreview} transparent={true} animationType="fade">
+      <View style={{ flex: 1, backgroundColor: "rgba(41, 41, 41, 0.8)", justifyContent: "center", alignItems: "center" }}>
+        <TouchableOpacity onPress={handleClosePreview} style={styles.closeButton}>
+          <Text style={styles.closeButtonText}>X</Text>
+        </TouchableOpacity>
+        <Image style={styles.fullImage} source={photoUriState ? { uri: photoUriState } : undefined} />
+      </View>
+    </Modal>
+  )} */}
+        {isPreview && (
+        <Modal visible={isPreview} transparent={true} animationType="fade">
+          <View style={{ flex: 1, backgroundColor: "rgba(41, 41, 41, 0.8)", justifyContent: "center", alignItems: "center" }}>
+            <TouchableOpacity onPress={handleClosePreview} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>X</Text>
+            </TouchableOpacity>
+            <ImageViewer
+  imageUrls={photoUriState ? [{ url: photoUriState }] : []}
+  enableSwipeDown={true}
+  onSwipeDown={handleClosePreview}
+  enableImageZoom={true}
+  style={styles.fullImage}
+  renderIndicator={() => <></>} // This removes the 1/1 indicator
+/>
+          </View>
+        </Modal>
 )}
 
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.retakebutton} onPress={navigateToCamera}>
-          <Text style={styles.retakebuttonText}>Retake</Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity
-  style={styles.nextbutton}
-  onPress={() => navigateToReviewSummary(photoUriState || "", "image/jpeg")}
->
-  <Text style={styles.buttonText}>Next</Text>
-</TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.retakebutton} onPress={navigateToCamera}>
+            <Text style={styles.retakebuttonText}>Retake</Text>
+          </TouchableOpacity>
+
+  
+
+{/*=======================================================================================*/}
+{/*RJP <-3/5/2025 add feedback button*/}
+
+<TouchableOpacity
+            style={[styles.nextbutton, isLoading && styles.disabledButton]}
+            onPress={() => setIsLoading(true)}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator size={27} color="#FFFFFF" />
+            ) : (
+              <Text style={styles.buttonText}>Next</Text>
+            )}
+          </TouchableOpacity>
+{/*=======================================================================================*/}
+
+        </View>
       </View>
-    </View>
+    </SafeAreaView>  
   );
 }
 //Alberto -> 2/19/2025
 const  {width, height} = Dimensions.get("window");
 
 const styles = StyleSheet.create({
+  //RJP add safe Area 3/5/2025
+  safeArea: {
+    flex: 1,
+    backgroundColor: "white", // Ensures the background matches your screen
+  },
+
+  //RJP 3/5/2025 <-- add style to the button when disabled
+  disabledButton: {
+    backgroundColor: "#808080", // Gray color when disabled
+    flex: 1,
+  },
+  
   container: {
     flex: 1,
     backgroundColor: "#F5F8FF",
     padding: 16,
+    paddingTop: 30,
+  },
+  backButtonContainer: {
+    position: 'absolute',
+    top: 10, // Adjust this value to lower the button
+    left: 5,
+    zIndex: 1,
   },
   backText: {
-    fontSize: 16,
-    color: "#007AFF",
+    fontSize: 18,
+    color: '#007AFF',
   },
   header: {
     fontSize: 20,
     textAlign: "center",
     marginVertical: 16,
-    paddingTop: 30,
+    paddingTop: 15,
   },
   buttonContainer: {
     flex: 1,
@@ -284,18 +382,18 @@ const styles = StyleSheet.create({
   },
   retakebuttonText: {
     color: "#375894",
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "600",
   },
   buttonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "600",
   },
   image: {
     width: width * 0.9, // 90% of screen width
-    height: height * 0.5, // 50% of screen height
-    marginTop: 16,
+    height: height * 0.60, // 50% of screen height
+    marginTop: 1,
     borderRadius: 20,
     alignSelf: "center",
   },

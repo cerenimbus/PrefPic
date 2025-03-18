@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import BottomNavigation from '../components/bottomNavDemo';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { XMLParser } from 'fast-xml-parser';
 import { getDeviceID } from '../components/deviceInfo';
+import { Dimensions } from 'react-native';
+
+interface UserDetails {
+    firstName: string;
+    lastName: string;
+  }
 
 
 const LibraryScreen: React.FC = () => {
+    const { width, height } = Dimensions.get('window');
     const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
     const [selectedProcedure, setSelectedProcedure] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false); // Added state for loading
+    const [isAddProcedureLoading, setIsAddProcedureLoading] = useState(false); // Added state for loading
+    const [isFinishDemoLoading, setIsFinishDemoLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [authorizationCode, setAuthorizationCode] = useState<string | null>(null); // Added state for authorization code
-    const [procedures, setProcedures] = useState<string[]>([]); // Updated state for procedures
+    const [procedures, setProcedures] = useState<{name:string;serial:string}[]>([]); // Updated state for procedures
     const [alwaysDo, setAlwaysDo] = useState(""); // Added state for alwaysDo
     const [watchFor, setWatchFor] = useState(""); // Added state for watchFor
     const [neverDo, setNeverDo] = useState(""); // Added state for neverDo
@@ -21,6 +30,7 @@ const LibraryScreen: React.FC = () => {
     const searchParams = useLocalSearchParams();
     const procedureName = Array.isArray(searchParams.procedureName) ? searchParams.procedureName[0] : searchParams.procedureName;
     const [isSurgicalStaff, setIsSurgicalStaff] = useState(false);
+    const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
     // MG 02/21/2025
     // added parameters for title, firstName, and lastName
     // const title = Array.isArray(searchParams.title) ? searchParams.title[0] : searchParams.title;
@@ -41,6 +51,21 @@ const LibraryScreen: React.FC = () => {
             setNeverDo(Array.isArray(neverDoParam) ? neverDoParam[0] : neverDoParam);
         }
     }, [searchParams.alwaysDo, searchParams.watchFor, searchParams.neverDo]);
+
+    useEffect(() => {
+        const fetchUserDetails = async () => {
+          try {
+            const jsonValue = await AsyncStorage.getItem('userDetails');
+            if (jsonValue != null) {
+              setUserDetails(JSON.parse(jsonValue));
+            }
+          } catch (error) {
+            console.error("Error fetching user details:", error);
+          }
+        };
+    
+        fetchUserDetails();
+      }, []);
     
     useEffect(() => {
         const checkUserType = async () => {
@@ -88,26 +113,39 @@ const LibraryScreen: React.FC = () => {
     }, [authorizationCode]); // Added useEffect to call GetProcedureList API
 
     // Update the procedure list when procedureName is passed
-    useEffect(() => {
-        if (procedureName && !procedures.includes(procedureName)) {
-            setProcedures((prevProcedures) => [...prevProcedures, procedureName]);
-        }
-    }, [procedureName]);
+    // useEffect(() => {
+    //     if (procedureName && !procedures.includes(procedureName)) {
+    //         setProcedures((prevProcedures) => [...prevProcedures, procedureName]);
+    //     }
+    // }, [procedureName]);
 
     const navigateToAddProcedure = () => {
         router.push('addProcedure');
     };
     
-    const navigateToviewProcedure = (procedureName: string, alwaysDo:string, watchFor:string, neverDo:string) => {
+    const navigateToviewProcedure = (procedure: any) => {
+        console.log("Navigating with procedure:", procedure); // Debugging log
         router.push({
         pathname: "procedureReviewSummary",
-        params: { procedureName, alwaysDo, watchFor, neverDo },
+        params: { 
+            name:procedure.name, 
+
+            serial:procedure.serial
+
+        },
     });
     const navigateToMainAccountPage = () => {
         router.push('mainAccountPage');
     };    
       
 };
+    const handleNextPressCompleteDemo =  () => {
+        setIsFinishDemoLoading(true);
+        setTimeout(() => {
+            navigateToCompleteDemo(); // Navigate after the delay
+            setIsFinishDemoLoading(false); // Reset loading state after navigation
+        }, 1000); // 1000 milliseconds = 1 second 
+    };
     const navigateToCompleteDemo = () => {
         router.push('completeDemo');
     };  
@@ -142,18 +180,25 @@ const LibraryScreen: React.FC = () => {
             const result = parser.parse(data);
     
             // Correctly extract the procedure list
-            const procedureList = result?.ResultInfo?.Selections?.Procedure || [];
-            const proceduresArray = Array.isArray(procedureList) ? procedureList : [procedureList];
-            console.log('Parsed procedure list:', proceduresArray); // Debugging statement
-    
-            // Update the procedures state
-            setProcedures(proceduresArray.map((procedure: any) => procedure.Name));
-        } catch (error) {
-            console.error('Error fetching procedure list:', error);
-            Alert.alert('Error', 'An error occurred while fetching the procedure list');
-        } finally {
-            setIsLoading(false);
-        }
+            const procedureList = result?.ResultInfo?.Selections?.Procedure;
+            const proceduresArray = Array.isArray(procedureList) ? procedureList : procedureList ? [procedureList] : [];
+            const updatedProcedures = proceduresArray.map((procedure : any) => ({
+                name:procedure?.Name,
+
+                serial:procedure?.Serial
+
+            }));
+            console.log("parsedProcedures", updatedProcedures);
+
+            
+            setProcedures(updatedProcedures);
+        console.log('Parsed procedure list:', updatedProcedures); // Debugging statement
+    } catch (error) {
+        console.error('Error fetching procedure list:', error);
+        Alert.alert('Error', 'An error occurred while fetching the procedure list');
+    } finally {
+        setIsLoading(false);
+    }
     };// Added getProcedureList function
 
     const handleCodeSubmit = async () => {
@@ -220,13 +265,22 @@ const LibraryScreen: React.FC = () => {
         //throw new Error('Function not implemented.');
     //}
     
+    const handleNextPress =  () => {
+            setIsAddProcedureLoading(true);
+            setTimeout(() => {
+                navigateToAddProcedure(); // Navigate after the delay
+                setIsAddProcedureLoading(false); // Reset loading state after navigation
+              }, 1000); // 1000 milliseconds = 1 second 
+      };
     
 
     return (
-        <SafeAreaView style={styles.container}>
+        
+        <SafeAreaView style={{flex:1}}>
             <View style={styles.container}>
 
                 {/*<Text style={styles.title}>{title}{firstName}{lastName}</Text>*/}
+                <Text style={styles.username}>{userDetails?.firstName}{" "}{userDetails?.lastName}</Text>
                 <Text style={styles.subtitle}>Procedures Library</Text>
                 <Text style={styles.description}>
                     On this screen you create or edit your medical procedures practices.
@@ -234,15 +288,23 @@ const LibraryScreen: React.FC = () => {
                 </Text>
                 <View style={styles.card}>
                     {!isSurgicalStaff && (
-                    <TouchableOpacity style={styles.addButton} onPress={navigateToAddProcedure}>
-                        <Text style={styles.addProcedureButtonText}>Add Procedure   +</Text>
-                    </TouchableOpacity>
+                    <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={handleNextPress}
+                    disabled={isAddProcedureLoading}
+                >
+                    {isAddProcedureLoading ? (
+                        <ActivityIndicator size="small" color="white" />
+                    ) : (
+                        <Text style={styles.addProcedureButtonText}>Add Procedure</Text>
+                    )}
+                </TouchableOpacity>
                     )}
                     {procedures.length >= 5 ? (
                         <ScrollView style = {{flex: 1}}>
                             {procedures.map((procedure, index) => (
-                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={() => navigateToviewProcedure(procedure, alwaysDo, watchFor, neverDo)}>
-                                    <Text style={styles.procedureNameButtonText}>{procedure}</Text>
+                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={()=>navigateToviewProcedure(procedure)}>
+                                    <Text style={styles.procedureNameButtonText}>{procedure.name}</Text>
                                     <TouchableOpacity style={styles.procedureButton}>
                                         <Text style={styles.item}>{'>'}</Text>
                                     </TouchableOpacity>
@@ -252,8 +314,8 @@ const LibraryScreen: React.FC = () => {
                     ) : (
                         <View>
                             {procedures.map((procedure, index) => (
-                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={() => navigateToviewProcedure(procedure, alwaysDo, watchFor, neverDo)}>
-                                    <Text style={styles.procedureNameButtonText}>{procedure}</Text>
+                                <TouchableOpacity key={index} style={styles.procedureContainer} onPress={()=>navigateToviewProcedure(procedure)}>
+                                    <Text style={styles.procedureNameButtonText}>{procedure.name}</Text>
                                     <TouchableOpacity style={styles.procedureButton}>
                                         <Text style={styles.item}>{'>'}</Text>
                                     </TouchableOpacity>
@@ -261,35 +323,39 @@ const LibraryScreen: React.FC = () => {
                             ))}
                         </View>
                     )}
+                    <TouchableOpacity
+                        style={styles.finishButton}
+                        onPress={handleNextPressCompleteDemo}
+                        disabled={isFinishDemoLoading}
+                    >
+                        {isFinishDemoLoading ? (
+                            <ActivityIndicator size="small" color="#3A5A8C" />
+                        ) : (
+                            <Text style={styles.FinishButtonText}>Finish Demo</Text>
+                        )}
+                    </TouchableOpacity>
                 </View> 
-                <TouchableOpacity style={styles.finishButton} onPress={navigateToCompleteDemo}>
-                    <Text style={styles.FinishButtonText}>Finish Demo</Text>
-                </TouchableOpacity>
-            </View>
+                </View>
             <BottomNavigation />
         </SafeAreaView>
+        
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
+        padding: '5%',
         backgroundColor: '#E7EFFF',
     },
-    newCard: {
-        width: '100%', // or maxWidth: 400
-        maxWidth: 500,
-        height: 400, // Adjust height as needed
-        backgroundColor: '#gray',
-        borderRadius: 10,
-        padding: 20, // Padding for inner content
-        borderWidth: 2, // Add border
-        borderColor: 'white', // Border color
-        shadowColor: '#000', // Shadow for iOS
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
-        shadowOffset: { width: 0, height: 2 },
+    username: {
+        fontSize: 18,
+        textAlign: 'center',
+        fontFamily: 'Darker Grotesque',
+    },
+    finishDemoContainer: {
+        alignItems: 'center', // Center the button horizontally
+        marginBottom: '5%', // Add spacing from the BottomNavigation
     },
     procedureContainer: {
         flexDirection: 'row',
@@ -316,36 +382,37 @@ const styles = StyleSheet.create({
     },
     FinishButtonText: {
         color: '#3A5A8C',
-        fontSize: 18, // Adjusted font size
+        fontSize: 20, // Adjusted font size
         fontWeight: 'bold',
     },
     addProcedureButtonText: {
         color: '#ffffff',
-        fontSize: 18, // Adjusted font size
+        fontSize: 20, // Adjusted font size
         fontWeight: 'bold',
     },
     procedureNameButtonText: {
         color: 'gray',
-        fontSize: 18, // Adjusted font size
+        fontSize: 20, // Adjusted font size
     },
     arrow: {
         color: '#4A6FA5', // Arrow color
-        fontSize: 20, // Adjust arrow size as needed
+        fontSize: 20,
     },
     card: {
         flex: 1,
         width: '100%', // or maxWidth: 400
-        maxWidth: 400,
-        height: 508, // Adjust height as needed
+        // height: '100%', // Adjust height as needed
         backgroundColor: '#ffffff',
         borderRadius: 10,
-        padding: 20, // Padding for inner content
+        padding: '5%', // Padding for inner content
         borderWidth: 2, // Add border
         borderColor: 'white', // Border color
         shadowColor: '#000', // Shadow for iOS
         shadowOpacity: 0.1,
         shadowRadius: 10,
         shadowOffset: { width: 0, height: 2 },
+        justifyContent: 'space-between',
+        marginBottom: '8%',
     },
     bottomNav: {
         width: '100%', // or maxWidth: 400
@@ -368,17 +435,17 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         color: '#4A6FA5',
         textAlign: 'center',
-        fontFamily: 'Roboto',
+        fontFamily: 'Darker Grotesque',
     },
     subtitle: {
         fontSize: 40,
         marginBottom: 10,
         textAlign: 'center',
-        fontFamily: 'Roboto',
+        fontFamily: 'Darker Grotesque',
     },
     description: {
         marginBottom: 20,
-        fontSize: 18,
+        fontSize: 20,
         lineHeight: 24,
         textAlign: 'center',
         // width: 307,
@@ -388,10 +455,14 @@ const styles = StyleSheet.create({
     addButton: {
         backgroundColor: '#375894',
         color: 'white',
-        padding: 15,
+        paddingVertical: '3%',
+        paddingHorizontal: '10%',
+        height: 50,
         borderRadius: 30,
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 5,
+        justifyContent: 'center',
+        
     },
     input: {
         flexDirection: 'row',
@@ -409,16 +480,17 @@ const styles = StyleSheet.create({
     },
     finishButton: {
         backgroundColor: 'white',
+        paddingVertical: '3%',
+        paddingHorizontal: '10%',
         color: 'white',
-        padding: 15,
         borderRadius: 30,
         alignItems: 'center',
-        position: "absolute",
-        bottom: 50,
-        left: 40,
-        right: 40,
         borderColor: "#3A5A8C",
+        width: '100%', // Ensure it spans the card width
+        marginTop: 'auto',
         borderWidth: 2,
+        marginBottom: '9%',
+
     },
 });
 

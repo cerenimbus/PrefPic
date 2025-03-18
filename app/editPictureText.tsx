@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDeviceID } from '../components/deviceInfo';
 import CryptoJS from "crypto-js";
 import {
+  SafeAreaView,
   View,
   Text,
   StyleSheet,
@@ -14,6 +15,8 @@ import {
   ScrollView,
   Platform,
   Alert,
+  Keyboard,
+  TouchableWithoutFeedback 
 } from "react-native";
 
 
@@ -38,6 +41,25 @@ export default function EditPictureText() {
     };
     fetchDeviceID();
   }, []);
+
+  //-----------------------------------------------------------------------------------------------------
+  //RJP 03/4/2025<-- debug to show all async storage key value
+  useEffect(() => {
+    // Debugging: Log all AsyncStorage keys
+    AsyncStorage.getAllKeys()
+      .then(async (keys) => {
+        console.log("🔹 AsyncStorage Keys:", keys);
+        
+        // Retrieve values for each key
+        const keyValues = await AsyncStorage.multiGet(keys);
+        keyValues.forEach(([key, value]) => {
+          console.log(`🔹 ${key}: ${value}`);
+        });
+      })
+      .catch(error => console.error("⚠️ Error fetching AsyncStorage keys:", error));
+  }, []);
+  //end
+  //---------------------------------------------------------------------------------------
 
   useEffect(() => {
     if (photoUri) {
@@ -76,6 +98,18 @@ export default function EditPictureText() {
       }
       console.log("🔹 Procedure Serial:", procedureSerial);
 
+      //----------------------------------------------------------------------------------------------
+      //RJP <---- change to picture_serial 3/4/2025
+      const picture_serial = await AsyncStorage.getItem("picture_serial");
+      if (!picture_serial) {
+        Alert.alert("Error", "Picture_serial not found. ");
+        return;
+      }
+      console.log("🔹 Picture Serial:", picture_serial);
+      //End RJP 3/4/2025
+      //-------------------------------------------------------------------------------------------------
+
+
       if (!deviceID) {
         Alert.alert("Error", "Device ID not found.");
         return;
@@ -108,7 +142,7 @@ export default function EditPictureText() {
       formData.append("Key", key);
       formData.append("AC", authorizationCode);
       formData.append("PrefPicVersion", "1");
-      formData.append("Picture", procedureSerial);
+      formData.append("Picture", picture_serial); //RJP 3/4/2025 <------- change picture_serial from procedureserial
       formData.append("Name", descriptionText);
       formData.append("Note", notesText);
 
@@ -118,7 +152,7 @@ export default function EditPictureText() {
         Key: key,
         AC: authorizationCode,
         PrefPicVersion: "1",
-        Picture: procedureSerial,
+        Picture: picture_serial, //RJP 3/4/2025 <------- change picture_serial from procedureserial
         Name: descriptionText,
         Note: notesText,
       });
@@ -140,7 +174,7 @@ export default function EditPictureText() {
         Alert.alert("Success!", "Picture text updated successfully.");
         router.push({
           pathname: "addPearls",
-          params: { updatedDescription: descriptionText, updatedNotes: notesText },
+          params: { updatedProcedureSerial: procedureSerial, procedureName: procedureName },
         });
       } else {
         const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
@@ -161,6 +195,17 @@ export default function EditPictureText() {
         Alert.alert("Error", "Procedure not found. Please create a procedure first.");
         return;
       }
+
+      //-------------------------------------------------------------------------------
+      //RJP 3/4/2025<-- change to picture serial
+      const picture_serial = await AsyncStorage.getItem("picture_serial");
+      if (!picture_serial) {
+        Alert.alert("Error", "Picture not found.");
+        return;
+      }
+      //End RJP 3/4/2025
+      //--------------------------------------------------------------------------------
+      
 
       if (!deviceID) {
         Alert.alert("Error", "Device ID not found.");
@@ -190,7 +235,7 @@ export default function EditPictureText() {
       formData.append("Key", key);
       formData.append("AC", authorizationCode);
       formData.append("PrefPicVersion", "1");
-      formData.append("Picture", procedureSerial);
+      formData.append("Picture", picture_serial); //RJP 3/4/2025 <------- change picture_serial from procedureserial
       formData.append("Name", descriptionText);
       formData.append("Note", notesText);
       
@@ -226,13 +271,17 @@ export default function EditPictureText() {
   
   
   return (
+<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+  <SafeAreaView style={styles.safeArea}>
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}
+      keyboardShouldPersistTaps="handled">
+
         <View style={styles.container}>
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity  style= {styles.backButtonContainer} onPress={() => router.back()}>
             <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
           <Text style={styles.header}>Image for: {procedureName}</Text>
@@ -281,10 +330,18 @@ export default function EditPictureText() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
+
+  safeArea: {
+    flex: 1,
+    backgroundColor: "white", // Ensures the background matches your screen
+  },
+
   scrollContainer: {
     flexGrow: 1,
     justifyContent: "center",
@@ -293,29 +350,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F5F8FF",
-    padding: 16,
+    padding: 15,
   },
-
+  backButtonContainer: {
+    position: 'absolute',
+    top: 10, // Adjust this value to lower the button
+    left: 5,
+    zIndex: 1,
+  },
   backText: {
-    fontSize: 16,
-    color: "#007AFF",
+    fontSize: 18,
+    color: '#007AFF',
   },
-
   header: {
     fontSize: 20,
     textAlign: "center",
     marginVertical: 16,
-    paddingTop: 30,
-    fontWeight: "600",
+    paddingTop: 15,
+    //fontWeight: "600",
   },
 
   buttonContainer: {
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "flex-end",
-    paddingBottom: 20,
+    paddingBottom: 15,
     flexDirection: "row",
-    width: "100%",
+    width: "106%",
   },
 
   save: {
@@ -325,7 +386,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: 20,
     width: 170,
-    right: 10,
+    right: 11,
   },
 
   delete: {
@@ -336,30 +397,32 @@ const styles = StyleSheet.create({
     borderColor: "#375894",
     width: 170,
     borderWidth: 2,
-    right: 10,
+    right: 1,
   },
 
   deletebuttonText: {
     color: "#375894",
     fontSize: 16,
     fontWeight: "600",
+    textAlign: "center",
   },
 
   buttonText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
+    textAlign: "center",
   },
 
   centerBox: {
-    marginTop: 30,
+    marginTop: 15,
     width: "100%",
     backgroundColor: "#FFFFFF",
     alignSelf: "center",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
-    padding: 10,
+    padding: 5,
     position: "relative",
   },
 
@@ -375,7 +438,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#000",
     width: "100%",
-    paddingVertical: 5,
+    paddingVertical: 2,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
   },
@@ -398,11 +461,12 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    height: 250,
+    height: 300,
     borderRadius: 30,
-    marginTop: 10,
+    marginTop: 5,
     alignSelf: "center",
     width: "100%",
+    
   },
 
   retakePicture: {
