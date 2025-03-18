@@ -289,7 +289,6 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
           email: form.email,
         }));
         Alert.alert("Success", "A confirmation email has been sent to you.", [
-
           { 
             text: "OK", 
             onPress: async () => {

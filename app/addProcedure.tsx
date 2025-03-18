@@ -217,11 +217,8 @@ const styles = StyleSheet.create({
   backText: {
     fontSize: 20,
     color: '#007AFF',
-
     fontFamily: "Darker Grotesque, sans-serif", //
-
     width: 'auto',
-
     height: 27,
     marginLeft: 20,
     marginTop: -23.5,
