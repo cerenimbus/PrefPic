@@ -59,7 +59,7 @@ const enterTeamMember = () => {
       const key = CryptoJS.SHA1(keyString).toString();
 
       // Construct JoinTeam API URL
-      const url = `https://PrefPic.com/dev/PPService/JoinTeam.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&TeamNumber=${encodeURIComponent(teamNumber)}`;
+      const url = `https://prefpic.com/dev/PPService/JoinTeam.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&TeamNumber=${encodeURIComponent(teamNumber)}`;
 
       console.log('Joining team with URL:', url);
 
@@ -71,10 +71,29 @@ const enterTeamMember = () => {
       // Handle API response (assuming success message in response)
       if (data.includes("<Result>Success</Result>")) {
         //Alert.alert('Success', 'You have successfully joined the team!');
-        setTeamNumber(''); // Clear input field after success
+        // setTeamNumber(''); // Clear input field after success //=========================
+
+        //===================================================================================
+        // JM 03-19-2025
+        // Store the joined team number
+        await AsyncStorage.setItem('teamNumber', teamNumber);
+
+        //===================================================================================
+        // JM 03-19-2025
+        // Fetch and store the user’s name
+        const storedUser = await AsyncStorage.getItem('userDetails');
+        if (storedUser) {
+          const user = JSON.parse(storedUser);
+          await AsyncStorage.setItem('joinedMember', JSON.stringify({ id: Date.now().toString(), name: `${user.firstName} ${user.lastName}` }));
+        }    
 
         router.push({
-          pathname: "mainAccountPage",
+          // pathname: "mainAccountPage", //========================================
+
+          //===================================================================================
+          // JM 03-19-2025
+          pathname: "teamMember",
+          params: { teamNumber },
         });
 
       } else {

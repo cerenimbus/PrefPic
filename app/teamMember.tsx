@@ -91,11 +91,51 @@ const TeamMembersScreen: React.FC = () => {
       }
   }, [authorizationCode]);
 
+  //====================================================================
+  // useEffect(() => {
+  //   if (memberName && !teamMembers.some(member => member.fullName === memberName)) {
+  //       setTeamMembers((prev) => [...prev, { id: Date.now().toString(), fullName: memberName, title: 'New Member' }]);
+  //   }
+  // }, [memberName, teamMembers]);
+
+  //====================================================================
+  // JM 03-19-2025
+  // Load the team members from the API and AsyncStorage.
   useEffect(() => {
-    if (memberName && !teamMembers.some(member => member.fullName === memberName)) {
-        setTeamMembers((prev) => [...prev, { id: Date.now().toString(), fullName: memberName, title: 'New Member' }]);
-    }
-  }, [memberName, teamMembers]);
+    const loadTeamMembers = async () => {
+      try {
+        const storedMember = await AsyncStorage.getItem('joinedMember');
+        const storedTeamNumber = await AsyncStorage.getItem('teamNumber');
+  
+        if (storedTeamNumber) {
+          setTeamNumber(storedTeamNumber);
+          await getTeamList(); // Ensure API fetch for team members
+        }
+  
+        // if (storedMember && !teamMembers.some(member => member.fullName === storedMember)) {
+        //   setTeamMembers((prev) => [...prev, { id: Date.now().toString(), fullName: storedMember, title: 'New Member' }]);
+        // }
+        //====================================================================
+        // JM 03-19-2025 MODIFIED
+        if (storedMember) {
+          const parsedMember = JSON.parse(storedMember);
+
+          //====================================================================
+          // JM 03-19-2025 MODIFIED
+          // Prevent duplicates before updating state
+          if (!members.some(member => member.name === parsedMember.name)) {
+            setMembers((prev) => [...prev, parsedMember]);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading team members:", error);
+      }
+    };
+  
+    loadTeamMembers();
+  }, []);
+  
+
 
   // MLI 02/28/2025
   // Added this to check the user type and navigate to the appropriate screen
@@ -131,7 +171,7 @@ const TeamMembersScreen: React.FC = () => {
         const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
         const key = CryptoJS.SHA1(keyString).toString();
 
-        const url = `https://PrefPic.com/dev/PPService/GetTeamList.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&PrefPicVersion=1`;
+        const url = `https://prefpic.com/dev/PPService/GetTeamList.php?DeviceID=${encodeURIComponent(deviceID.id)}&Date=${formattedDate}&Key=${key}&AC=${authorizationCode}&PrefPicVersion=1`;
         console.log('Fetching getTeam list from URL:', url);
 
         const response = await fetch(url);
@@ -263,7 +303,7 @@ const navigateToViewTeamMember = (teamNumber: string) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* MLI - 02/21/2025 */}
+      {/* {/ MLI - 02/21/2025 /} */}
       {/*<Text style={styles.username}>{username || '[USER NAME]'}</Text> */}
       {/* MLI 02/27/2025 Added this to display the username of the physician who created the account, allowing their name to be visible on the Team Members screen.*/}
       <Text style={styles.username}>
@@ -277,7 +317,7 @@ const navigateToViewTeamMember = (teamNumber: string) => {
       
       <View style={styles.card}>
         <TouchableOpacity style={styles.addButton} onPress={navigateToAddTeamMember} disabled={isAddingMember}>
-          {/* MLI - 03/05/2025 added an Activity Indicator */}
+          {/* {/ MLI - 03/05/2025 added an Activity Indicator /} */}
           {isAddingMember ? (
             <ActivityIndicator size="small" color="#fff" />
           ) : (
@@ -298,16 +338,35 @@ const navigateToViewTeamMember = (teamNumber: string) => {
                   </ScrollView>
                   ) : (
 
-                  <View>
-                    {members.map((member, index) => (
-                      // <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
-                      <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamCode)}>
-                        <Text style={styles.teamMemberButtonText}>{member.name}</Text>
-                        <TouchableOpacity style={styles.teamMemberButton}>
-                          <Text style={styles.item}>{'>'}</Text>
+                  // <View>
+                  //   {members.map((member, index) => (
+                  //     // <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
+                  //     <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamCode)}>
+                  //       <Text style={styles.teamMemberButtonText}>{member.name}</Text>
+                  //       <TouchableOpacity style={styles.teamMemberButton}>
+                  //         <Text style={styles.item}>{'>'}</Text>
+                  //         </TouchableOpacity>
+                  //         </TouchableOpacity>
+                  //       ))}
+                  // </View>
+
+                  //====================================================================
+                    // JM 03-19-2025 MODIFIED
+                    <View>
+                    {members.length > 0 ? (
+                      members.map((member, index) => (
+                        <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamCode)}>
+                          <Text style={styles.teamMemberButtonText}>{member.name}</Text>
+                          <TouchableOpacity style={styles.teamMemberButton}>
+                            <Text style={styles.item}><Ionicons name="chevron-forward" size={24} color="yourColor" /></Text>
                           </TouchableOpacity>
-                          </TouchableOpacity>
-                        ))}
+                        </TouchableOpacity>
+                      ))
+                    ) : (
+                      <View  style={styles.noMembersContainer}>
+                          <Text style={styles.noMembersText}>No team members yet.</Text>
+                      </View>
+                    )}
                   </View>
 
                 )}
@@ -316,79 +375,6 @@ const navigateToViewTeamMember = (teamNumber: string) => {
                 </SafeAreaView>
       );
     };
-
-    /* commented by MLI - 02/21/2025 */
-      /* <ScrollView style={styles.membersList}>
-        {[...members, ...Array(5 - members.length).fill(null)].map((member, index) => (
-          <View key={index} style={styles.memberItem} >
-            <Text style={styles.memberName}>{member ? member.name : 'Full Name'}</Text>
-          </View>
-        ))}
-      </ScrollView> */
-
-      /* <TouchableOpacity style={styles.backButton} onPress={navigateToLibrary}>
-        <Text style={styles.backTextArrow}>←</Text>
-        <Text style={styles.backText}>Back</Text>
-      </TouchableOpacity>
-      <Text style={styles.title}>Team Members</Text>
-      <Text style={styles.subtitle}>[Title]   [First Name]   [Last Name]</Text> */
-
-      /* <View style={styles.content}>
-        <View style={styles.inputContainer}>
-          {isAddingMember ? (
-            <TextInput
-              style={styles.input}
-              value={newMemberName}
-              onChangeText={setNewMemberName}
-              placeholder=""
-              placeholderTextColor="#A0A0A0"
-              autoFocus
-            />
-          ) : (
-            <Text style={styles.nameText}>Name</Text>
-          )} */
-          
-
-        //   <TouchableOpacity style={styles.addButton} onPress={handleAddMember}>
-        //     <Text style={styles.addButtonText}>Add</Text>
-        //     <Text style={styles.plusIcon}>+</Text>
-        //   </TouchableOpacity>
-        // </View> */
-
-
-        //   <TouchableOpacity style={styles.addButton} onPress={handleAddMember}>
-        //     <Text style={styles.addButtonText} >Add</Text>
-        //     <Text style={styles.plusIcon}>+</Text>
-        //   </TouchableOpacity>
-        // </View>
-
-
-        /* <View style={styles.membersList}> */
-          /* {members.map((member) => (
-            <View key={member.id} style={styles.memberItem}>
-              <Text style={styles.memberName}>{member.name}</Text>
-              <TouchableOpacity 
-                style={styles.removeButton}
-                onPress={() => handleRemoveMember(member.id)} //commented by MLI
-              >
-                <Text style={styles.minusIcon}>-</Text>
-              </TouchableOpacity>
-            </View> */
-          /* ))}
-          {Array(7 - members.length).fill(null).map((_, index) => (
-            <View key={`empty-${index}`} style={styles.memberItem}>
-              <Text style={styles.memberName}>[Full Name]</Text>
-              <TouchableOpacity style={styles.removeButton} >
-                <Text style={styles.minusIcon}>-</Text>
-              </TouchableOpacity> */
-            /* </View> */
-          /* ))} */
-        // </SafeAreaView>
-      // </View>
-      // <BottomNavigation />
-    //</SafeAreaView>
-  //</View>
-
 
 const styles = StyleSheet.create({
 
@@ -413,15 +399,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginTop: 0,
   },
-
+  noMembersContainer: {
+    margin: "10%",
+  },
+  noMembersText: {
+    textAlign: "center",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
   teamMemberContainer: {
+    top:10, // JM 03-19-2025
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-
-    paddingVertical: 10,
+    paddingVertical: 5,
     borderBottomWidth: 1,
     borderBottomColor: '#B0BEC5',
+    backgroundColor: 'white', // JM 03-19-2025
+    borderWidth: 1,  // JM 03-19-2025
+    borderColor: '#E0E0E0',  // JM 03-19-2025
+    borderRadius: 10, // JM 03-19-2025
+    marginBottom: 5,  // JM 03-19-2025
+    paddingHorizontal: 20, // JM 03-19-2025
+    shadowColor: '#000',  // JM 03-19-2025
+    shadowOffset: { width: 0, height: 2 }, // JM 03-19-2025
+    shadowOpacity: 0.1, // JM 03-19-2025
+    shadowRadius: 4, // JM 03-19-2025
+    elevation: 3, // For Android shadow // JM 03-19-2025
 },
   username: {
     color: '#4A6FA5',
@@ -581,6 +585,7 @@ teamMemberButton: {
         color: 'gray',
         fontSize: 18,
         fontWeight: 'bold',
+        left: 10, //JM 03-19-2025
     },
     card: {
       width: '100%', // or maxWidth: 400
