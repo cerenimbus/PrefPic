@@ -234,17 +234,17 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
 
 // JMF 03-10-2025
 // If the user selected "Surgical Staff", redirect to enterTeamMember page
-  if (form.role === "Surgical Staff") {
-    // Save user details before redirecting
-    await AsyncStorage.setItem('userDetails', JSON.stringify({
-      title: form.title,
-      firstName: form.firstName,
-      lastName: form.lastName,
-      email: form.email,
-    }));
-    router.push("enterTeamMember");
-    return; // Stop execution here to prevent the account creation API call
-  }
+  // if (form.role === "Surgical Staff") {
+  //   // Save user details before redirecting
+  //   await AsyncStorage.setItem('userDetails', JSON.stringify({
+  //     title: form.title,
+  //     firstName: form.firstName,
+  //     lastName: form.lastName,
+  //     email: form.email,
+  //   }));
+  //   router.push("enterTeamMember");
+  //   return; // Stop execution here to prevent the account creation API call
+  // }
 
 
 
@@ -289,7 +289,25 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
           email: form.email,
         }));
         Alert.alert("Success", "A confirmation email has been sent to you.", [
-          { text: "OK", onPress: () => router.push("sign-in") },
+
+          { 
+            text: "OK", 
+            onPress: async () => {
+              // JMF 03-10-2025 -- // RHCM 03/18/2025 modified
+              if (form.role === "Surgical Staff") {
+                // Save user details before redirecting
+                await AsyncStorage.setItem('userDetails', JSON.stringify({
+                  title: form.title,
+                  firstName: form.firstName,
+                  lastName: form.lastName,
+                  email: form.email,
+                }));
+                router.push("enterTeamMember");
+              } else {
+                router.push("sign-in");
+              }
+            }
+          }
         ]);
       } else {
         Alert.alert("Error", "Failed to create account.");
