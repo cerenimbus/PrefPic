@@ -358,7 +358,7 @@ const navigateToViewTeamMember = (teamNumber: string) => {
                         <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamCode)}>
                           <Text style={styles.teamMemberButtonText}>{member.name}</Text>
                           <TouchableOpacity style={styles.teamMemberButton}>
-                            <Text style={styles.item}><Ionicons name="chevron-forward" size={24} color="yourColor" /></Text>
+                            <Text style={styles.item}>{'>'}<Ionicons name="chevron-forward" size={24} color="yourColor" /></Text>
                           </TouchableOpacity>
                         </TouchableOpacity>
                       ))

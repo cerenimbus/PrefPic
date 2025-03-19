@@ -89,7 +89,6 @@ const enterTeamMember = () => {
 
         router.push({
           // pathname: "mainAccountPage", //========================================
-
           //===================================================================================
           // JM 03-19-2025
           pathname: "teamMember",
@@ -165,7 +164,6 @@ const styles = StyleSheet.create({
     //marginTop: 100,
     backgroundColor: "#f0f4fa",
   },
-
   description: {
     textAlign: 'center',
     fontSize: 16,
@@ -173,7 +171,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-
     width: '100%',
     height: 45,
     borderWidth: 1,
