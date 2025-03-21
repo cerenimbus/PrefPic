@@ -75,26 +75,50 @@ const enterTeamMember = () => {
 
         //===================================================================================
         // JM 03-19-2025
-        // Store the joined team number
+        // Saves the teamNumber to AsyncStorage so that it can be retrieved later.
         await AsyncStorage.setItem('teamNumber', teamNumber);
 
         //===================================================================================
         // JM 03-19-2025
-        // Fetch and store the user’s name
+        // Ensures that the user's identity is stored and displayed correctly in the team list.
         const storedUser = await AsyncStorage.getItem('userDetails');
         if (storedUser) {
           const user = JSON.parse(storedUser);
-          await AsyncStorage.setItem('joinedMember', JSON.stringify({ id: Date.now().toString(), name: `${user.firstName} ${user.lastName}` }));
+          const newMember = { 
+            id: Date.now().toString(), 
+            name: `${user.firstName} ${user.lastName}` 
+          };
+          //===================================================================================
+          // JM 03-19-2025
+          //Saves the new member data in AsyncStorage under the key joinedMember.
+          await AsyncStorage.setItem('joinedMember', JSON.stringify(newMember));
+          
+          // Retrieves existing team members from AsyncStorage.
+          const storedMembers = await AsyncStorage.getItem('teamMembers');
+          let members = storedMembers ? JSON.parse(storedMembers) : [];
+          
+          // Check if this member is already in the list
+          if (!members.some((member: { name: string; }) => member.name === newMember.name)) {
+            members.push(newMember);
+            await AsyncStorage.setItem('teamMembers', JSON.stringify(members));
+          }
         }    
 
         router.push({
           // pathname: "mainAccountPage", //========================================
+
           //===================================================================================
           // JM 03-19-2025
           pathname: "teamMember",
           params: { teamNumber },
         });
+      } 
 
+      //===================================================================================
+      // JM 03-19-2025
+      // Check if the response contains "Invalid Team Number" or similar error
+      else if (data.includes("<Result>Invalid Team Number</Result>") || data.includes("<Error>")) {
+        Alert.alert('Error', 'The team number/code you entered is invalid or does not exist. Please enter a valid and correct team number/code.');
       } else {
         Alert.alert('Error', 'Failed to join the team. Please try again.');
       }
@@ -164,6 +188,7 @@ const styles = StyleSheet.create({
     //marginTop: 100,
     backgroundColor: "#f0f4fa",
   },
+
   description: {
     textAlign: 'center',
     fontSize: 16,
@@ -171,6 +196,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
+
     width: '100%',
     height: 45,
     borderWidth: 1,
