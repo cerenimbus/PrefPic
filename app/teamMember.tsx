@@ -99,33 +99,49 @@ const TeamMembersScreen: React.FC = () => {
   // }, [memberName, teamMembers]);
 
   //====================================================================
-  // JM 03-19-2025
+  // JM 03-19-2025 MODIFIED
   // Load the team members from the API and AsyncStorage.
   useEffect(() => {
     const loadTeamMembers = async () => {
       try {
-        const storedMember = await AsyncStorage.getItem('joinedMember');
-        const storedTeamNumber = await AsyncStorage.getItem('teamNumber');
-  
-        if (storedTeamNumber) {
-          setTeamNumber(storedTeamNumber);
-          await getTeamList(); // Ensure API fetch for team members
-        }
-  
-        // if (storedMember && !teamMembers.some(member => member.fullName === storedMember)) {
-        //   setTeamMembers((prev) => [...prev, { id: Date.now().toString(), fullName: storedMember, title: 'New Member' }]);
-        // }
         //====================================================================
         // JM 03-19-2025 MODIFIED
+        // Retrieves previously saved team members from AsyncStorage and sets them in the members state.
+        const storedMembers = await AsyncStorage.getItem('teamMembers');
+        if (storedMembers) {
+          const parsedMembers = JSON.parse(storedMembers);
+          setMembers(parsedMembers);
+        }
+        
+         //====================================================================
+        // // JM 03-19-2025 MODIFIED
+        // A team number is found, it calls getTeamList() to fetch updated team members from the API.
+        const storedTeamNumber = await AsyncStorage.getItem('teamNumber');
+        if (storedTeamNumber) {
+          setTeamNumber(storedTeamNumber);
+          await getTeamList(); // Fetch team members from the API
+        }
+        
+        // //====================================================================
+        // // JM 03-19-2025 MODIFIED
+        // Check if there's a newly joined member
+        const storedMember = await AsyncStorage.getItem('joinedMember');
         if (storedMember) {
           const parsedMember = JSON.parse(storedMember);
-
-          //====================================================================
-          // JM 03-19-2025 MODIFIED
-          // Prevent duplicates before updating state
-          if (!members.some(member => member.name === parsedMember.name)) {
-            setMembers((prev) => [...prev, parsedMember]);
-          }
+          
+          // Check if this member is already in the list
+          setMembers(prevMembers => {
+             //====================================================================
+            // JM 03-19-2025
+            // If the member doesn't exist, add them
+            if (!prevMembers.some(member => member.name === parsedMember.name)) {
+              const updatedMembers = [...prevMembers, parsedMember];
+              // Save the updated list back to AsyncStorage
+              AsyncStorage.setItem('teamMembers', JSON.stringify(updatedMembers));
+              return updatedMembers;
+            }
+            return prevMembers;
+          });
         }
       } catch (error) {
         console.error("Error loading team members:", error);
@@ -134,8 +150,6 @@ const TeamMembersScreen: React.FC = () => {
   
     loadTeamMembers();
   }, []);
-  
-
 
   // MLI 02/28/2025
   // Added this to check the user type and navigate to the appropriate screen
@@ -201,6 +215,9 @@ const TeamMembersScreen: React.FC = () => {
             fullName: member.Name,
             title: member.Title || 'Member'
         })));
+
+        // setTeamMembers(apiMembers);
+
     } catch (error) {
         console.error('Error fetching team list:', error);
         Alert.alert('Error', 'An error occurred while fetching the team list');
@@ -217,6 +234,12 @@ const TeamMembersScreen: React.FC = () => {
         try {
             const storedUsername = await AsyncStorage.getItem('username');
             if (storedUsername) setUsername(storedUsername);
+
+            //===================================================================================
+            // JM 03-19-2025
+            // Loads the and fetch user role/type from AsyncStorage
+            const storedUserType = await AsyncStorage.getItem('UserType');
+            if (storedUserType) setUserType(storedUserType);
 
             //RHCM 2/28/2025 Directly fetch and set the team code from the API
             await getTeamList();
@@ -247,7 +270,15 @@ const TeamMembersScreen: React.FC = () => {
         id: Date.now().toString(),
         name: newMemberName.trim()
       };
-      setMembers([...members, newMember]);
+
+      //====================================================================
+      // JM 03-19-2025
+      // Creates a new member, adds them to the members list, and stores the updated list in AsyncStorage.
+      const updatedMembers = [...members, newMember];
+      setMembers(updatedMembers);
+      AsyncStorage.setItem('teamMembers', JSON.stringify(updatedMembers));
+      
+      // setMembers([...members, newMember]);
       setNewMemberName('');
       setIsAddingMember(false);
     }
@@ -316,69 +347,75 @@ const navigateToViewTeamMember = (teamNumber: string) => {
       </Text>
       
       <View style={styles.card}>
-        <TouchableOpacity style={styles.addButton} onPress={navigateToAddTeamMember} disabled={isAddingMember}>
-          {/* {/ MLI - 03/05/2025 added an Activity Indicator /} */}
-          {isAddingMember ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-          <Text style={styles.addButtonText}>Add Team Member +</Text>
+        
+        {/* //===================================================================================
+        // MODIFIED: JM 03-19-2025 */}
+         {/* {/ Only show Add button for Physicians /} */}
+          {userType === "Physician" && (
+            <TouchableOpacity style={styles.addButton} onPress={navigateToAddTeamMember} disabled={isAddingMember}>
+              {isAddingMember ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={styles.addButtonText}>Add Team Member +</Text>
+              )}
+            </TouchableOpacity>
           )}
-          </TouchableOpacity>
-          {teamMembers.length >= 5 ? (
-            <ScrollView style = {{flex: 1}}>
-              {members.map((member, index) => (
 
-                // <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
-                <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamCode)}>
+          {teamMembers.length >= 5 ? (
+          <ScrollView style = {{flex: 1}}>
+            {members.map((member, index) => (
+
+              // <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
+              <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamCode)}>
 
                 <Text style={styles.teamMemberButtonText}>{member.name}</Text>
-                <Text style={styles.item}>{'>'}</Text>
+                <Text style={styles.item}><Ionicons name="chevron-forward" size={24} color="gray" /></Text>
               </TouchableOpacity>
-                  ))}
-                  </ScrollView>
-                  ) : (
+            ))}
+          </ScrollView>
+          ) : (
+                  
+                    
+          //====================================================================
+          // <View>
+          //   {members.map((member, index) => (
+          //     // <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
+          //     <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamCode)}>
+          //       <Text style={styles.teamMemberButtonText}>{member.name}</Text>
+          //       <TouchableOpacity style={styles.teamMemberButton}>
+          //         <Text style={styles.item}>{'>'}</Text>
+          //         </TouchableOpacity>
+          //         </TouchableOpacity>
+          //       ))}
+          // </View>
 
-                  // <View>
-                  //   {members.map((member, index) => (
-                  //     // <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamNumber)}>
-                  //     <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamCode)}>
-                  //       <Text style={styles.teamMemberButtonText}>{member.name}</Text>
-                  //       <TouchableOpacity style={styles.teamMemberButton}>
-                  //         <Text style={styles.item}>{'>'}</Text>
-                  //         </TouchableOpacity>
-                  //         </TouchableOpacity>
-                  //       ))}
-                  // </View>
+          //====================================================================
+          // JM 03-19-2025 MODIFIED
+            <View>
+            {members.length > 0 ? (
+              members.map((member, index) => (
+                <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamCode)}>
+                  <Text style={styles.teamMemberButtonText}>{member.name}</Text>
+                  <TouchableOpacity style={styles.teamMemberButton}>
+                    <Text style={styles.item}><Ionicons name="chevron-forward" size={24} color="yourColor" /></Text>
+                  </TouchableOpacity>
+                </TouchableOpacity>
+              ))
+            ) : (
+              <View  style={styles.noMembersContainer}>
+                  <Text style={styles.noMembersText}>No team members yet.</Text>
+              </View>
+            )}
+          </View>
 
-                  //====================================================================
-                    // JM 03-19-2025 MODIFIED
-                    <View>
-                    {members.length > 0 ? (
-                      members.map((member, index) => (
-                        <TouchableOpacity key={index} style={styles.teamMemberContainer} onPress={() => navigateToViewTeamMember(teamCode)}>
-                          <Text style={styles.teamMemberButtonText}>{member.name}</Text>
-                          <TouchableOpacity style={styles.teamMemberButton}>
-                            <Text style={styles.item}>{'>'}<Ionicons name="chevron-forward" size={24} color="yourColor" /></Text>
-                          </TouchableOpacity>
-                        </TouchableOpacity>
-                      ))
-                    ) : (
-                      <View  style={styles.noMembersContainer}>
-                          <Text style={styles.noMembersText}>No team members yet.</Text>
-                      </View>
-                    )}
-                  </View>
-
-                )}
-                </View>
-                <BottomNavigation />
-                </SafeAreaView>
+        )}
+        </View>
+        <BottomNavigation />
+        </SafeAreaView>
       );
     };
 
 const styles = StyleSheet.create({
-
-
   staticMemberText: {
     color: '#666',
     fontSize: 20,
