@@ -1,7 +1,7 @@
 import { useRouter, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getDeviceID } from '../components/deviceInfo';
+import { getDeviceID } from "../components/deviceInfo";
 import CryptoJS from "crypto-js";
 import {
   SafeAreaView,
@@ -16,9 +16,8 @@ import {
   Platform,
   Alert,
   Keyboard,
-  TouchableWithoutFeedback 
+  TouchableWithoutFeedback,
 } from "react-native";
-
 
 export default function EditPictureText() {
   const router = useRouter();
@@ -27,12 +26,13 @@ export default function EditPictureText() {
   const [notesText, setNotesText] = useState<string>("");
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
 
-  const { photoUri, procedureName, updatedDescription, updatedNotes } = useLocalSearchParams<{
-    photoUri: string;
-    procedureName: string;
-    updatedDescription: string;
-    updatedNotes: string;
-  }>();
+  const { photoUri, procedureName, updatedDescription, updatedNotes } =
+    useLocalSearchParams<{
+      photoUri: string;
+      procedureName: string;
+      updatedDescription: string;
+      updatedNotes: string;
+    }>();
 
   useEffect(() => {
     const fetchDeviceID = async () => {
@@ -49,14 +49,16 @@ export default function EditPictureText() {
     AsyncStorage.getAllKeys()
       .then(async (keys) => {
         console.log("🔹 AsyncStorage Keys:", keys);
-        
+
         // Retrieve values for each key
         const keyValues = await AsyncStorage.multiGet(keys);
         keyValues.forEach(([key, value]) => {
           console.log(`🔹 ${key}: ${value}`);
         });
       })
-      .catch(error => console.error("⚠️ Error fetching AsyncStorage keys:", error));
+      .catch((error) =>
+        console.error("⚠️ Error fetching AsyncStorage keys:", error)
+      );
   }, []);
   //end
   //---------------------------------------------------------------------------------------
@@ -91,9 +93,14 @@ export default function EditPictureText() {
     try {
       console.log("🔹 Starting API call...");
 
-      const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
+      const procedureSerial = await AsyncStorage.getItem(
+        "currentProcedureSerial"
+      );
       if (!procedureSerial) {
-        Alert.alert("Error", "Procedure not found. Please create a procedure first.");
+        Alert.alert(
+          "Error",
+          "Procedure not found. Please create a procedure first."
+        );
         return;
       }
       console.log("🔹 Procedure Serial:", procedureSerial);
@@ -109,7 +116,6 @@ export default function EditPictureText() {
       //End RJP 3/4/2025
       //-------------------------------------------------------------------------------------------------
 
-
       if (!deviceID) {
         Alert.alert("Error", "Device ID not found.");
         return;
@@ -124,11 +130,16 @@ export default function EditPictureText() {
       console.log("🔹 Authorization Code:", authorizationCode);
 
       const currentDate = new Date();
-      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
-        currentDate.getDate()
-      ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
-        currentDate.getMinutes()
-      ).padStart(2, "0")}`;
+      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}/${String(currentDate.getDate()).padStart(
+        2,
+        "0"
+      )}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(
+        2,
+        "0"
+      )}:${String(currentDate.getMinutes()).padStart(2, "0")}`;
 
       const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
       console.log("🔹 Key String:", keyString);
@@ -174,10 +185,14 @@ export default function EditPictureText() {
         Alert.alert("Success!", "Picture text updated successfully.");
         router.push({
           pathname: "addPearls",
-          params: { updatedProcedureSerial: procedureSerial, procedureName: procedureName },
+          params: {
+            updatedProcedureSerial: procedureSerial,
+            procedureName: procedureName,
+          },
         });
       } else {
-        const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
+        const errorMessage =
+          data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
         Alert.alert("Update Failed", errorMessage);
       }
     } catch (error) {
@@ -190,9 +205,14 @@ export default function EditPictureText() {
     try {
       console.log("🔹 Starting API call before adding more pictures...");
 
-      const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
+      const procedureSerial = await AsyncStorage.getItem(
+        "currentProcedureSerial"
+      );
       if (!procedureSerial) {
-        Alert.alert("Error", "Procedure not found. Please create a procedure first.");
+        Alert.alert(
+          "Error",
+          "Procedure not found. Please create a procedure first."
+        );
         return;
       }
 
@@ -205,7 +225,6 @@ export default function EditPictureText() {
       }
       //End RJP 3/4/2025
       //--------------------------------------------------------------------------------
-      
 
       if (!deviceID) {
         Alert.alert("Error", "Device ID not found.");
@@ -219,11 +238,16 @@ export default function EditPictureText() {
       }
 
       const currentDate = new Date();
-      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
-        currentDate.getDate()
-      ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
-        currentDate.getMinutes()
-      ).padStart(2, "0")}`;
+      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}/${String(currentDate.getDate()).padStart(
+        2,
+        "0"
+      )}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(
+        2,
+        "0"
+      )}:${String(currentDate.getMinutes()).padStart(2, "0")}`;
 
       const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
       const key = CryptoJS.SHA1(keyString).toString();
@@ -238,7 +262,7 @@ export default function EditPictureText() {
       formData.append("Picture", picture_serial); //RJP 3/4/2025 <------- change picture_serial from procedureserial
       formData.append("Name", descriptionText);
       formData.append("Note", notesText);
-      
+
       const response = await fetch(url, {
         method: "POST",
         body: formData,
@@ -259,7 +283,8 @@ export default function EditPictureText() {
           params: { procedureName, notesText },
         });
       } else {
-        const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
+        const errorMessage =
+          data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
         Alert.alert("Update Failed", errorMessage);
       }
     } catch (error) {
@@ -268,74 +293,96 @@ export default function EditPictureText() {
     }
   };
 
-  
-  
   return (
-<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-  <SafeAreaView style={styles.safeArea}>
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContainer}
-      keyboardShouldPersistTaps="handled">
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <SafeAreaView style={styles.safeArea}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <ScrollView
+            contentContainerStyle={styles.scrollContainer}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.container}>
+              <TouchableOpacity
+                style={styles.backButtonContainer}
+                onPress={() => router.back()}
+              >
+                <Text style={styles.backText}>← Back</Text>
+              </TouchableOpacity>
+              <Text style={styles.header}>Image for: {procedureName}</Text>
 
-        <View style={styles.container}>
-          <TouchableOpacity  style= {styles.backButtonContainer} onPress={() => router.back()}>
-            <Text style={styles.backText}>← Back</Text>
-          </TouchableOpacity>
-          <Text style={styles.header}>Image for: {procedureName}</Text>
+              {photoUriState ? (
+                <Image source={{ uri: photoUriState }} style={styles.image} />
+              ) : (
+                <Text style={{ textAlign: "center", marginVertical: 20 }}>
+                  No image available
+                </Text>
+              )}
 
-          {photoUriState ? (
-            <Image source={{ uri: photoUriState }} style={styles.image} />
-          ) : (
-            <Text style={{ textAlign: "center", marginVertical: 20 }}>
-              No image available
-            </Text>
-          )}
+              <TouchableOpacity
+                style={styles.retakePicture}
+                onPress={navigateToCamera}
+              >
+                <Text style={styles.retakePictureText}>Retake pic</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity style={styles.retakePicture} onPress={navigateToCamera}>
-            <Text style={styles.retakePictureText}>Retake pic</Text>
-          </TouchableOpacity>
+              <View style={styles.centerBox}>
+                <Text style={styles.description}>Description</Text>
+                <TextInput
+                  style={styles.contentsInput}
+                  value={descriptionText}
+                  onChangeText={setDescriptionText}
+                  placeholder="Enter description"
+                  multiline
+                />
 
-          <View style={styles.centerBox}>
-            <Text style={styles.description}>Description</Text>
-            <TextInput
-              style={styles.contentsInput}
-              value={descriptionText}
-              onChangeText={setDescriptionText}
-              placeholder="Enter description"
-              multiline
-            />
+                <Text style={styles.notes}>Notes</Text>
+                <TextInput
+                  style={styles.bulletTextInput}
+                  value={notesText}
+                  onChangeText={setNotesText}
+                  placeholder="Enter notes"
+                  multiline
+                />
+              </View>
 
-            <Text style={styles.notes}>Notes</Text>
-            <TextInput
-              style={styles.bulletTextInput}
-              value={notesText}
-              onChangeText={setNotesText}
-              placeholder="Enter notes"
-              multiline
-            />
-          </View>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={styles.delete}
+                  onPress={handleAddMorePictures}
+                >
+                  <Text style={styles.deletebuttonText}>
+                    Take more pictures
+                  </Text>
+                </TouchableOpacity>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.delete} onPress={handleAddMorePictures}>
-              <Text style={styles.deletebuttonText}>Take more pictures</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.save} onPress={navigateToEditPicture}>
-              <Text style={styles.buttonText}>Done with this procedure</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
-    </SafeAreaView>
+                <TouchableOpacity
+                  style={styles.save}
+                  onPress={navigateToEditPicture}
+                >
+                  <Text style={styles.buttonText}>
+                    Done with this procedure
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
+  //=================================================================
+  // ADDED: JM 03-21-2025
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 
   safeArea: {
     flex: 1,
@@ -353,14 +400,14 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   backButtonContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 10, // Adjust this value to lower the button
     left: 5,
     zIndex: 1,
   },
   backText: {
     fontSize: 18,
-    color: '#007AFF',
+    color: "#007AFF",
   },
   header: {
     fontSize: 20,
@@ -372,11 +419,13 @@ const styles = StyleSheet.create({
 
   buttonContainer: {
     flex: 1,
-    justifyContent: "flex-end",
+    justifyContent: "center", // MODIFIED: JM 03-21-2025
     alignItems: "flex-end",
+    textAlign: "center",
     paddingBottom: 15,
     flexDirection: "row",
-    width: "106%",
+    width: "100%",
+    gap: 10, // ADDED: JM 03-21=2025
   },
 
   save: {
@@ -384,20 +433,23 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 31,
     alignItems: "center",
-    marginLeft: 20,
+    justifyContent: "center", // ADDED: JM 03-21-2025
+    // marginLeft: 20,
     width: 170,
-    right: 11,
+    height: 66, // ADDED: JM 03-21-2025
+    // right: 11,
   },
 
   delete: {
     backgroundColor: "#FFFFFF",
-    padding: 14,
     borderRadius: 31,
     alignItems: "center",
     borderColor: "#375894",
     width: 170,
+    height: 66, // ADDED: JM 03-21-2025
+    justifyContent: "center", // ADDED: JM 03-21-2025
     borderWidth: 2,
-    right: 1,
+    // right: 1,
   },
 
   deletebuttonText: {
@@ -415,25 +467,24 @@ const styles = StyleSheet.create({
   },
 
   centerBox: {
-    marginTop: 15,
+    marginTop: 10, // MODIFIED: JM 03-25-2025
     width: "100%",
     backgroundColor: "#FFFFFF",
     alignSelf: "center",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
-    padding: 5,
+    padding: 15,
     position: "relative",
   },
 
   description: {
-    fontSize: 16,
+    fontSize: 18, // MODIFIED: JM 03-21-2025
     fontWeight: "600",
     color: "#000",
-    marginBottom: 5,
+    marginBottom: 10, // MODIFIED: JM 03-21-2025
     alignSelf: "flex-start",
   },
-
   contentsInput: {
     fontSize: 16,
     color: "#000",
@@ -441,6 +492,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
+    marginBottom: 5, // ADDED: JM 03-21-2025
   },
 
   notes: {
@@ -448,6 +500,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#000",
     marginTop: 10,
+    marginBottom: 5, // ADDED: JM 03-21-2025
     alignSelf: "flex-start",
   },
 
@@ -466,7 +519,6 @@ const styles = StyleSheet.create({
     marginTop: 5,
     alignSelf: "center",
     width: "100%",
-    
   },
 
   retakePicture: {
@@ -481,5 +533,7 @@ const styles = StyleSheet.create({
     color: "#FFFF",
     fontSize: 16,
     fontWeight: "600",
+    paddingVertical: 3, // MODIFIED: JM 03-21-2025
+    paddingHorizontal: 40, // ADDED: JM 03-21=2025
   },
 });
