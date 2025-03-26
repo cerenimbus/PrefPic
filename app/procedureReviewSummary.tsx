@@ -179,8 +179,8 @@ useEffect(() => {
 
  const handleImagePress = async (index: number) => {
     if (images[index]) {
-      // setIsNavigating(true); // Show loading screen
-      // setNavigateIndex(index); // Store index to use in effect
+      setIsNavigating(true); 
+      setNavigateIndex(index); 
     } else {
       // Navigate to camera
         
@@ -242,7 +242,7 @@ return (
           <View style={styles.card}>
             <View style={styles.cardHeader}>
               <Text style={styles.cardTitle}>Images</Text>
-              
+              <Text style={styles.editText}></Text>
             </View>
             <View style={styles.centerBox}>
               <View style={styles.boxContainer}>
