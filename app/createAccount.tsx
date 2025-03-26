@@ -1,4 +1,4 @@
-  import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Platform,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Checkbox } from "react-native-paper";
@@ -21,7 +21,6 @@ import CryptoJS from "crypto-js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { getDeviceID } from "../components/deviceInfo";
-
 
 const CreateAccount = () => {
   const [form, setForm] = useState({
@@ -34,7 +33,7 @@ const CreateAccount = () => {
     role: "",
     specialty: "",
   });
-  
+
   const isFormValid = () => {
     return (
       form.title.trim() !== "" &&
@@ -48,7 +47,6 @@ const CreateAccount = () => {
       isValidEmail(form.email) // Ensure valid email format
     );
   };
-  
 
   const [deviceID, setDeviceID] = useState<{
     softwareVersion: string | number | boolean;
@@ -57,7 +55,9 @@ const CreateAccount = () => {
     model: string;
     version: string;
   } | null>(null);
-  const [authorizationCode, setAuthorizationCode] = useState<string | null>(null); 
+  const [authorizationCode, setAuthorizationCode] = useState<string | null>(
+    null
+  );
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isContinueEnabled, setIsContinueEnabled] = useState(false);
   const router = useRouter();
@@ -73,20 +73,21 @@ const CreateAccount = () => {
   const specialtyRef = useRef<TextInput | null>(null);
   const [phoneError, setPhoneError] = useState("");
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-//   const [activeField, setActiveField] = useState<React.RefObject<TextInput> | null>(null); 
-  const [activeField, setActiveField] = useState<React.RefObject<TextInput | View> | null>(null);
+  //   const [activeField, setActiveField] = useState<React.RefObject<TextInput> | null>(null);
+  const [activeField, setActiveField] = useState<React.RefObject<
+    TextInput | View
+  > | null>(null);
 
-//   const [role, setRole] = useState<string>(""); // Ensure role is properly initialized
-//   const [specialty, setSpecialty] = useState<string>(""); 
+  //   const [role, setRole] = useState<string>(""); // Ensure role is properly initialized
+  //   const [specialty, setSpecialty] = useState<string>("");
 
   useEffect(() => {
-  
     const fetchDeviceID = async () => {
       const id = await getDeviceID();
       setDeviceID(id);
     };
-      fetchDeviceID();
-    }, []);
+    fetchDeviceID();
+  }, []);
 
   const specialties: Record<string, string[]> = {
     Physician: [
@@ -124,51 +125,53 @@ const CreateAccount = () => {
       "Imaging Technician",
       "Perfusionist",
       "Neurophysiology/ EP Tech",
-      
-      ],
+    ],
   };
 
   useEffect(() => {
     const fetchAuthorizationCode = async () => {
-        try {
-            console.log('Fetching authorization code from AsyncStorage...');
-            const code = await AsyncStorage.getItem('authorizationCode');
-            if (code) {
-                console.log('Fetched authorization code:', code); // Debugging statement
-                setAuthorizationCode(code);
-            } else {
-                console.log('No authorization code found in AsyncStorage');
-            }
-        } catch (error) {
-            console.error('Error fetching authorization code:', error);
+      try {
+        console.log("Fetching authorization code from AsyncStorage...");
+        const code = await AsyncStorage.getItem("authorizationCode");
+        if (code) {
+          console.log("Fetched authorization code:", code); // Debugging statement
+          setAuthorizationCode(code);
+        } else {
+          console.log("No authorization code found in AsyncStorage");
         }
+      } catch (error) {
+        console.error("Error fetching authorization code:", error);
+      }
     };
     fetchAuthorizationCode();
-}, []);
-  
+  }, []);
+
   // Fix the error when accessing specialties
-//   const specialtyOptions = specialties[role] || []; // Ensure it returns an empty array if role is not valid
-// const specialtyOptions = specialties[role as keyof typeof specialties] || [];
-const specialtyOptions = specialties[form.role as keyof typeof specialties] || [];
+  //   const specialtyOptions = specialties[role] || []; // Ensure it returns an empty array if role is not valid
+  // const specialtyOptions = specialties[role as keyof typeof specialties] || [];
+  const specialtyOptions =
+    specialties[form.role as keyof typeof specialties] || [];
 
-const handlePhoneChange = (text: string) => {
-  // Remove non-numeric characters
-  const numericText = text.replace(/[^0-9]/g, '');
+  const handlePhoneChange = (text: string) => {
+    // Remove non-numeric characters
+    const numericText = text.replace(/[^0-9]/g, "");
 
-  // Limit input to 10 digits
-  if (numericText.length <= 10) {
+    // Limit input to 10 digits
+    if (numericText.length <= 10) {
       handleInputChange("phone", numericText); // Update the form state
 
       // Validate length
       if (numericText.length === 10) {
-          setPhoneError(""); // Clear error when valid
+        setPhoneError(""); // Clear error when valid
       } else {
-          setPhoneError("Phone number must be exactly 10 digits");
+        setPhoneError("Phone number must be exactly 10 digits");
       }
-  }
-};
+    }
+  };
 
-const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
+  const handleRoleSelection = (
+    selectedRole: "Physician" | "Surgical Staff"
+  ) => {
     Keyboard.dismiss();
     setForm((prev) => ({
       ...prev,
@@ -187,7 +190,6 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
   };
 
   const validateForm = () => {
-    
     console.log("form not valid");
     setIsContinueEnabled(isFormValid());
   };
@@ -199,18 +201,18 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
   // const handleFocus = (inputRef: React.RefObject<TextInput | View>) => {
   //   setActiveField(inputRef);
   //   setTimeout(() => {
-  //     scrollViewRef.current?.scrollTo({ y: 100, animated: true }); 
+  //     scrollViewRef.current?.scrollTo({ y: 100, animated: true });
   //   }, 300);
   // };
 
   const handleFocus = (inputRef: React.RefObject<TextInput | View>) => {
     setActiveField(inputRef);
     setTimeout(() => {
-        inputRef.current?.measure((x, y, width, height, pageX, pageY) => {
-            scrollViewRef.current?.scrollTo({ y: pageY - 100, animated: true }); 
-        });
+      inputRef.current?.measure((x, y, width, height, pageX, pageY) => {
+        scrollViewRef.current?.scrollTo({ y: pageY - 100, animated: true });
+      });
     }, 300);
-};
+  };
 
   const handleBlur = () => {
     setActiveField(null);
@@ -226,42 +228,47 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
       Alert.alert("Invalid Email", "Must enter a validly formatted email.");
       return;
     }
-    if (!deviceID)
-    {
-        Alert.alert("Device ID Error", "Unable to retrieve device ID.");
-        return;
+    if (!deviceID) {
+      Alert.alert("Device ID Error", "Unable to retrieve device ID.");
+      return;
     }
 
-// JMF 03-10-2025
-// If the user selected "Surgical Staff", redirect to enterTeamMember page
-  // if (form.role === "Surgical Staff") {
-  //   // Save user details before redirecting
-  //   await AsyncStorage.setItem('userDetails', JSON.stringify({
-  //     title: form.title,
-  //     firstName: form.firstName,
-  //     lastName: form.lastName,
-  //     email: form.email,
-  //   }));
-  //   router.push("enterTeamMember");
-  //   return; // Stop execution here to prevent the account creation API call
-  // }
-
-
-
+    // JMF 03-10-2025
+    // If the user selected "Surgical Staff", redirect to enterTeamMember page
+    // if (form.role === "Surgical Staff") {
+    //   // Save user details before redirecting
+    //   await AsyncStorage.setItem('userDetails', JSON.stringify({
+    //     title: form.title,
+    //     firstName: form.firstName,
+    //     lastName: form.lastName,
+    //     email: form.email,
+    //   }));
+    //   router.push("enterTeamMember");
+    //   return; // Stop execution here to prevent the account creation API call
+    // }
 
     const currentDate = new Date();
-    const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
-      currentDate.getDate()
-    ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
-      currentDate.getMinutes()
-    ).padStart(2, "0")}`;
-    
+    const formattedDate = `${String(currentDate.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}/${String(currentDate.getDate()).padStart(
+      2,
+      "0"
+    )}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(
+      2,
+      "0"
+    )}:${String(currentDate.getMinutes()).padStart(2, "0")}`;
+
     const newdevice = "";
     const newdate = "";
     const keyString = `${deviceID.id}${formattedDate}`;
     const key = CryptoJS.SHA1(keyString).toString();
 
-    const url = `https://PrefPic.com/dev/PPService/CreateAccount.php?DeviceID=${encodeURIComponent(deviceID.id)}&DeviceType=${encodeURIComponent(deviceID.type)}&DeviceModel=${encodeURIComponent(
+    const url = `https://PrefPic.com/dev/PPService/CreateAccount.php?DeviceID=${encodeURIComponent(
+      deviceID.id
+    )}&DeviceType=${encodeURIComponent(
+      deviceID.type
+    )}&DeviceModel=${encodeURIComponent(
       deviceID.model
     )}&DeviceVersion=${encodeURIComponent(
       deviceID.version
@@ -271,42 +278,59 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
       form.title
     )}&Email=${encodeURIComponent(form.email)}&Phone=${encodeURIComponent(
       form.phone
-    )}&Password=${encodeURIComponent(form.password)}&Type=${form.role}&Specialty=${encodeURIComponent(
+    )}&Password=${encodeURIComponent(form.password)}&Type=${
+      form.role
+    }&Specialty=${encodeURIComponent(
       form.specialty
     )}&PrefPicVersion=1&TestFlag=1`;
 
-    console.log("URL: ", url)
+    console.log("Requesting account creation:", url);
+
     try {
       const response = await fetch(url);
       const data = await response.text();
       console.log("API Response:", data);
 
       if (data.includes("<Result>Success</Result>")) {
-        await AsyncStorage.setItem('userDetails', JSON.stringify({
-          title: form.title,          //MG 02/26/2025
-          firstName: form.firstName,  //save to async storage for display in main account screen
-          lastName: form.lastName,
-          email: form.email,
-        }));
+        await AsyncStorage.setItem(
+          "userDetails",
+          JSON.stringify({
+            title: form.title, //MG 02/26/2025
+            firstName: form.firstName, //save to async storage for display in main account screen
+            lastName: form.lastName,
+            email: form.email,
+            role: form.role, // ✅ ADDED: JM 03-25-2025
+          })
+        );
+
+        //=======================================================================================================
+        // ✅ ADDED: JM 03-25-2025
+        // Store the correct role
+        await AsyncStorage.setItem("UserType", form.role);
+
         Alert.alert("Success", "A confirmation email has been sent to you.", [
-          { 
-            text: "OK", 
+          {
+            text: "OK",
             onPress: async () => {
               // JMF 03-10-2025 -- // RHCM 03/18/2025 modified
               if (form.role === "Surgical Staff") {
                 // Save user details before redirecting
-                await AsyncStorage.setItem('userDetails', JSON.stringify({
-                  title: form.title,
-                  firstName: form.firstName,
-                  lastName: form.lastName,
-                  email: form.email,
-                }));
+                await AsyncStorage.setItem(
+                  "userDetails",
+                  JSON.stringify({
+                    title: form.title,
+                    firstName: form.firstName,
+                    lastName: form.lastName,
+                    email: form.email,
+                    role: form.role, // ✅ ADDED: JM 03-25-2025
+                  })
+                );
                 router.push("enterTeamMember");
               } else {
                 router.push("sign-in");
               }
-            }
-          }
+            },
+          },
         ]);
       } else {
         Alert.alert("Error", "Failed to create account.");
@@ -317,33 +341,49 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
     }
   };
 
-  
-
   return (
-//  jm_branch
+    //  jm_branch
     // edited: JM 2025/03/07*
-    <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
-      
-    <SafeAreaView style={{ flex: 1 }}>
-    
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-      {/*edited: JM 2025/03/07*/} 
-    <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Feather name="arrow-left" size={24} color="#375894" />
-          <Text style={styles.backText}>Back</Text>
-    </TouchableOpacity>
-    {/*-------------*/}
-      <TouchableWithoutFeedback onPress={dismissKeyboard}>
-        
-            <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollcontainer} showsVerticalScrollIndicator={false}>
-            <View style={styles.formContainer}>
-              <Text style={styles.header}>Create Account</Text>
-                    
-              <TextInput style={styles.input} placeholder="Title" value={form.title}    onChangeText={(text) => handleInputChange("title", text)} />
-                        
-              <TextInput
+    <ImageBackground
+      source={require("../assets/Start.jpg")}
+      style={styles.background}
+    >
+      <SafeAreaView style={{ flex: 1 }}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          {/*edited: JM 2025/03/07*/}
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <Feather name="arrow-left" size={24} color="#375894" />
+            <Text style={styles.backText}>Back</Text>
+          </TouchableOpacity>
+          {/*-------------*/}
+          <TouchableWithoutFeedback onPress={dismissKeyboard}>
+            <ScrollView
+              ref={scrollViewRef}
+              contentContainerStyle={styles.scrollcontainer}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.formContainer}>
+                <Text style={styles.header}>Create Account</Text>
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Title"
+                  value={form.title}
+                  onChangeText={(text) => handleInputChange("title", text)}
+                />
+
+                <TextInput
                   ref={firstNameRef}
-                  style={[styles.input, activeField === firstNameRef ? styles.activeInput : {}]}
+                  style={[
+                    styles.input,
+                    activeField === firstNameRef ? styles.activeInput : {},
+                  ]}
                   multiline
                   placeholder="First Name"
                   value={form.firstName}
@@ -351,10 +391,13 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                   onFocus={() => handleFocus(firstNameRef)}
                   onBlur={handleBlur}
                   returnKeyType="done"
-                  />
-              <TextInput
+                />
+                <TextInput
                   ref={lastNameRef}
-                  style={[styles.input, activeField === lastNameRef ? styles.activeInput : {}]}
+                  style={[
+                    styles.input,
+                    activeField === lastNameRef ? styles.activeInput : {},
+                  ]}
                   multiline
                   placeholder="Last Name"
                   value={form.lastName}
@@ -362,16 +405,20 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                   onFocus={() => handleFocus(lastNameRef)}
                   onBlur={handleBlur}
                   returnKeyType="done"
-                  />
-                        
-                  {phoneError ? <Text style={{ color: "red", marginBottom: 5 }}>{phoneError}</Text> : null}
+                />
 
-              <TextInput
+                {phoneError ? (
+                  <Text style={{ color: "red", marginBottom: 5 }}>
+                    {phoneError}
+                  </Text>
+                ) : null}
+
+                <TextInput
                   ref={phoneRef}
                   style={[
-                      styles.input, 
-                      activeField === phoneRef ? styles.activeInput : {},
-                      phoneError ? { borderColor: "red", borderWidth: 1 } : {}
+                    styles.input,
+                    activeField === phoneRef ? styles.activeInput : {},
+                    phoneError ? { borderColor: "red", borderWidth: 1 } : {},
                   ]}
                   multiline
                   placeholder="Phone Number"
@@ -381,11 +428,14 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                   onFocus={() => handleFocus(phoneRef)}
                   onBlur={handleBlur}
                   returnKeyType="done"
-              />
-                          
-              <TextInput
+                />
+
+                <TextInput
                   ref={emailRef}
-                  style={[styles.input, activeField === emailRef ? styles.activeInput : {}]}
+                  style={[
+                    styles.input,
+                    activeField === emailRef ? styles.activeInput : {},
+                  ]}
                   multiline
                   placeholder="Email"
                   value={form.email}
@@ -394,11 +444,14 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                   onFocus={() => handleFocus(emailRef)}
                   onBlur={handleBlur}
                   returnKeyType="done"
-                  />
-            <View style={styles.passwordContainer}>
-                <TextInput
+                />
+                <View style={styles.passwordContainer}>
+                  <TextInput
                     ref={passwordRef}
-                    style={[styles.input, activeField === passwordRef ? styles.activeInput : {}]}
+                    style={[
+                      styles.input,
+                      activeField === passwordRef ? styles.activeInput : {},
+                    ]}
                     placeholder="Password"
                     secureTextEntry={!showPassword} // This will now work
                     value={form.password}
@@ -406,11 +459,18 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                     onFocus={() => handleFocus(passwordRef)}
                     onBlur={handleBlur}
                     returnKeyType="done"
-                />
-                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                    <Feather name={showPassword ? "eye" : "eye-off"} size={20} color="gray" />
-                </TouchableOpacity>
-            </View>
+                  />
+                  <TouchableOpacity
+                    onPress={() => setShowPassword(!showPassword)}
+                    style={styles.eyeIcon}
+                  >
+                    <Feather
+                      name={showPassword ? "eye" : "eye-off"}
+                      size={20}
+                      color="gray"
+                    />
+                  </TouchableOpacity>
+                </View>
 
                 {/* <View style={styles.checkboxContainer}>
 
@@ -523,34 +583,41 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
 // jm_branch
                 </View> */}
 
-                {/*edited: JM 2025/03/07*/} 
+                {/*edited: JM 2025/03/07*/}
                 {/* Role Selection */}
                 <View style={styles.checkboxContainer}>
-                    <Text style={styles.label}>Select Role:</Text>
-                    <View style={styles.checkboxOptions}>
-                        <View style={styles.checkboxOption}>
-                            <View style={styles.checkboxWrapper}>
-                                <Checkbox
-                                    status={form.role === "Physician" ? "checked" : "unchecked"}
-                                    onPress={() => handleInputChange("role", "Physician")}
-                                />
-                            </View>
-                            <Text style={styles.checkboxText}>Physician</Text>
-                        </View>
-
-                        <View style={styles.checkboxOption}>
-                            <View style={styles.checkboxWrapper}>
-                                <Checkbox
-                                    status={form.role === "Surgical Staff" ? "checked" : "unchecked"}
-                                    onPress={() => handleInputChange("role", "Surgical Staff")}
-                                />
-                            </View>
-                            <Text style={styles.checkboxText}>Staff</Text>
-                        </View>
+                  <Text style={styles.label}>Select Role:</Text>
+                  <View style={styles.checkboxOptions}>
+                    <View style={styles.checkboxOption}>
+                      <View style={styles.checkboxWrapper}>
+                        <Checkbox
+                          status={
+                            form.role === "Physician" ? "checked" : "unchecked"
+                          }
+                          onPress={() => handleInputChange("role", "Physician")}
+                        />
+                      </View>
+                      <Text style={styles.checkboxText}>Physician</Text>
                     </View>
 
+                    <View style={styles.checkboxOption}>
+                      <View style={styles.checkboxWrapper}>
+                        <Checkbox
+                          status={
+                            form.role === "Surgical Staff"
+                              ? "checked"
+                              : "unchecked"
+                          }
+                          onPress={() =>
+                            handleInputChange("role", "Surgical Staff")
+                          }
+                        />
+                      </View>
+                      <Text style={styles.checkboxText}>Staff</Text>
+                    </View>
+                  </View>
                 </View>
-                
+
                 {/* {form.role && (
                 <Picker selectedValue={form.specialty} onValueChange={(value) => handleInputChange("specialty", value)} style={styles.picker}>
                     {specialties[form.role].map((spec) => (
@@ -558,7 +625,7 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
                     ))}
                 </Picker>
                 )} */}
-{/* <!-- jm_branch --> */}
+                {/* <!-- jm_branch --> */}
                 {/* <View ref={specialtyRef} style={styles.picker}>
 
 
@@ -577,93 +644,94 @@ const handleRoleSelection = (selectedRole: "Physician" | "Surgical Staff") => {
 //  jm_branch
                 </View> */}
 
-                {/*edited: JM 2025/03/07*/} 
+                {/*edited: JM 2025/03/07*/}
                 <View ref={specialtyRef} style={styles.pickerContainer}>
-                    <Picker
-                        selectedValue={form.specialty}
-                        onValueChange={(itemValue) => {
-                            handleInputChange("specialty", itemValue);
-                            handleFocus(specialtyRef);
-                        }}
-                        style={styles.picker} // Applying the new picker styles
-                        itemStyle={styles.pickerItem} // Applying item styles inside Picker (iOS only)
-                    >
-                        <Picker.Item label="Select Specialty" value="" />
-                        {specialtyOptions.map((spec, index) => (
-                            <Picker.Item key={index} label={spec} value={spec} />
-                        ))}
-                    </Picker>
-
+                  <Picker
+                    selectedValue={form.specialty}
+                    onValueChange={(itemValue) => {
+                      handleInputChange("specialty", itemValue);
+                      handleFocus(specialtyRef);
+                    }}
+                    style={styles.picker} // Applying the new picker styles
+                    itemStyle={styles.pickerItem} // Applying item styles inside Picker (iOS only)
+                  >
+                    <Picker.Item label="Select Specialty" value="" />
+                    {specialtyOptions.map((spec, index) => (
+                      <Picker.Item key={index} label={spec} value={spec} />
+                    ))}
+                  </Picker>
                 </View>
 
                 <TouchableOpacity
-                    style={[styles.continueButton, form.specialty.trim() === "" && styles.disabledButton]}
-                    // , !isContinueEnabled && styles.disabledButton
-                    onPress={handleCreateAccount}
-                    disabled={form.specialty.trim() === "" || isLoading} // Uses `isContinueEnabled` instead of calling `isFormValid()`
-                    >
-                        <Text style={styles.continueText}>{isLoading ? "Loading..." : "Continue"}</Text>
-                    {/* <Text style={styles.continueText}>Continue</Text> */}
+                  style={[
+                    styles.continueButton,
+                    form.specialty.trim() === "" && styles.disabledButton,
+                  ]}
+                  // , !isContinueEnabled && styles.disabledButton
+                  onPress={handleCreateAccount}
+                  disabled={form.specialty.trim() === "" || isLoading} // Uses `isContinueEnabled` instead of calling `isFormValid()`
+                >
+                  <Text style={styles.continueText}>
+                    {isLoading ? "Loading..." : "Continue"}
+                  </Text>
+                  {/* <Text style={styles.continueText}>Continue</Text> */}
                 </TouchableOpacity>
-                
-            </View>
+              </View>
             </ScrollView>
-
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
-    </SafeAreaView>
+          </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </ImageBackground>
 
-// <!--             </ImageBackground>
-//       </TouchableWithoutFeedback>
-//     </KeyboardAvoidingView>
-//     </SafeAreaView> -->
-
+    // <!--             </ImageBackground>
+    //       </TouchableWithoutFeedback>
+    //     </KeyboardAvoidingView>
+    //     </SafeAreaView> -->
   );
 };
 
 const styles = StyleSheet.create({
-    background: {
-//  jm_branch
-      flex: 1, 
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    phoneContainer: {
-      marginBottom: 16, 
-      position: "relative", 
-    },
-    disabledButton: {
-      backgroundColor: "#A9A9A9", // Gray color for disabled button
-    },
-    activeInput: {
-      borderColor: "#007AFF",
-      backgroundColor: "#e6f0ff",
-    },
-    // backButton: { 
-    //   flexDirection: "row", 
-    //   alignSelf: "flex-start", 
-    //   // marginBottom: 10 
-    // },
+  background: {
+    //  jm_branch
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  phoneContainer: {
+    marginBottom: 16,
+    position: "relative",
+  },
+  disabledButton: {
+    backgroundColor: "#A9A9A9", // Gray color for disabled button
+  },
+  activeInput: {
+    borderColor: "#007AFF",
+    backgroundColor: "#e6f0ff",
+  },
+  // backButton: {
+  //   flexDirection: "row",
+  //   alignSelf: "flex-start",
+  //   // marginBottom: 10
+  // },
 
-    // edited: JM 2025/03/07
-    backButton: {
-      flexDirection: "row",
-      alignItems: "center",
-      position: "absolute",
-      top: 20,
-      // left: 10,
-      zIndex: 50,
-    },
-     // edited: JM 2025/03/07
-    backText: { 
-      marginLeft: 5, 
-      fontSize: 25, 
-      color: '#375894' 
-    },
+  // edited: JM 2025/03/07
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    position: "absolute",
+    top: 20,
+    // left: 10,
+    zIndex: 50,
+  },
+  // edited: JM 2025/03/07
+  backText: {
+    marginLeft: 5,
+    fontSize: 25,
+    color: "#375894",
+  },
 
-    // edited: JM 2025/03/07
-    scrollcontainer: {  
+  // edited: JM 2025/03/07
+  scrollcontainer: {
     // flexGrow: 1,
     // padding: 20,
     // marginTop: 100,
@@ -695,7 +763,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 20,
-    
   },
   // added: JM 2025/03/07
   formContainer: {
@@ -707,7 +774,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
   },
-   // added: JM 2025/03/07
+  // added: JM 2025/03/07
   header: {
     fontSize: 24,
     fontWeight: "bold",
@@ -751,30 +818,30 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center", // Center align items vertically
     marginBottom: 10,
-},
-// edited: JM 2025/03/07
-checkboxOptions: {
-    flexDirection: "row", 
-    marginLeft: 10, 
-},
-// added: JM 2025/03/07
-checkboxWrapper: {
-  borderColor: "#808080",
-  borderWidth: 1,
-  borderRadius: 100, 
-  justifyContent: "center", 
-  alignItems: "center", 
-},
-// added: JM 2025/03/07
-checkboxText: {
-  marginLeft: 5,
-},
-// edited: JM 2025/03/07
-checkboxOption: {
+  },
+  // edited: JM 2025/03/07
+  checkboxOptions: {
+    flexDirection: "row",
+    marginLeft: 10,
+  },
+  // added: JM 2025/03/07
+  checkboxWrapper: {
+    borderColor: "#808080",
+    borderWidth: 1,
+    borderRadius: 100,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  // added: JM 2025/03/07
+  checkboxText: {
+    marginLeft: 5,
+  },
+  // edited: JM 2025/03/07
+  checkboxOption: {
     flexDirection: "row",
     alignItems: "center",
-    marginRight: 15, 
-},
+    marginRight: 15,
+  },
   continueButton: {
     backgroundColor: "#375894",
     padding: 12,
@@ -792,7 +859,7 @@ checkboxOption: {
     width: "100%",
     backgroundColor: "#F5F5F5",
     borderRadius: 10,
-    overflow: 'hidden', // Optional: To ensure corners are rounded
+    overflow: "hidden", // Optional: To ensure corners are rounded
   },
   // edited: JM 2025/03/07
   picker: {
@@ -806,66 +873,66 @@ checkboxOption: {
   // added: JM 2025/03/07
   pickerItem: {
     height: 150, // Set height for items in the picker (only applies to iOS)
-    fontSize: 16, 
-    color: '#333', 
-},
-// <!-- 
-//         flex: 1, 
-//         justifyContent: 'center',
-//         alignItems: 'center',
-//       },
-//       phoneContainer: {
-//         marginBottom: 16, // Space between fields
-//         position: "relative", // For precise placement of error text
-//     },
-//       disabledButton: {
-//         backgroundColor: "#A9A9A9", // Gray color for disabled button
-//       },
-//       activeInput: {
-//         borderColor: "#007AFF",
-//         backgroundColor: "#e6f0ff",
-//       },
-//       scrollcontainer: {  flexGrow: 1,
-//         padding: 20,
-//         marginTop: 100,
-//         backgroundColor: "#fff", },
-//   container: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#E3F6FC", padding: 20 },
-//   backButton: { flexDirection: "row", alignSelf: "flex-start", marginBottom: 10 },
-//   backText: { marginLeft: 5, fontSize: 16, color: '#375894' },
-//   formContainer: { width: "90%", backgroundColor: "white", borderRadius: 25, alignItems: "center"},
-//   header: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
-//   input: { width: "100%", padding: 12, backgroundColor: "#F5F5F5", borderRadius: 10, marginBottom: 10 },
-//   checkboxContainer: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: 10 },
-//   checkboxOption: { flexDirection: "row", alignItems: "center", marginRight: 5},
-//   checkboxOption2: { flexDirection: "row", alignItems: "center", marginRight: 50 },
-//   selectText: { fontWeight: "bold", marginRight: 10, fontSize: 12, },
-//   note: { textAlign: "center", fontSize: 12, color: "gray", marginBottom: 20 },
-//   continueButton: { backgroundColor: "#375894", padding: 10, borderRadius: 25, width: "100%", alignItems: "center" },
-//   continueText: { color: "white", fontSize: 18, fontWeight: "bold" },
-//   passwordContainer: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     width: "100%",
-//     paddingHorizontal: 10,
-//     paddingVertical: 12,
-//     backgroundColor: "#F5F5F5",
-//     borderRadius: 10,
-//     marginBottom: 10,
-//     justifyContent: "space-between",
-//   },
-//   eyeIcon: {
-//     position: "absolute",
-//     right: 15,
-//     padding: 10,
-//   },
-//   picker: {
-//     width: "100%",
-//     backgroundColor: "#F5F5F5",
-//     borderRadius: 10,
-//     padding: 12,
-//     marginBottom: 10,
-//   },
-//  master -->
+    fontSize: 16,
+    color: "#333",
+  },
+  // <!--
+  //         flex: 1,
+  //         justifyContent: 'center',
+  //         alignItems: 'center',
+  //       },
+  //       phoneContainer: {
+  //         marginBottom: 16, // Space between fields
+  //         position: "relative", // For precise placement of error text
+  //     },
+  //       disabledButton: {
+  //         backgroundColor: "#A9A9A9", // Gray color for disabled button
+  //       },
+  //       activeInput: {
+  //         borderColor: "#007AFF",
+  //         backgroundColor: "#e6f0ff",
+  //       },
+  //       scrollcontainer: {  flexGrow: 1,
+  //         padding: 20,
+  //         marginTop: 100,
+  //         backgroundColor: "#fff", },
+  //   container: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#E3F6FC", padding: 20 },
+  //   backButton: { flexDirection: "row", alignSelf: "flex-start", marginBottom: 10 },
+  //   backText: { marginLeft: 5, fontSize: 16, color: '#375894' },
+  //   formContainer: { width: "90%", backgroundColor: "white", borderRadius: 25, alignItems: "center"},
+  //   header: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
+  //   input: { width: "100%", padding: 12, backgroundColor: "#F5F5F5", borderRadius: 10, marginBottom: 10 },
+  //   checkboxContainer: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: 10 },
+  //   checkboxOption: { flexDirection: "row", alignItems: "center", marginRight: 5},
+  //   checkboxOption2: { flexDirection: "row", alignItems: "center", marginRight: 50 },
+  //   selectText: { fontWeight: "bold", marginRight: 10, fontSize: 12, },
+  //   note: { textAlign: "center", fontSize: 12, color: "gray", marginBottom: 20 },
+  //   continueButton: { backgroundColor: "#375894", padding: 10, borderRadius: 25, width: "100%", alignItems: "center" },
+  //   continueText: { color: "white", fontSize: 18, fontWeight: "bold" },
+  //   passwordContainer: {
+  //     flexDirection: "row",
+  //     alignItems: "center",
+  //     width: "100%",
+  //     paddingHorizontal: 10,
+  //     paddingVertical: 12,
+  //     backgroundColor: "#F5F5F5",
+  //     borderRadius: 10,
+  //     marginBottom: 10,
+  //     justifyContent: "space-between",
+  //   },
+  //   eyeIcon: {
+  //     position: "absolute",
+  //     right: 15,
+  //     padding: 10,
+  //   },
+  //   picker: {
+  //     width: "100%",
+  //     backgroundColor: "#F5F5F5",
+  //     borderRadius: 10,
+  //     padding: 12,
+  //     marginBottom: 10,
+  //   },
+  //  master -->
 });
 
 export default CreateAccount;
