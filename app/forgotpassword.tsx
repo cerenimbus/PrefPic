@@ -1,5 +1,5 @@
 import React from "react";
-import { ImageBackground,StyleSheet,View,Text, Image,TextInput,Linking,Alert,TouchableOpacity,KeyboardAvoidingView,Platform,ScrollView} from "react-native";
+import { ImageBackground,StyleSheet,View,Text, Image,TextInput,Linking,Alert,TouchableOpacity,KeyboardAvoidingView,Platform,ScrollView, ActivityIndicator} from "react-native";
 import { useState } from "react";
 import { useEffect } from "react";
 import CheckBox from "expo-checkbox";
@@ -15,6 +15,8 @@ export default function ForgotPassword()  {
   const [email, setEmail] = useState("");
   const [deviceID, setDeviceID] = useState<string | null>(null);
   const router = useRouter();
+  // JCM 03/27/2025: Added a state variable for enabling/disabling Send Password button
+  const [sendPasswordIsLoading, setSendPasswordIsLoading] = useState(false);
 
   // Email Validation Function
   const validateEmail = (email: string): boolean => {
@@ -41,6 +43,12 @@ export default function ForgotPassword()  {
   
 
   const handleSendPassword = async () => {
+     //----------------------------------------------------------------------------------------------
+    //JCM 03/27/2025: Set setSendPasswordIsLoading state variable to "true" to disable the Send Password button
+    setSendPasswordIsLoading(true);
+    //----------------------------------------------------------------------------------------------
+
+
     if (!isEmailValid) {
       Alert.alert("Invalid Email", "Must enter a validly formatted email.");
       return;
@@ -96,6 +104,12 @@ export default function ForgotPassword()  {
       } else {
         Alert.alert("Error", "The server response was not in the expected format.");
       }
+
+      //----------------------------------------------------------------------------------------------
+      //JCM 03/27/2025: Set setSendPasswordIsLoading state variable to "false" to enable the Send Password button
+      setSendPasswordIsLoading(false);
+      //----------------------------------------------------------------------------------------------
+
     } catch (error) {
       console.error("Error during password reset:", error);
       Alert.alert("Error", "An error occurred while processing the request.");
@@ -143,16 +157,24 @@ export default function ForgotPassword()  {
 
             {/* Send Password Button */}
             <View style={styles.bcontainer}>
-            <TouchableOpacity
-                style={[
-                  styles.getButton,
-                  { backgroundColor: isEmailEntered && isEmailValid ? "#375894" : "#A3A3A3" },
-                ]}
-                onPress={handleSendPassword}
-                disabled={!isEmailEntered || !isEmailValid} // Disable if email is not entered or invalid
-              >
-                <Text style={styles.GetText}>Send Password</Text>
+            {/*----------------------------------------------------------------------------------------------*/}
+            {/*JCM - 03/26/2025 Added an activity indicator for button feedback */}
+              <TouchableOpacity
+                  style={[
+                    styles.getButton,
+                    { backgroundColor: isEmailEntered && isEmailValid ? "#375894" : "#A3A3A3" },
+                  ]}
+                  onPress={handleSendPassword}
+                  disabled={!isEmailEntered || !isEmailValid || sendPasswordIsLoading} // Disable if email is not entered or invalid
+                >
+
+                  { sendPasswordIsLoading ? (
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                  ) : (
+                    <Text style={styles.GetText}>Send Password</Text>
+                  )}
               </TouchableOpacity>
+            {/*----------------------------------------------------------------------------------------------*/}
             </View>
           </View>
         </ScrollView>

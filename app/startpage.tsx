@@ -149,7 +149,7 @@ export default function StartScreen() {
                     setChecked(newValue);
                   }}
                 />
-                <Text style = {styles.text}>I accept</Text>
+                <Text style = {styles.text}>I accept </Text>
                 <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/terms.html")}>
                   Terms
                 </Text>
