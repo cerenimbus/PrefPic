@@ -1,7 +1,7 @@
 import { useRouter, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getDeviceID } from '../components/deviceInfo';
+import { getDeviceID } from "../components/deviceInfo";
 import CryptoJS from "crypto-js";
 import {
   View,
@@ -23,12 +23,13 @@ export default function RetakePicture() {
   const [notesText, setNotesText] = useState<string>("");
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
 
-  const { photoUri, procedureName, updatedDescription, updatedNotes } = useLocalSearchParams<{
-    photoUri: string;
-    procedureName: string;
-    updatedDescription: string;
-    updatedNotes: string;
-  }>();
+  const { photoUri, procedureName, updatedDescription, updatedNotes } =
+    useLocalSearchParams<{
+      photoUri: string;
+      procedureName: string;
+      updatedDescription: string;
+      updatedNotes: string;
+    }>();
 
   useEffect(() => {
     const fetchDeviceID = async () => {
@@ -68,9 +69,14 @@ export default function RetakePicture() {
     try {
       console.log("🔹 Starting API call...");
 
-      const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
+      const procedureSerial = await AsyncStorage.getItem(
+        "currentProcedureSerial"
+      );
       if (!procedureSerial) {
-        Alert.alert("Error", "Procedure not found. Please create a procedure first.");
+        Alert.alert(
+          "Error",
+          "Procedure not found. Please create a procedure first."
+        );
         return;
       }
       console.log("🔹 Procedure Serial:", procedureSerial);
@@ -89,11 +95,16 @@ export default function RetakePicture() {
       console.log("🔹 Authorization Code:", authorizationCode);
 
       const currentDate = new Date();
-      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
-        currentDate.getDate()
-      ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
-        currentDate.getMinutes()
-      ).padStart(2, "0")}`;
+      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}/${String(currentDate.getDate()).padStart(
+        2,
+        "0"
+      )}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(
+        2,
+        "0"
+      )}:${String(currentDate.getMinutes()).padStart(2, "0")}`;
 
       const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
       console.log("🔹 Key String:", keyString);
@@ -139,10 +150,14 @@ export default function RetakePicture() {
         Alert.alert("Success!", "Picture text updated successfully.");
         router.push({
           pathname: "viewEditPicture",
-          params: { updatedDescription: descriptionText, updatedNotes: notesText },
+          params: {
+            updatedDescription: descriptionText,
+            updatedNotes: notesText,
+          },
         });
       } else {
-        const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
+        const errorMessage =
+          data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
         Alert.alert("Update Failed", errorMessage);
       }
     } catch (error) {
@@ -155,9 +170,14 @@ export default function RetakePicture() {
     try {
       console.log("🔹 Starting Delete API call...");
 
-      const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
+      const procedureSerial = await AsyncStorage.getItem(
+        "currentProcedureSerial"
+      );
       if (!procedureSerial) {
-        Alert.alert("Error", "Procedure not found. Please create a procedure first.");
+        Alert.alert(
+          "Error",
+          "Procedure not found. Please create a procedure first."
+        );
         return;
       }
       console.log("🔹 Procedure Serial:", procedureSerial);
@@ -176,11 +196,16 @@ export default function RetakePicture() {
       console.log("🔹 Authorization Code:", authorizationCode);
 
       const currentDate = new Date();
-      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
-        currentDate.getDate()
-      ).padStart(2, "0")}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, "0")}:${String(
-        currentDate.getMinutes()
-      ).padStart(2, "0")}`;
+      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}/${String(currentDate.getDate()).padStart(
+        2,
+        "0"
+      )}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(
+        2,
+        "0"
+      )}:${String(currentDate.getMinutes()).padStart(2, "0")}`;
 
       const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
       console.log("🔹 Key String:", keyString);
@@ -216,14 +241,20 @@ export default function RetakePicture() {
         const storedImages = await AsyncStorage.getItem("capturedImages");
         if (storedImages) {
           const images = JSON.parse(storedImages);
-          const updatedImages = images.filter((img: string) => img !== photoUriState);
-          await AsyncStorage.setItem("capturedImages", JSON.stringify(updatedImages));
+          const updatedImages = images.filter(
+            (img: string) => img !== photoUriState
+          );
+          await AsyncStorage.setItem(
+            "capturedImages",
+            JSON.stringify(updatedImages)
+          );
         }
 
         setPhotoUriState(null); // Clear the photo URI state
         router.push("viewEditPicture"); // Navigate back to the previous screen
       } else {
-        const errorMessage = data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Delete failed.";
+        const errorMessage =
+          data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Delete failed.";
         Alert.alert("Delete Failed", errorMessage);
       }
     } catch (error) {
@@ -252,7 +283,10 @@ export default function RetakePicture() {
             </Text>
           )}
 
-          <TouchableOpacity style={styles.retakePicture} onPress={navigateToCamera}>
+          <TouchableOpacity
+            style={styles.retakePicture}
+            onPress={navigateToCamera}
+          >
             <Text style={styles.retakePictureText}>Retake pic</Text>
           </TouchableOpacity>
 
@@ -281,7 +315,10 @@ export default function RetakePicture() {
               <Text style={styles.deletebuttonText}>Delete</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.save} onPress={navigateToEditPicture}>
+            <TouchableOpacity
+              style={styles.save}
+              onPress={navigateToEditPicture}
+            >
               <Text style={styles.buttonText}>Save</Text>
             </TouchableOpacity>
           </View>
