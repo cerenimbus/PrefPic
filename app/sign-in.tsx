@@ -327,7 +327,7 @@ export default function Signin() {
             {/* Terms and Privacy Policy */}
             <View style={styles.checkboxContainer}>
               <CheckBox value={isChecked} onValueChange={setChecked} />
-              <Text style={styles.iaccept}>I accept</Text>
+              <Text style={styles.iaccept}>I accept </Text>
               <Text
                 style={styles.link}
                 onPress={() =>

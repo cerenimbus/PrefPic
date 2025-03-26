@@ -19,6 +19,9 @@ export default function ReviewImage() {
   const [isLoading, setIsLoading] = useState(false);
   const [deviceID, setDeviceID] = useState<{id:string} | null>(null);
   const [retryCount, setRetryCount] = useState(0); // Track retry attempts
+  // JCM - 03/26/2025: Add state variable to be used for button feedbacks
+  const [retakePictureIsLoading, retakePictureSetIsLoading] = useState(false);
+  
 
    //RJP -> 2/7/2025
   // (import) image and procedure name from add_2.tsx 
@@ -60,15 +63,25 @@ export default function ReviewImage() {
 //Alberto -> 2/11/2025
 //API CALL  -> 2/13/2025
 const navigateToCamera = () => {
-  // Reset photoUriState before navigating back
-  setPhotoUriState(null);
-  //Alberto -> 2/17/2025
-  // Navigate back to the camera screen with the procedureName
-  router.replace({
-    pathname: "camera",
-    // Pass the procedureName as a query parameter so it doesn't get lost
-    params: { procedureName },
-  });
+    //----------------------------------------------------------------------------------------------
+    //JCM 03/27/2025: Set setIsLoading state variable to "true" to disable the Retake pic button
+    retakePictureSetIsLoading(true);
+    //----------------------------------------------------------------------------------------------
+
+    //----------------------------------------------------------------------------------------------
+    //JCM 03/27/2025: Added a delay navigation until the state update completes.
+    setTimeout(() => {
+      setPhotoUriState(null);
+      router.push({
+        pathname: "camera",
+        params: { procedureName },
+      });
+    //----------------------------------------------------------------------------------------------
+
+      //JCM 03/27/2025: Set setIsLoading state variable to "false" to enable the Retake pic button
+      retakePictureSetIsLoading(false);
+      //----------------------------------------------------------------------------------------------
+    }, 3000); 
 };
   //open bleed view
   const handleImageClick = () => {
@@ -286,30 +299,41 @@ useEffect(() => {
         </Modal>
 )}
 
-
-
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.retakebutton} onPress={navigateToCamera}>
-            <Text style={styles.retakebuttonText}>Retake</Text>
-          </TouchableOpacity>
+          {/*----------------------------------------------------------------------------------------------*/}
+          {/*JCM - 03/26/2025 Added an activity indicator for button feedback */}
+            <TouchableOpacity 
+              style={styles.retakebutton} 
+              onPress={navigateToCamera}
+              disabled = {retakePictureIsLoading}
+            >
+            
+              {retakePictureIsLoading ? (
+                <ActivityIndicator size="small" color="#375894" />
+              ) : (
+                <Text style={styles.retakebuttonText}>Retake</Text>
+              )}
+
+            </TouchableOpacity>
+          {/*----------------------------------------------------------------------------------------------*/}
 
   
 
-{/*=======================================================================================*/}
-{/*RJP <-3/5/2025 add feedback button*/}
+        {/*=======================================================================================*/}
+        {/*RJP <-3/5/2025 add feedback button*/}
 
-<TouchableOpacity
-            style={[styles.nextbutton, isLoading && styles.disabledButton]}
+          <TouchableOpacity
+            style={[styles.nextbutton]}
             onPress={() => setIsLoading(true)}
             disabled={isLoading}
           >
             {isLoading ? (
-              <ActivityIndicator size={27} color="#FFFFFF" />
+              <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
               <Text style={styles.buttonText}>Next</Text>
             )}
           </TouchableOpacity>
-{/*=======================================================================================*/}
+        {/*=======================================================================================*/}
 
         </View>
       </View>
@@ -328,7 +352,7 @@ const styles = StyleSheet.create({
 
   //RJP 3/5/2025 <-- add style to the button when disabled
   disabledButton: {
-    backgroundColor: "#808080", // Gray color when disabled
+    backgroundColor: "#A0A0A0", // Gray color when disabled
     flex: 1,
   },
   

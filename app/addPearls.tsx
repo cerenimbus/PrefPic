@@ -223,13 +223,13 @@ const AddPearls: React.FC = () => {
       pathname: "procedureReviewSummary",
       params: { serial: updatedProcedureSerial },
     });
+    setIsLoading(false); // Reset loading state after navigation
   };
   const handleNextPress = () => {
     setIsLoading(true);
-    setTimeout(() => {
-      navigateToProcedureReviewSummary(); // Navigate after the delay
-      setIsLoading(false); // Reset loading state after navigation
-    }, 1000); // 1000 milliseconds = 1 second
+      setTimeout(() => {
+        navigateToProcedureReviewSummary(); // Navigate after the delay
+      }, 3000); // 1000 milliseconds = 1 second
   };
 
   return (
@@ -326,12 +326,15 @@ const AddPearls: React.FC = () => {
             )}
 
             {/* Next Button */}
+
+            {/* JCM - 03/26/2025 Added disable function when Next button is tapped or pressed. */}
             <TouchableOpacity
               style={[
                 styles.button,
                 // (alwaysDo.trim() === "" || watchFor.trim() === "" || neverDo.trim() === "") && styles.disabledButton
               ]}
               onPress={handleNextPress}
+              disabled = { isLoading }
               // disabled={alwaysDo.trim() === "" || watchFor.trim() === "" || neverDo.trim() === "" || isLoading}
             >
               {isLoading ? (
@@ -403,7 +406,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#e6f0ff",
   },
   button: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#375894",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
@@ -415,7 +418,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   doneButton: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#375894",
     padding: 10,
     borderRadius: 8,
     alignItems: "center",

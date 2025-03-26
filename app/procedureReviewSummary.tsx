@@ -242,7 +242,7 @@ return (
           <View style={styles.card}>
             <View style={styles.cardHeader}>
               <Text style={styles.cardTitle}>Images</Text>
-              <Text style={styles.editText}>Edit</Text>
+              
             </View>
             <View style={styles.centerBox}>
               <View style={styles.boxContainer}>
