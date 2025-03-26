@@ -8,62 +8,83 @@ import { AuthContext } from "./AuthContext";
 import constants from "expo-constants";
 import { getDeviceID } from "../components/deviceInfo";
 import { XMLParser } from "fast-xml-parser";
-import * as Device from "expo-device";  // Import expo-device to get device info
+import * as Device from "expo-device"; // Import expo-device to get device info
 // import * as SplashScreen from "expo-splash-screen";
 // import { useFonts, DarkerGrotesque_600SemiBold } from "@expo-google-fonts/darker-grotesque";
 import Ionicons from "react-native-vector-icons/Ionicons"; // Import icon
-
-
 
 export default function Signin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isChecked, setChecked] = useState(false);
-  const[isChecked1, setChecked1] = useState(false);
+  const [isChecked1, setChecked1] = useState(false);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [hasCheckedDemo, setHasCheckedDemo] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-
-
-
   // Use context and handle undefined fallback
-  const { authCode, saveAuthCode } = useContext(AuthContext) || { authCode: null, saveAuthCode: () => {} };
+  const { authCode, saveAuthCode } = useContext(AuthContext) || {
+    authCode: null,
+    saveAuthCode: () => {},
+  };
 
   useEffect(() => {
     console.log("is Checked updated:", isChecked);
     console.log("is Checked1 updated:", isChecked1);
   }, [isChecked, isChecked1]);
 
+  // useEffect(() => {
+  //   const checkDemoStatus = async () => {
+  //     if (hasCheckedDemo) return; // Avoid re-running
 
-    // useEffect(() => {
-    //   const checkDemoStatus = async () => {
-    //     if (hasCheckedDemo) return; // Avoid re-running
-    
-    //     const demoStatus = await AsyncStorage.getItem("status");
-    //     if (demoStatus === "Demo" || demoStatus === "Active") {
-    //       router.replace("/sign-in");
-    //     }
-    //     setHasCheckedDemo(true); // Mark as checked
-    //   };
-    
-    //   checkDemoStatus();
-    // }, [hasCheckedDemo]);
-  
-    useEffect(() => {
-      const checkUserType = async () => {
-        const userType = await AsyncStorage.getItem("UserType");
-    
+  //     const demoStatus = await AsyncStorage.getItem("status");
+  //     if (demoStatus === "Demo" || demoStatus === "Active") {
+  //       router.replace("/sign-in");
+  //     }
+  //     setHasCheckedDemo(true); // Mark as checked
+  //   };
+
+  //   checkDemoStatus();
+  // }, [hasCheckedDemo]);
+
+  //=======================================================================================================
+  // COMMENTED: JM 03-25-2025
+  // useEffect(() => {
+  //   const checkUserType = async () => {
+  //     const userType = await AsyncStorage.getItem("UserType");
+
+  //     if (!userType) {
+  //       await AsyncStorage.setItem("UserType", "Staff"); // Default to "Staff" if not set
+  //     }
+  //   };
+
+  //   checkUserType();
+  // }, []);
+
+  //=======================================================================================================
+  // ⚠️ MODIFIED: JM 03-25-2025
+  useEffect(() => {
+    const checkUserType = async () => {
+      try {
+        let userType = await AsyncStorage.getItem("UserType");
+
+        //=======================================================================================================
+        // ✅ ADDED: JM 03-25-2025
+        // Only set default if it's completely missing (not override valid roles)
         if (!userType) {
-          await AsyncStorage.setItem("UserType", "Staff"); // Default to "Staff" if not set
+          console.warn("UserType missing! Setting default to 'Surgical Staff'");
+          await AsyncStorage.setItem("UserType", "Surgical Staff");
         }
-      };
-    
-      checkUserType();
-    }, []);
-  
-  
+
+        console.log("UserType set to:", userType); // Debugging
+      } catch (error) {
+        console.error("Error checking UserType:", error);
+      }
+    };
+
+    checkUserType();
+  }, []);
 
   const navigateToIndex = () => {
     if (!validateEmail(email)) {
@@ -72,7 +93,10 @@ export default function Signin() {
     }
 
     if (!isChecked) {
-      Alert.alert("Terms & Privacy", "You must accept the Terms and Privacy Policy to proceed.");
+      Alert.alert(
+        "Terms & Privacy",
+        "You must accept the Terms and Privacy Policy to proceed."
+      );
       return;
     }
 
@@ -88,26 +112,26 @@ export default function Signin() {
     router.push("/forgotpassword");
   };
 
-  const navigateToCreateAccount = () => { 
+  const navigateToCreateAccount = () => {
     router.push("/createAccount"); // Adjust the path if your CreateAccount screen is in another folder
   };
-  
-  const navigateToTeamAccount = () => { 
+
+  const navigateToTeamAccount = () => {
     router.push("/completeDemo"); // Adjust the path if your CreateAccount screen is in another folder
   };
   const navigateToMainAccountPage = () => {
     router.push("/mainAccountPage");
   };
   // Determine if the "Sign In" button should be enabled or disabled
-  const isFormValid = email && password && isChecked && isChecked1  && validateEmail(email);
+  const isFormValid =
+    email && password && isChecked && isChecked1 && validateEmail(email);
 
   const handleSignIn = async () => {
-
-        // Validate form data
-        if (!isFormValid) {
-          Alert.alert("Validation Error", "Please fill out all fields correctly.");
-          return;
-        }
+    // Validate form data
+    if (!isFormValid) {
+      Alert.alert("Validation Error", "Please fill out all fields correctly.");
+      return;
+    }
     if (!email || !password) {
       Alert.alert("Validation Error", "Email and Password are required.");
       return;
@@ -121,17 +145,23 @@ export default function Signin() {
 
     // Password validation (adjust this validation as needed)
     if (password.length < 6) {
-      Alert.alert("Invalid Password", "Password must be at least 6 characters long.");
+      Alert.alert(
+        "Invalid Password",
+        "Password must be at least 6 characters long."
+      );
       return;
     }
 
     // Check if Terms & Privacy is accepted
     if (!isChecked) {
-      Alert.alert("Terms & Privacy", "You must accept the Terms and Privacy Policy to proceed.");
+      Alert.alert(
+        "Terms & Privacy",
+        "You must accept the Terms and Privacy Policy to proceed."
+      );
       return;
     }
 
-    if(!isChecked1){
+    if (!isChecked1) {
       Alert.alert("You must check the checkbox to proceed");
       return;
     }
@@ -142,27 +172,62 @@ export default function Signin() {
       // Get basic device info using Platform and Constants
       const deviceType = Platform.OS; // 'ios' or 'android'
       const deviceVersion = Platform.Version; // OS version
-      const screenHeight = Dimensions.get('window').height;
-      const screenWidth = Dimensions.get('window').width;
-      
+      const screenHeight = Dimensions.get("window").height;
+      const screenWidth = Dimensions.get("window").width;
+
       // Get device model from expo-device
       const deviceModel = Device.modelId; // Device model like "iPhone" or "Pixel"
 
       // Get device ID
       const { id: deviceID } = await getDeviceID();
 
-
       // Generate formatted date (MM/DD/YYYY-HH:mm)
       const currentDate = new Date();
-      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, '0')}/${String(currentDate.getDate()).padStart(2, '0')}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(2, '0')}:${String(currentDate.getMinutes()).padStart(2, '0')}`;
+      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}/${String(currentDate.getDate()).padStart(
+        2,
+        "0"
+      )}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(
+        2,
+        "0"
+      )}:${String(currentDate.getMinutes()).padStart(2, "0")}`;
       const demoStatus = (await AsyncStorage.getItem("Demo")) || "Active";
-      const userType = (await AsyncStorage.getItem("UserType")) || "Staff";
+
+      //=======================================================================================================
+      // ⚠️ COMMENTED: JM 03-25-2025
+      // const userType = (await AsyncStorage.getItem("UserType")) || "Staff";
+
+      //=======================================================================================================
+      // ✅ ADDED: JM 03-25-2025
+      // Verify that the correct role is retained
+      const userType = await AsyncStorage.getItem("UserType");
+      console.log("UserType at Sign-In:", userType);
+
+      //=======================================================================================================
+      // ✅ ADDED: JM 03-25-2025
+      if (!userType) {
+        console.warn("⚠️ UserType missing! Defaulting to 'Surgical Staff'");
+        await AsyncStorage.setItem("UserType", "Surgical Staff");
+      }
+
       // Generate Key using SHA1 (DeviceID + Date)
       const keyString = `${deviceID}${formattedDate}`;
       const key = CryptoJS.SHA1(keyString).toString();
 
       // Construct API URL
-      const url = `https://prefpic.com/dev/PPService/AuthorizeUser.php?DeviceID=${encodeURIComponent(deviceID)}&DeviceType=${encodeURIComponent(deviceType)}&DeviceModel=${encodeURIComponent(deviceModel)}&DeviceVersion=${encodeURIComponent(deviceVersion)}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}&PrefPicVersion=10&TestFlag=0`;
+      const url = `https://prefpic.com/dev/PPService/AuthorizeUser.php?DeviceID=${encodeURIComponent(
+        deviceID
+      )}&DeviceType=${encodeURIComponent(
+        deviceType
+      )}&DeviceModel=${encodeURIComponent(
+        deviceModel
+      )}&DeviceVersion=${encodeURIComponent(
+        deviceVersion
+      )}&SoftwareVersion=1.0&Date=${formattedDate}&Key=${key}&Email=${encodeURIComponent(
+        email
+      )}&Password=${encodeURIComponent(password)}&PrefPicVersion=10&TestFlag=0`;
       console.log("Request URL:", url);
 
       // Call API
@@ -175,46 +240,60 @@ export default function Signin() {
       const result = parser.parse(data);
       const resultInfo = result?.ResultInfo;
 
-      if (resultInfo?.Result === 'Success') {
+      if (resultInfo?.Result === "Success") {
         const authorizationCode = resultInfo?.Auth;
         await AsyncStorage.setItem("AUTH_CODE", authorizationCode || "");
         saveAuthCode(authorizationCode || "");
 
-        const userDetails = await AsyncStorage.getItem('userDetails');
-        const parsedUserDetails = userDetails ? JSON.parse(userDetails): null;
+        const userDetails = await AsyncStorage.getItem("userDetails");
+        const parsedUserDetails = userDetails ? JSON.parse(userDetails) : null;
 
         router.push({
-        pathname: "/mainAccountPage",
-        params: {
-          title: parsedUserDetails?.title,
-          firstName: parsedUserDetails?.firstName,
-          lastName: parsedUserDetails?.lastName,
-          email: parsedUserDetails?.email,
+          pathname: "/mainAccountPage",
+          params: {
+            title: parsedUserDetails?.title,
+            firstName: parsedUserDetails?.firstName,
+            lastName: parsedUserDetails?.lastName,
+            email: parsedUserDetails?.email,
           },
         });
       } else {
-        Alert.alert("Authorization Failed", resultInfo?.Message || "An unknown error occurred.");
+        Alert.alert(
+          "Authorization Failed",
+          resultInfo?.Message || "An unknown error occurred."
+        );
       }
     } catch (error) {
       console.error("Error during authorization:", error);
-      Alert.alert("Authorization Failed", "An error occurred during authorization.");
+      Alert.alert(
+        "Authorization Failed",
+        "An error occurred during authorization."
+      );
     } finally {
       setIsLoading(false);
     }
   };
   return (
-    <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.flexContainer}>
+    <ImageBackground
+      source={require("../assets/Start.jpg")}
+      style={styles.background}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.flexContainer}
+      >
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-
           {/* Form Container */}
           <View style={styles.container}>
-                      {/* Centered Image and Text */}
+            {/* Centered Image and Text */}
 
-          <View style={styles.imageTextContainer}>
-            <Image source={require("../assets/logo.png")} style={styles.imagestyle} />
-            <Text style={styles.signintxt}>Sign in</Text>
-          </View>
+            <View style={styles.imageTextContainer}>
+              <Image
+                source={require("../assets/logo.png")}
+                style={styles.imagestyle}
+              />
+              <Text style={styles.signintxt}>Sign in</Text>
+            </View>
 
             {/* Email and Password Inputs */}
             <TextInput
@@ -225,44 +304,62 @@ export default function Signin() {
               keyboardType="email-address"
               autoCapitalize="none"
             />
-        <View style={styles.inputContainer}>
-       <TextInput
-        style={styles.inputpass}
-        placeholder="Password"
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-        secureTextEntry={!isPasswordVisible} // Toggle visibility
-        autoCapitalize="none"
-      />
-      <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
-        <Ionicons
-          name={isPasswordVisible ? "eye-off" : "eye"} // Change icon
-          size={24}
-          color="gray"
-        />
-      </TouchableOpacity>
-       </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.inputpass}
+                placeholder="Password"
+                value={password}
+                onChangeText={(text) => setPassword(text)}
+                secureTextEntry={!isPasswordVisible} // Toggle visibility
+                autoCapitalize="none"
+              />
+              <TouchableOpacity
+                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+              >
+                <Ionicons
+                  name={isPasswordVisible ? "eye-off" : "eye"} // Change icon
+                  size={24}
+                  color="gray"
+                />
+              </TouchableOpacity>
+            </View>
 
             {/* Terms and Privacy Policy */}
             <View style={styles.checkboxContainer}>
               <CheckBox value={isChecked} onValueChange={setChecked} />
-              <Text style = {styles.iaccept}>I accept</Text>
-              <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/terms.html")}>
-                 Terms
+              <Text style={styles.iaccept}>I accept</Text>
+              <Text
+                style={styles.link}
+                onPress={() =>
+                  Linking.openURL("https://prefpic.com/terms.html")
+                }
+              >
+                Terms
               </Text>
-              <Text style = {styles.and}> and </Text>
-              <Text style={styles.link} onPress={() => Linking.openURL("https://prefpic.com/privacypolicy.html")}>
+              <Text style={styles.and}> and </Text>
+              <Text
+                style={styles.link}
+                onPress={() =>
+                  Linking.openURL("https://prefpic.com/privacypolicy.html")
+                }
+              >
                 Privacy Policy
               </Text>
             </View>
             <View style={styles.checkboxContainer2}>
               <CheckBox value={isChecked1} onValueChange={setChecked1} />
-              <Text style={styles.ptext}>I will not enter any patient’s Personally Identifiable Information or pictures</Text>
+              <Text style={styles.ptext}>
+                I will not enter any patient’s Personally Identifiable
+                Information or pictures
+              </Text>
             </View>
 
             {/* Sign In Button */}
-            <TouchableOpacity 
-              style={[styles.getButton, { backgroundColor: isFormValid ? "#375894" : "#A3A3A3" }]} 
+            <TouchableOpacity
+              style={[
+                styles.getButton,
+                { backgroundColor: isFormValid ? "#375894" : "#A3A3A3" },
+              ]}
               onPress={handleSignIn}
               disabled={!isFormValid}
             >
@@ -281,23 +378,20 @@ export default function Signin() {
             {/* <TouchableOpacity onPress={navigateToTeamAccount}>
               <Text style={styles.caccount}>Team</Text>
             </TouchableOpacity> */}
-
           </View>
-         <TouchableOpacity onPress={navigateToTeamAccount}>
-              <Text style={styles.caccount1}>start</Text>
-            </TouchableOpacity>  
-
-
+          <TouchableOpacity onPress={navigateToTeamAccount}>
+            <Text style={styles.caccount1}>start</Text>
+          </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
-            <Text style={styles.footerText}>© 2025 Symphatic LLC, All Rights Reserved</Text>
-      
+      <Text style={styles.footerText}>
+        © 2025 Symphatic LLC, All Rights Reserved
+      </Text>
     </ImageBackground>
   );
 }
 
-const { width, height } = Dimensions.get('window');
-
+const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   inputContainer: {
@@ -309,17 +403,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 10,
     width: "100%",
-
   },
   inputpass: {
     flex: 1, // Ensure input takes available space
     height: 40,
     backgroundColor: "#F1F5FC",
-
-
-
-    
-
   },
   input: {
     flex: 1,
@@ -330,13 +418,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: constants.statusBarHeight,
     justifyContent: "center",
-
   },
   scrollViewContent: {
     paddingBottom: 20,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 70
+    marginTop: 70,
   },
   imageTextContainer: {
     alignItems: "center",
@@ -345,7 +432,6 @@ const styles = StyleSheet.create({
   imagestyle: {
     width: 200,
     height: 50,
-  
   },
   signintxt: {
     fontSize: 36,
@@ -354,9 +440,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 25,
     fontFamily: "DarkerGrotesque_600SemiBold",
-
-
-
   },
   GetText: {
     color: "white",
@@ -375,14 +458,14 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     fontSize: 12,
     textAlign: "center",
-    marginTop: 10
+    marginTop: 10,
   },
   caccount1: {
     color: "#888888",
     textDecorationLine: "underline",
     fontSize: 12,
     textAlign: "center",
-    marginTop: 10
+    marginTop: 10,
   },
   getButton: {
     backgroundColor: "#A3A3A3", // Initially disabled color
@@ -399,8 +482,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     justifyContent: "flex-start",
     width: "100%",
-
-
   },
   background: {
     flex: 1,
@@ -419,7 +500,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     marginBottom: 30,
-    marginTop: 40
+    marginTop: 40,
   },
   inputemail: {
     height: 40,
@@ -448,16 +529,15 @@ const styles = StyleSheet.create({
     paddingRight: 3,
     color: "#7C7C7C",
   },
-  iaccept:{
-
+  iaccept: {
     color: "#7C7C7C",
   },
-  and:{ 
+  and: {
     color: "#7C7C7C",
   },
   footerText: {
     fontSize: 12,
     textAlign: "center",
-    marginBottom: 20
+    marginBottom: 20,
   },
 });
