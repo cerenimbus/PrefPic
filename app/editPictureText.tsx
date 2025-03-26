@@ -375,7 +375,7 @@ export default function EditPictureText() {
               </TouchableOpacity>
 
               <View style={styles.centerBox}>
-                <Text style={styles.description}>Description</Text>
+                <Text style={styles.description}>Photo title</Text>
                 <TextInput
                   style={styles.contentsInput}
                   value={descriptionText}

@@ -2,7 +2,7 @@
   "expo": {
     "name": "PrefPic",
     "slug": "PrefPic",
-    "version": "1.0.14",
+    "version": "1.0.17",
     "orientation": "portrait",
     "icon": "./assets/prefpicAppLogo.png",
     "userInterfaceStyle": "light",
@@ -14,7 +14,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.cerenimbus.prefpic"
+      "bundleIdentifier": "com.cerenimbus.prefpic",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
