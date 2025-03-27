@@ -323,6 +323,7 @@ import {
   Alert,
   SafeAreaView,
   ActivityIndicator,
+  Modal, // ✅ ADDED: JM 03-25-2025
 } from "react-native";
 import { getDeviceID } from "../components/deviceInfo";
 import CryptoJS from "crypto-js";
@@ -552,7 +553,21 @@ export default function () {
     });
   };
 
+  //=======================================================================================================
+  // ✅ ADDED: JM 03-25-2025
+  // State for modal visibility
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // Delete confirmation modal
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // Success Deletion modal
+
+  // Show delete confirmation modal
+  const confirmDeleteProcedure = () => {
+    setShowDeleteModal(true);
+  };
+
   const deleteProcedure = async () => {
+    // Close delete confirmation modal
+    setShowDeleteModal(false);
+
     if (!serial || !deviceID || !authorizationCode) {
       Alert.alert(
         "Error",
@@ -566,84 +581,124 @@ export default function () {
       ? authorizationCode[0]
       : authorizationCode;
 
-    Alert.alert(
-      "Delete Procedure",
-      `Are you sure you want to delete the procedure: ${procedureName}?`,
-      [
-        {
-          text: "No",
-          style: "cancel",
-        },
-        {
-          text: "Yes",
-          onPress: async () => {
-            setIsLoading(true);
-            try {
-              const currentDate = new Date();
-              const formattedDate = `${String(
-                currentDate.getMonth() + 1
-              ).padStart(2, "0")}/${String(currentDate.getDate()).padStart(
-                2,
-                "0"
-              )}/${currentDate.getFullYear()}-${String(
-                currentDate.getHours()
-              ).padStart(2, "0")}:${String(currentDate.getMinutes()).padStart(
-                2,
-                "0"
-              )}`;
+    setIsLoading(true);
+    try {
+      const currentDate = new Date();
+      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}/${String(currentDate.getDate()).padStart(
+        2,
+        "0"
+      )}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(
+        2,
+        "0"
+      )}:${String(currentDate.getMinutes()).padStart(2, "0")}`;
 
-              const keyString = `${deviceID.id}${formattedDate}${authCode}`;
-              const key = CryptoJS.SHA1(keyString).toString();
+      const keyString = `${deviceID.id}${formattedDate}${authCode}`;
+      const key = CryptoJS.SHA1(keyString).toString();
 
-              const url = `https://PrefPic.com/dev/PPService/DeleteProcedure.php?DeviceID=${encodeURIComponent(
-                deviceID.id
-              )}&Date=${formattedDate}&Key=${key}&AC=${authCode}&PrefPicVersion=1&Serial=${encodeURIComponent(
-                procedureSerial
-              )}`;
+      const url = `https://PrefPic.com/dev/PPService/DeleteProcedure.php?DeviceID=${encodeURIComponent(
+        deviceID.id
+      )}&Date=${formattedDate}&Key=${key}&AC=${authCode}&PrefPicVersion=1&Serial=${encodeURIComponent(
+        procedureSerial
+      )}`;
 
-              const response = await fetch(url, { method: "GET" });
-              const responseText = await response.text();
+      const response = await fetch(url, { method: "GET" });
+      const responseText = await response.text();
 
-              console.log("Delete Response:", responseText);
+      console.log("Delete Response:", responseText);
 
-              if (responseText.includes("<Result>Success</Result>")) {
-                console.log(
-                  `Procedure Deleted: Name - ${procedureName}, Serial - ${procedureSerial}`
-                );
+      if (responseText.includes("<Result>Success</Result>")) {
+        console.log(
+          `Procedure Deleted: Name - ${procedureName}, Serial - ${procedureSerial}`
+        );
 
-                // Remove procedure pearls from AsyncStorage
-                await AsyncStorage.removeItem(
-                  `procedurePearls_${procedureName}`
-                );
-                await AsyncStorage.removeItem(
-                  `procedurePearls_${procedureSerial}`
-                );
+        // Remove procedure pearls from AsyncStorage
+        await AsyncStorage.removeItem(`procedurePearls_${procedureName}`);
+        await AsyncStorage.removeItem(`procedurePearls_${procedureSerial}`);
 
-                Alert.alert(
-                  "Success",
-                  `Procedure \"${procedureName}\" deleted successfully.`
-                );
-                router.replace("library");
-              } else {
-                throw new Error("Failed to delete procedure.");
-              }
-            } catch (error) {
-              console.error("Error deleting procedure:", error);
-              Alert.alert(
-                "Error",
-                "An error occurred while deleting the procedure."
-              );
-            } finally {
-              setIsLoading(false);
-            }
-          },
-        },
-      ]
-    );
+        //=======================================================================================================
+        // ✅ ADDED: JM 03-25-2025
+        // Show success deletion modal
+        setShowSuccessModal(true);
+      } else {
+        throw new Error("Failed to delete procedure.");
+      }
+    } catch (error) {
+      console.error("Error deleting procedure:", error);
+      Alert.alert("Error", "An error occurred while deleting the procedure.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Function to close success modal and navigate to library
+  const closeSuccessModal = () => {
+    setShowSuccessModal(false);
+    router.replace("library");
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* //=======================================================================================================
+          // ✅ ADDED: JM 03-25-2025 */}
+      {/* Modal */}
+      <Modal
+        visible={showDeleteModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowDeleteModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Feather name="alert-circle" size={50} color="red" />
+            <Text style={styles.modalTitle}>Delete Procedure</Text>
+            <Text style={styles.modalText}>
+              Are you sure you want to delete the procedure: {procedureName}?
+            </Text>
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setShowDeleteModal(false)}
+              >
+                <Text style={styles.cancelButtonText}>No</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={deleteProcedure}
+              >
+                <Text style={styles.confirmButtonText}>Yes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Success Modal */}
+      <Modal
+        visible={showSuccessModal}
+        transparent
+        animationType="fade"
+        onRequestClose={closeSuccessModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Feather name="check-circle" size={50} color="green" />
+            <Text style={styles.modalTitle}>Success</Text>
+            <Text style={styles.modalText}>
+              Procedure "{procedureName}" deleted successfully.
+            </Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={closeSuccessModal}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {isLoading || isNavigating ? (
         // Loading Screen
         <View style={styles.loadingContainer}>
@@ -736,7 +791,7 @@ export default function () {
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={styles.deleteButton}
-              onPress={deleteProcedure}
+              onPress={confirmDeleteProcedure}
             >
               <Text style={styles.FinishButtonText}>Delete</Text>
             </TouchableOpacity>
@@ -910,4 +965,81 @@ const styles = StyleSheet.create({
   },
   image: { width: "100%", height: "100%", resizeMode: "cover" },
   imagePreview: { width: 80, height: 80, borderRadius: 10 },
+
+  //=======================================================================================================
+  // ✅ ADDED: JM 03-25-2025
+  // Style for Modal
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "75%",
+    backgroundColor: "white",
+    paddingVertical: 30,
+    paddingHorizontal: 30,
+    borderRadius: 15,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginVertical: 20,
+  },
+  modalText: {
+    fontSize: 18,
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  modalButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginTop: 5,
+  },
+  cancelButton: {
+    backgroundColor: "#ccc",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 50,
+    flex: 1,
+    marginRight: 5,
+    alignItems: "center",
+  },
+  cancelButtonText: {
+    color: "black",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  confirmButton: {
+    backgroundColor: "red",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 50,
+    flex: 1,
+    marginLeft: 5,
+    alignItems: "center",
+  },
+  confirmButtonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+
+  modalButton: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 50,
+    marginTop: 10,
+    width: "50%",
+    alignItems: "center",
+  },
+  modalButtonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
 });
