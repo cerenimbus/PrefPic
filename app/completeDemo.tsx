@@ -1,11 +1,14 @@
-import React, { useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground, Alert, ActivityIndicator } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import BottomNavigation from "../components/bottomNav";
 
 export default function CompleteDemo() {
   const router = useRouter();
+
+  // JCM 03/27/2025: Added a state variable 
+  const [createAccountIsLoading, setCreateAccountIsLoading] = useState(false);
 
   useEffect(() => {
     // Set the status to true so the user won't go through the demo again
@@ -22,8 +25,23 @@ export default function CompleteDemo() {
 
 
   const handleCreateAccount = async () => {
+    //----------------------------------------------------------------------------------------------
+    //JCM 03/27/2025: Set setIsLoading state variable to "true" to disable the Create Account button
+    setCreateAccountIsLoading(true);
+    //----------------------------------------------------------------------------------------------
+
     await AsyncStorage.setItem("isSurgicalStaff", "false");
-    router.push("/createAccount"); // Navigate to CreateAccount screen
+
+    //----------------------------------------------------------------------------------------------
+    //JCM 03/27/2025: Added a delay navigation until the state update completes.
+    setTimeout(() => {
+      router.push("/createAccount"); // Navigate to CreateAccount screen
+    
+      //JCM 03/27/2025: Set setIsLoading state variable to "false" to enable the Create Account button
+      setCreateAccountIsLoading(false);
+      //----------------------------------------------------------------------------------------------
+    }, 1000);
+    //----------------------------------------------------------------------------------------------
   };
 
   return (
@@ -41,9 +59,20 @@ export default function CompleteDemo() {
           Tap below to create an account on the <Text style={styles.boldText}>live app</Text> (and lower your blood pressure).
         </Text>
 
-        <TouchableOpacity style={styles.button} onPress={handleCreateAccount}>
-          <Text style={styles.buttonText}>Create Account</Text>
+        {/*----------------------------------------------------------------------------------------------*/}
+        {/*JCM - 03/26/2025 Added an activity indicator for button feedback */}
+        <TouchableOpacity 
+          style={styles.button} 
+          onPress={handleCreateAccount}
+          disabled = {createAccountIsLoading}
+        >
+          {createAccountIsLoading ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Text style={styles.buttonText}>Create Account</Text>
+          )}
         </TouchableOpacity>
+        {/*----------------------------------------------------------------------------------------------*/}
       </View>
       <BottomNavigation />
     </ImageBackground>

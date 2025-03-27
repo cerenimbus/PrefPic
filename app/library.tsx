@@ -333,8 +333,8 @@ const LibraryScreen: React.FC = () => {
         </Text>
         <Text style={styles.subtitle}>Procedures Library</Text>
         <Text style={styles.description}>
-          On this screen you create or edit your medical procedures practices.
-          Then you will add your pictures.
+          On this screen you create or edit your procedures.
+          Then you will add your pictures and pearls.  
         </Text>
         <View style={styles.card}>
           {!isSurgicalStaff && (

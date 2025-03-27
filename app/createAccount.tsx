@@ -13,6 +13,7 @@ import {
   TouchableWithoutFeedback,
   Platform,
   SafeAreaView,
+  ActivityIndicator
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Checkbox } from "react-native-paper";
@@ -224,6 +225,11 @@ const CreateAccount = () => {
   };
 
   const handleCreateAccount = async () => {
+    //----------------------------------------------------------------------------------------------
+    //JCM 03/27/2025: Set setIsContinueEnabled state variable to "true" to disable the Continue button
+    setIsContinueEnabled(true);
+    //----------------------------------------------------------------------------------------------
+
     if (!isValidEmail(form.email)) {
       Alert.alert("Invalid Email", "Must enter a validly formatted email.");
       return;
@@ -329,6 +335,11 @@ const CreateAccount = () => {
               } else {
                 router.push("sign-in");
               }
+
+            //----------------------------------------------------------------------------------------------
+            //JCM 03/27/2025: Set setIsContinueEnabled state variable to "false" to disable the Continue button
+              setIsContinueEnabled(false);
+            //----------------------------------------------------------------------------------------------
             },
           },
         ]);
@@ -358,8 +369,7 @@ const CreateAccount = () => {
             style={styles.backButton}
             onPress={() => router.back()}
           >
-            <Feather name="arrow-left" size={24} color="#375894" />
-            <Text style={styles.backText}>Back</Text>
+            <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
           {/*-------------*/}
           <TouchableWithoutFeedback onPress={dismissKeyboard}>
@@ -662,6 +672,8 @@ const CreateAccount = () => {
                   </Picker>
                 </View>
 
+                {/*----------------------------------------------------------------------------------------------*/}
+                {/*JCM - 03/26/2025 Added an activity indicator and updated the code for button feedback.*/}
                 <TouchableOpacity
                   style={[
                     styles.continueButton,
@@ -669,13 +681,17 @@ const CreateAccount = () => {
                   ]}
                   // , !isContinueEnabled && styles.disabledButton
                   onPress={handleCreateAccount}
-                  disabled={form.specialty.trim() === "" || isLoading} // Uses `isContinueEnabled` instead of calling `isFormValid()`
+                  disabled={form.specialty.trim() === "" || isContinueEnabled} // Uses `isContinueEnabled` instead of calling `isFormValid()`
                 >
-                  <Text style={styles.continueText}>
-                    {isLoading ? "Loading..." : "Continue"}
-                  </Text>
+
+                  { isContinueEnabled ? (
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                  ) : (
+                    <Text style={styles.continueText}> Continue </Text>
+                  )}
                   {/* <Text style={styles.continueText}>Continue</Text> */}
                 </TouchableOpacity>
+                {/*----------------------------------------------------------------------------------------------*/}
               </View>
             </ScrollView>
           </TouchableWithoutFeedback>
@@ -725,9 +741,9 @@ const styles = StyleSheet.create({
   },
   // edited: JM 2025/03/07
   backText: {
-    marginLeft: 5,
-    fontSize: 25,
+    paddingLeft: 8,
     color: "#375894",
+    fontSize: 16,
   },
 
   // edited: JM 2025/03/07

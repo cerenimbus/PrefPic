@@ -16,6 +16,7 @@ import {
   Platform,
   Alert,
   Keyboard,
+  ActivityIndicator,
   TouchableWithoutFeedback,
 } from "react-native";
 
@@ -25,6 +26,10 @@ export default function EditPictureText() {
   const [descriptionText, setDescriptionText] = useState<string>("");
   const [notesText, setNotesText] = useState<string>("");
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  // JCM - 03/26/2025: Add state variable to be used for button feedbacks.
+  const [takeMorePictureIsLoading, takeMorePictureSetIsLoading] = useState(false);
+  const [retakePictureIsLoading, retakePictureSetIsLoading] = useState(false);
 
   const { photoUri, procedureName, updatedDescription, updatedNotes } =
     useLocalSearchParams<{
@@ -82,14 +87,33 @@ export default function EditPictureText() {
   }, [updatedDescription, updatedNotes]);
 
   const navigateToCamera = () => {
-    setPhotoUriState(null);
-    router.replace({
-      pathname: "camera",
-      params: { procedureName, notesText },
-    });
-  };
+    //----------------------------------------------------------------------------------------------
+    //JCM 03/27/2025: Set setIsLoading state variable to "true" to disable the Retake pic button
+    retakePictureSetIsLoading(true);
+    //----------------------------------------------------------------------------------------------
+
+    //----------------------------------------------------------------------------------------------
+    //JCM 03/27/2025: Added a delay navigation until the state update completes.
+    setTimeout(() => {
+      setPhotoUriState(null);
+      router.push({
+        pathname: "camera",
+        params: { procedureName, notesText },
+      });
+    //----------------------------------------------------------------------------------------------
+
+      //JCM 03/27/2025: Set setIsLoading state variable to "false" to enable the Retake pic button
+      retakePictureSetIsLoading(false);
+      //----------------------------------------------------------------------------------------------
+    }, 3000); 
+};
+
 
   const navigateToEditPicture = async () => {
+    //----------------------------------------------------------------------------------------------
+    //JCM 03/27/2025: Set setIsLoading state variable to "true" to disable the Done with this procedure button
+    setIsLoading(true);
+    //----------------------------------------------------------------------------------------------
     try {
       console.log("🔹 Starting API call...");
 
@@ -190,6 +214,10 @@ export default function EditPictureText() {
             procedureName: procedureName,
           },
         });
+        //----------------------------------------------------------------------------------------------
+        //JCM 03/27/2025: Set setIsLoading state variable to "false" to enable the Done with this procedure button
+        setIsLoading(false);
+        //----------------------------------------------------------------------------------------------
       } else {
         const errorMessage =
           data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
@@ -202,6 +230,11 @@ export default function EditPictureText() {
   };
 
   const handleAddMorePictures = async () => {
+    //----------------------------------------------------------------------------------------------
+    //JCM 03/27/2025: Set takeMorePictureSetIsLoading state variable to "true" to disable the Take more pictures button
+    takeMorePictureSetIsLoading(true);
+    //----------------------------------------------------------------------------------------------
+
     try {
       console.log("🔹 Starting API call before adding more pictures...");
 
@@ -282,6 +315,11 @@ export default function EditPictureText() {
           pathname: "camera",
           params: { procedureName, notesText },
         });
+
+        //----------------------------------------------------------------------------------------------
+        //JCM 03/27/2025: Set takeMorePictureSetIsLoading state variable to "false" to enable the Take more pictures button
+        takeMorePictureSetIsLoading(false);
+        //----------------------------------------------------------------------------------------------
       } else {
         const errorMessage =
           data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Update failed.";
@@ -320,16 +358,24 @@ export default function EditPictureText() {
                   No image available
                 </Text>
               )}
-
+              
+              {/* JCM - 03/26/2025 Added an activity indicator for button feedback */}
               <TouchableOpacity
                 style={styles.retakePicture}
                 onPress={navigateToCamera}
+                disabled = {retakePictureIsLoading}
               >
-                <Text style={styles.retakePictureText}>Retake pic</Text>
+
+                {retakePictureIsLoading ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                 ) : (
+                  <Text style={styles.retakePictureText}>Retake pic</Text>
+                 )}
+                
               </TouchableOpacity>
 
               <View style={styles.centerBox}>
-                <Text style={styles.description}>Description</Text>
+                <Text style={styles.description}>Photo title</Text>
                 <TextInput
                   style={styles.contentsInput}
                   value={descriptionText}
@@ -348,23 +394,36 @@ export default function EditPictureText() {
                 />
               </View>
 
+              {/* JCM - 03/26/2025 Added an activity indicator for button feedback */}
               <View style={styles.buttonContainer}>
                 <TouchableOpacity
                   style={styles.delete}
                   onPress={handleAddMorePictures}
+                  disabled= {takeMorePictureIsLoading}
                 >
-                  <Text style={styles.deletebuttonText}>
+                  {takeMorePictureIsLoading ? (
+                    <ActivityIndicator size="small" color="#375894" />
+                  ) : (
+                    <Text style={styles.deletebuttonText}>
                     Take more pictures
                   </Text>
+                  )}
                 </TouchableOpacity>
 
+
+                {/* JCM - 03/26/2025 Added an activity indicator for button feedback */}
                 <TouchableOpacity
                   style={styles.save}
                   onPress={navigateToEditPicture}
+                  disabled= {isLoading}
                 >
-                  <Text style={styles.buttonText}>
-                    Done with this procedure
-                  </Text>
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                  ) : (
+                    <Text style={styles.buttonText}>
+                      Done with this procedure
+                    </Text>
+                  )}
                 </TouchableOpacity>
               </View>
             </View>
@@ -454,14 +513,14 @@ const styles = StyleSheet.create({
 
   deletebuttonText: {
     color: "#375894",
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "600",
     textAlign: "center",
   },
 
   buttonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
     textAlign: "center",
   },
@@ -522,6 +581,14 @@ const styles = StyleSheet.create({
   },
 
   retakePicture: {
+    alignSelf: "center",
+    marginVertical: 10,
+    padding: 14,
+    borderRadius: 31,
+    backgroundColor: "#375894",
+  },
+
+  disabledButton: {
     alignSelf: "center",
     marginVertical: 10,
     padding: 14,
