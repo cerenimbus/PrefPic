@@ -420,9 +420,11 @@ export default function EditPictureText() {
                   {isLoading ? (
                     <ActivityIndicator size="small" color="#FFFFFF" />
                   ) : (
+                    <View style={styles.buttonTextWrapper}>
                     <Text style={styles.buttonText}>
                       Done with this procedure
                     </Text>
+                    </View>
                   )}
                 </TouchableOpacity>
               </View>
@@ -442,7 +444,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
+  buttonTextWrapper: {
+    flexShrink: 1,
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
   safeArea: {
     flex: 1,
     backgroundColor: "white", // Ensures the background matches your screen
@@ -494,7 +502,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center", // ADDED: JM 03-21-2025
     // marginLeft: 20,
-    width: 170,
+    width: "48%",
     height: 66, // ADDED: JM 03-21-2025
     // right: 11,
   },
@@ -523,8 +531,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     textAlign: "center",
+    minWidth: 200, // Set a larger min width
+    maxWidth: 250, // Avoids excessive shrinking
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 1,
+    flexWrap: "wrap",
+    flexGrow: 1, // Expands button as needed
   },
-
+  // buttonText: {
+  //   color: "#FFFFFF",
+  //   fontSize: 14,
+  //   fontWeight: "600",
+  //   textAlign: "center",
+  //   flexShrink: 1,
+  //   flexWrap: "wrap",
+  // },
   centerBox: {
     marginTop: 10, // MODIFIED: JM 03-25-2025
     width: "100%",

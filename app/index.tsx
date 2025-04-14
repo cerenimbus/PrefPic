@@ -165,34 +165,35 @@ const styles = StyleSheet.create({
       getButton: {
         backgroundColor: "#375894", 
         borderRadius: 31,
-        paddingVertical: 10,
+        paddingVertical: 12,
         width: 262,
         alignItems: "center",
         marginTop: 20,
-        height: 37
+        // height: 37
         
         
       },
       getButton2: {
         backgroundColor: "#375894", 
         borderRadius: 31,
-        paddingVertical: 10,
+        paddingVertical: 12,
         width: 262,
         alignItems: "center",
         marginTop: 15,
-        height: 37
+        // height: 37
         
       },
       text1:{
         fontSize: 14,
         color: "#FFFFFF",
-        fontWeight: "bold"
+        fontWeight: "bold",
+        textAlign: "center",
 
       },
       text2:{
         fontSize: 14,
         color: "#FFFFFF",
-        fontWeight: "bold"
-
+        fontWeight: "bold",
+        textAlign: "center",
       },
 })

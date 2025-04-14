@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { ImageBackground, StyleSheet, View, Text, Image, TextInput, Alert, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform, Linking, Dimensions } from "react-native";
+import { ImageBackground, StyleSheet, View, Text, Image, TextInput, Alert, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform, Linking, Dimensions, SafeAreaView } from "react-native";
 import CheckBox from "expo-checkbox";
 import { useRouter } from "expo-router";
 import CryptoJS from "crypto-js";
@@ -278,6 +278,7 @@ export default function Signin() {
       source={require("../assets/Start.jpg")}
       style={styles.background}
     >
+    <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.flexContainer}
@@ -349,8 +350,8 @@ export default function Signin() {
             <View style={styles.checkboxContainer2}>
               <CheckBox value={isChecked1} onValueChange={setChecked1} />
               <Text style={styles.ptext}>
-                I will not enter any patient’s Personally Identifiable
-                Information or pictures
+              I will not enter any patient's Protected Health
+              Information and/or photos
               </Text>
             </View>
 
@@ -379,14 +380,15 @@ export default function Signin() {
               <Text style={styles.caccount}>Team</Text>
             </TouchableOpacity> */}
           </View>
-          <TouchableOpacity onPress={navigateToTeamAccount}>
+          {/* <TouchableOpacity onPress={navigateToTeamAccount}>
             <Text style={styles.caccount1}>start</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </ScrollView>
       </KeyboardAvoidingView>
       <Text style={styles.footerText}>
         © 2025 Symphatic LLC, All Rights Reserved
       </Text>
+      </SafeAreaView>
     </ImageBackground>
   );
 }
@@ -403,6 +405,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 10,
     width: "100%",
+  },
+  safeArea: {
+    flex: 1,
   },
   inputpass: {
     flex: 1, // Ensure input takes available space

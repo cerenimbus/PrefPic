@@ -28,23 +28,6 @@ export default function StartScreen() {
     fetchDeviceID();
   }, []);
 
-  // Check if user already completed the demo
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const checkDemoStatus = async () => {
-  //       if (hasCheckedDemo) return; // Avoid redundant checks
-
-  //       const demoStatus = await AsyncStorage.getItem("status");
-  //       if (demoStatus === "Demo" || demoStatus === "Active") {
-  //         router.replace("/sign-in"); // Redirect if demo is done
-  //       }
-  //       setHasCheckedDemo(true); // Mark as checked
-  //     };
-
-  //     checkDemoStatus();
-  //   }, [hasCheckedDemo])
-  // );
-
   const handleGetStarted = async () => {
     try {
       if (!deviceID) {
@@ -158,10 +141,18 @@ export default function StartScreen() {
                   Privacy Policy
                 </Text>
             </View>
-            <View style={styles.checkboxContainer}>
+            {/*<View style={styles.checkboxContainer}>
                   <CheckBox value={isChecked1} onValueChange={setChecked1} />
                   <Text style={styles.text}>I will not enter any patient’s Personally Identifiable Information or pictures</Text>
-                </View>
+                </View>*/}
+                <View style={styles.checkboxContainer}>
+            <CheckBox value={isChecked1} onValueChange={setChecked1} />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.text}>
+                I will not enter any patient’s Personally Identifiable Information or pictures
+              </Text>
+            </View>
+            </View>
         </View>
 
         {/* Button */}
@@ -186,7 +177,7 @@ const styles = StyleSheet.create({
     width: wp(85),
     backgroundColor: "#FFFFFF",
     borderRadius: 10,
-    padding: wp(5),
+    padding: wp(4),
     alignItems: "center",
     minHeight: hp(52), // Ensure space for the button
     justifyContent: "space-between", // Prevent overflow
@@ -203,17 +194,33 @@ const styles = StyleSheet.create({
   mainDescription:{
     paddingTop: 5,
   },
+  // checkboxContainer1: {
+  //   marginVertical: 40,
+  //   marginHorizontal: 40,
+  //   gap: 8,
+  // },
+  // checkboxContainer: {
+  //   flexDirection: "row",
+  //   alignItems: "center",
+  // },
   checkboxContainer1: {
-    marginVertical: 40,
-    marginHorizontal: 40,
-    gap: 8,
+    gap: 10,
+    width: "100%", // Ensure full width usage
   },
+  
   checkboxContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
+    flexWrap: "wrap", // Allow multiline
+    width: "100%",
   },
+  // text: {
+  //   left: 5,
+  //   color: "#7C7C7C",
+  // },
   text: {
-    left: 5,
+    flexShrink: 1,
+    flexWrap: "wrap",
     color: "#7C7C7C",
   },
   link: {

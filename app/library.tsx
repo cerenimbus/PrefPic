@@ -339,16 +339,21 @@ const LibraryScreen: React.FC = () => {
         <View style={styles.card}>
           {!isSurgicalStaff && (
             <TouchableOpacity
-              style={styles.addButton}
-              onPress={handleNextPress}
-              disabled={isAddProcedureLoading}
-            >
-              {isAddProcedureLoading ? (
-                <ActivityIndicator size="small" color="white" />
-              ) : (
-                <Text style={styles.addProcedureButtonText}>Add Procedure</Text>
-              )}
-            </TouchableOpacity>
+            style={[styles.addButton, procedures.length >= 6 && { opacity: 0.5 }]}
+            onPress={handleNextPress}
+            disabled={isAddProcedureLoading || procedures.length >= 6}
+          >
+            {isAddProcedureLoading ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <Text style={styles.addProcedureButtonText}>Add Procedure</Text>
+            )}
+          </TouchableOpacity>
+          )}
+          {procedures.length === 6 && (
+            <Text style={styles.warningText}>
+              Please upgrade your plan if you want to add more procedures. The freemium version only allows 6 procedures.
+            </Text>
           )}
           {procedures.length >= 5 ? (
             <ScrollView style={{ flex: 1 }}>
@@ -473,6 +478,13 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 20, // Adjusted font size
     fontWeight: "bold",
+  },
+  warningText: {
+    color: "red",
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginVertical: 10,
   },
   procedureNameButtonText: {
     color: "gray",
