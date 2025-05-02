@@ -412,7 +412,7 @@ export default function EditPictureText() {
 
 
                 {/* JCM - 03/26/2025 Added an activity indicator for button feedback */}
-                <TouchableOpacity
+                {/*<TouchableOpacity
                   style={styles.save}
                   onPress={navigateToEditPicture}
                   disabled= {isLoading}
@@ -426,7 +426,26 @@ export default function EditPictureText() {
                     </Text>
                     </View>
                   )}
-                </TouchableOpacity>
+                </TouchableOpacity>*/}
+                <TouchableOpacity
+  style={styles.save}
+  onPress={navigateToEditPicture}
+  disabled={isLoading}
+>
+  {isLoading ? (
+    <ActivityIndicator size="small" color="#FFFFFF" />
+  ) : (
+    <View style={styles.buttonTextWrapper}>
+      <Text
+        style={styles.buttonText}
+        numberOfLines={2}
+      >
+        Done with this procedure
+      </Text>
+    </View>
+  )}
+</TouchableOpacity>
+
               </View>
             </View>
           </ScrollView>
@@ -444,12 +463,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  // buttonTextWrapper: {
+  //   flexShrink: 1,
+  //   flexWrap: "wrap",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   width: "100%",
+  // },
   buttonTextWrapper: {
-    flexShrink: 1,
-    flexWrap: "wrap",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   safeArea: {
     flex: 1,
@@ -495,18 +519,25 @@ const styles = StyleSheet.create({
     gap: 10, // ADDED: JM 03-21=2025
   },
 
+  // save: {
+  //   backgroundColor: "#375894",
+  //   padding: 16,
+  //   borderRadius: 31,
+  //   alignItems: "center",
+  //   justifyContent: "center", // ADDED: JM 03-21-2025
+  //   // marginLeft: 20,
+  //   width: "48%",
+  //   height: 66, // ADDED: JM 03-21-2025
+  //   // right: 11,
+  // },
   save: {
-    backgroundColor: "#375894",
-    padding: 16,
-    borderRadius: 31,
-    alignItems: "center",
-    justifyContent: "center", // ADDED: JM 03-21-2025
-    // marginLeft: 20,
-    width: "48%",
-    height: 66, // ADDED: JM 03-21-2025
-    // right: 11,
+    backgroundColor: '#007AFF',
+    height: 50,           // Fixed height
+    width: 250,           // Fixed width
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-
   delete: {
     backgroundColor: "#FFFFFF",
     borderRadius: 31,
@@ -527,17 +558,9 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    color: "#FFFFFF",
+    color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: "600",
-    textAlign: "center",
-    minWidth: 200, // Set a larger min width
-    maxWidth: 250, // Avoids excessive shrinking
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 1,
-    flexWrap: "wrap",
-    flexGrow: 1, // Expands button as needed
+    textAlign: 'center',
   },
   // buttonText: {
   //   color: "#FFFFFF",
