@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import BottomNavigation from "../components/bottomNav";
 import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const styles = StyleSheet.create({
   container: {
@@ -63,6 +64,7 @@ export default function AddTeamMemberDisplay() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <View style={styles.container}>
       {/* Header */}
       <TouchableOpacity onPress={() => router.back()}>
@@ -128,5 +130,6 @@ export default function AddTeamMemberDisplay() {
 
       <BottomNavigation />
     </View>
+    </SafeAreaView>
   );
 }

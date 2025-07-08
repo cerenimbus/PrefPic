@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
   },
   backButtonContainer: {
     position: "absolute",
-    top: 10,
+    top: 20,
     left: 5,
     zIndex: 1,
   },

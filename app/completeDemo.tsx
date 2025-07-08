@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground, Alert
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import BottomNavigation from "../components/bottomNav";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CompleteDemo() {
   const router = useRouter();
@@ -45,6 +46,7 @@ export default function CompleteDemo() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
       <View style={styles.container}>
         {/* Placeholder for profile image */}
@@ -76,6 +78,7 @@ export default function CompleteDemo() {
       </View>
       <BottomNavigation />
     </ImageBackground>
+    </SafeAreaView>
   );
 }
 

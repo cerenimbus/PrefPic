@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 import { getDeviceID } from '../components/deviceInfo';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const enterTeamMember = () => {
   const router = useRouter();
@@ -131,6 +132,7 @@ const enterTeamMember = () => {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <View style={styles.container}>
       <TouchableOpacity onPress={() => router.back()}>
         <Text style={styles.backText}>← Back</Text>
@@ -159,6 +161,7 @@ const enterTeamMember = () => {
 
       <BottomNavigation />
     </View>
+    </SafeAreaView>
   );
 };
 

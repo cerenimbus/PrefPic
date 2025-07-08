@@ -7,6 +7,7 @@ import CryptoJS from 'crypto-js';
 import { XMLParser } from 'fast-xml-parser';
 import { getDeviceID } from '../components/deviceInfo';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
 
 interface FormData {
   name: string;
@@ -166,6 +167,12 @@ const feedbackScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Feather name="arrow-left" size={18} color="#007AFF" />
+          <Text style={styles.backText}>Back</Text>
+        </TouchableOpacity>
+      </View>
       <Text style={styles.title}>Feedback</Text>
       <Text style={styles.description}>
         Let us know what could improve the PrefPic app.
@@ -279,12 +286,17 @@ const styles = StyleSheet.create({
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    // marginBottom: 20,
+  },
+  header: {
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   backText: {
     color: '#375894',
     fontSize: 20, 
-    marginTop: 30,
+    // marginTop: 30,
     fontFamily: "Darker Grotesque",
     width: 58,
     height: 27,

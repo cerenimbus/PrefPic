@@ -15,6 +15,7 @@ import {
   Platform,
   Alert,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RetakePicture() {
   const router = useRouter();
@@ -235,7 +236,7 @@ export default function RetakePicture() {
       console.log("🔹 API Response Status:", response.status);
 
       if (response.ok) {
-        Alert.alert("Success!", "Picture deleted successfully.");
+        // Alert.alert("Success!", "Picture deleted successfully.");
 
         // Remove the image from AsyncStorage
         const storedImages = await AsyncStorage.getItem("capturedImages");
@@ -264,6 +265,7 @@ export default function RetakePicture() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
@@ -325,6 +327,7 @@ export default function RetakePicture() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
