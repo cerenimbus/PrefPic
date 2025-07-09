@@ -58,7 +58,101 @@ export default function ReviewImage() {
           fetchDeviceID();
         }, []);
   
+const deletePicture = async () => {
+    try {
+      console.log("🔹 Starting Delete API call...");
 
+      const procedureSerial = await AsyncStorage.getItem(
+        "currentProcedureSerial"
+      );
+      if (!procedureSerial) {
+        Alert.alert(
+          "Error",
+          "Procedure not found. Please create a procedure first."
+        );
+        return;
+      }
+      console.log("🔹 Procedure Serial:", procedureSerial);
+
+      if (!deviceID) {
+        Alert.alert("Error", "Device ID not found.");
+        return;
+      }
+      console.log("🔹 Device ID:", deviceID);
+
+      const authorizationCode = await AsyncStorage.getItem("authorizationCode");
+      if (!authorizationCode) {
+        Alert.alert("Authorization Error", "Please log in again.");
+        return;
+      }
+      console.log("🔹 Authorization Code:", authorizationCode);
+
+      const currentDate = new Date();
+      const formattedDate = `${String(currentDate.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}/${String(currentDate.getDate()).padStart(
+        2,
+        "0"
+      )}/${currentDate.getFullYear()}-${String(currentDate.getHours()).padStart(
+        2,
+        "0"
+      )}:${String(currentDate.getMinutes()).padStart(2, "0")}`;
+
+      const keyString = `${deviceID.id}${formattedDate}${authorizationCode}`;
+      console.log("🔹 Key String:", keyString);
+      const key = CryptoJS.SHA1(keyString).toString();
+      console.log("🔹 Generated Key:", key);
+
+      const url = "https://prefpic.com/dev/PPService/DeletePicture.php";
+      const formData = new FormData();
+      formData.append("DeviceID", deviceID.id);
+      formData.append("Date", formattedDate);
+      formData.append("Key", key);
+      formData.append("AC", authorizationCode);
+      formData.append("PrefPicVersion", "1");
+      formData.append("Picture", procedureSerial);
+
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const data = await response.text();
+      console.log("🔹 API Response Body:", data);
+      console.log("🔹 API Response Status:", response.status);
+
+      if (response.ok) {
+        Alert.alert("Success!", "Picture deleted successfully.");
+
+        // Remove the image from AsyncStorage
+        const storedImages = await AsyncStorage.getItem("capturedImages");
+        if (storedImages) {
+          const images = JSON.parse(storedImages);
+          const updatedImages = images.filter(
+            (img: string) => img !== photoUriState
+          );
+          await AsyncStorage.setItem(
+            "capturedImages",
+            JSON.stringify(updatedImages)
+          );
+        }
+
+        setPhotoUriState(null); // Clear the photo URI state
+      } else {
+        const errorMessage =
+          data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Delete failed.";
+        Alert.alert("Delete Failed", errorMessage);
+      }
+    } catch (error) {
+      console.error("🔹 Error during Delete API call:", error);
+      Alert.alert("Delete Failed", "An error occurred during the delete.");
+    }
+  };
   
 //Alberto -> 2/11/2025
 //API CALL  -> 2/13/2025
@@ -67,7 +161,7 @@ const navigateToCamera = () => {
     //JCM 03/27/2025: Set setIsLoading state variable to "true" to disable the Retake pic button
     retakePictureSetIsLoading(true);
     //----------------------------------------------------------------------------------------------
-
+    deletePicture();
     //----------------------------------------------------------------------------------------------
     //JCM 03/27/2025: Added a delay navigation until the state update completes.
     setTimeout(() => {
