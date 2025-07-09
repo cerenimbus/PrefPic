@@ -57,7 +57,11 @@ export default function ReviewImage() {
         };
           fetchDeviceID();
         }, []);
-  
+
+  //RHCM 5/16/2025
+  //Added deletePicture() to delete the previous image for a retake.
+  //------------------------------------------------------------------
+    
 const deletePicture = async () => {
     try {
       console.log("🔹 Starting Delete API call...");
@@ -154,6 +158,10 @@ const deletePicture = async () => {
     }
   };
   
+
+    
+  //------------------------------------------------------------------
+
 //Alberto -> 2/11/2025
 //API CALL  -> 2/13/2025
 const navigateToCamera = () => {
@@ -161,7 +169,12 @@ const navigateToCamera = () => {
     //JCM 03/27/2025: Set setIsLoading state variable to "true" to disable the Retake pic button
     retakePictureSetIsLoading(true);
     //----------------------------------------------------------------------------------------------
+
+    //RHCM 5/16/2025
+    //--------------------------Start----------------------------------------
     deletePicture();
+    //--------------------------End------------------------------------------
+
     //----------------------------------------------------------------------------------------------
     //JCM 03/27/2025: Added a delay navigation until the state update completes.
     setTimeout(() => {
@@ -337,7 +350,7 @@ useEffect(() => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <TouchableOpacity style ={styles.backButtonContainer} onPress={navigateToCamera}>
+        <TouchableOpacity style ={styles.backButtonContainer} onPress={() => router.back()}>
           <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
 

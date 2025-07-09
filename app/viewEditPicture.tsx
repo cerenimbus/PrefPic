@@ -365,7 +365,7 @@ export default function ViewEditPicture() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigateToCamera()}>
+      <TouchableOpacity onPress={() => router.back()}>
         <Text style={styles.backText}>← Back</Text>
       </TouchableOpacity>
       <Text style={styles.header}>View / Edit Picture(s)</Text>

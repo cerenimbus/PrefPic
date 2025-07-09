@@ -9,6 +9,7 @@ import { getDeviceID } from "../components/deviceInfo";
 import CryptoJS from "crypto-js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { XMLParser } from "fast-xml-parser";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export default function ForgotPassword()  {
@@ -117,6 +118,7 @@ export default function ForgotPassword()  {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <ImageBackground source={require("../assets/Start.jpg")} style={styles.background}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -180,6 +182,7 @@ export default function ForgotPassword()  {
         </ScrollView>
       </KeyboardAvoidingView>
     </ImageBackground>
+    </SafeAreaView>
   );
 }
 

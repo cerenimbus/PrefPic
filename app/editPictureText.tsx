@@ -18,7 +18,10 @@ import {
   Keyboard,
   ActivityIndicator,
   TouchableWithoutFeedback,
+  Modal,
+  Dimensions,
 } from "react-native";
+import ImageViewer from "react-native-image-zoom-viewer";
 
 export default function EditPictureText() {
   const router = useRouter();
@@ -30,6 +33,16 @@ export default function EditPictureText() {
   // JCM - 03/26/2025: Add state variable to be used for button feedbacks.
   const [takeMorePictureIsLoading, takeMorePictureSetIsLoading] = useState(false);
   const [retakePictureIsLoading, retakePictureSetIsLoading] = useState(false);
+  const [isPreview, setIsPreview] = useState(false);
+
+  
+  const handleImageClick = () => {
+    setIsPreview(true);
+  };
+
+  const handleClosePreview = () => {
+    setIsPreview(false);
+  };
 
   const { photoUri, procedureName, updatedDescription, updatedNotes } =
     useLocalSearchParams<{
@@ -87,6 +100,7 @@ export default function EditPictureText() {
   }, [updatedDescription, updatedNotes]);
 
   const deletePicture = async () => {
+
     try {
       console.log("🔹 Starting Delete API call...");
 
@@ -189,6 +203,7 @@ export default function EditPictureText() {
       Alert.alert("Delete Failed", "An error occurred during the delete.");
     }
   };
+
 
   const navigateToCamera = () => {
     //----------------------------------------------------------------------------------------------
@@ -310,7 +325,7 @@ export default function EditPictureText() {
       console.log("🔹 API Response Status:", response.status);
 
       if (response.ok) {
-        Alert.alert("Success!", "Picture text updated successfully.");
+        // Alert.alert("Success!", "Picture text updated successfully.");
         router.push({
           pathname: "addPearls",
           params: {
@@ -435,111 +450,281 @@ export default function EditPictureText() {
     }
   };
 
-  return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <SafeAreaView style={styles.safeArea}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
-        >
-          <ScrollView
-            contentContainerStyle={styles.scrollContainer}
-            keyboardShouldPersistTaps="handled"
-          >
-            <View style={styles.container}>
-              <TouchableOpacity
-                style={styles.backButtonContainer}
-                onPress={() => router.back()}
-              >
-                <Text style={styles.backText}>← Back</Text>
-              </TouchableOpacity>
-              <Text style={styles.header}>Image for: {procedureName}</Text>
+//   return (
+//     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+//       <SafeAreaView style={styles.safeArea}>
+//         <KeyboardAvoidingView
+//           behavior={Platform.OS === "ios" ? "padding" : "height"}
+//           style={{ flex: 1 }}
+//         >
+//           <ScrollView
+//             contentContainerStyle={styles.scrollContainer}
+//             keyboardShouldPersistTaps="handled"
+//           >
+//             <View style={styles.container}>
+//               <TouchableOpacity
+//                 style={styles.backButtonContainer}
+//                 onPress={() => router.back()}
+//               >
+//                 <Text style={styles.backText}>← Back</Text>
+//               </TouchableOpacity>
+//               <Text style={styles.header}>Image for: {procedureName}</Text>
 
-              {photoUriState ? (
-                <Image source={{ uri: photoUriState }} style={styles.image} />
-              ) : (
-                <Text style={{ textAlign: "center", marginVertical: 20 }}>
-                  No image available
-                </Text>
-              )}
+
+//               {photoUriState ? (
+//                 <Image source={{ uri: photoUriState }} style={styles.image} />
+//               ) : (
+//                 <Text style={{ textAlign: "center", marginVertical: 20 }}>
+//                   No image available
+//                 </Text>
+//               )}
               
-              {/* JCM - 03/26/2025 Added an activity indicator for button feedback */}
-              <TouchableOpacity
-                style={styles.retakePicture}
-                onPress={navigateToCamera}
-                disabled = {retakePictureIsLoading}
-              >
+//               {/* JCM - 03/26/2025 Added an activity indicator for button feedback */}
+//               <TouchableOpacity
+//                 style={styles.retakePicture}
+//                 onPress={navigateToCamera}
+//                 disabled = {retakePictureIsLoading}
+//               >
 
-                {retakePictureIsLoading ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
-                 ) : (
-                  <Text style={styles.retakePictureText}>Retake pic</Text>
-                 )}
+//                 {retakePictureIsLoading ? (
+//                   <ActivityIndicator size="small" color="#FFFFFF" />
+//                  ) : (
+//                   <Text style={styles.retakePictureText}>Retake pic</Text>
+//                  )}
                 
+//               </TouchableOpacity>
+
+//               <View style={styles.centerBox}>
+//                 <Text style={styles.description}>Photo title</Text>
+//                 <TextInput
+//                   style={styles.contentsInput}
+//                   value={descriptionText}
+//                   onChangeText={setDescriptionText}
+//                   placeholder="Enter description"
+//                   multiline
+//                 />
+
+//                 <Text style={styles.notes}>Notes</Text>
+//                 <TextInput
+//                   style={styles.bulletTextInput}
+//                   value={notesText}
+//                   onChangeText={setNotesText}
+//                   placeholder="Enter notes"
+//                   multiline
+//                 />
+//               </View>
+
+//               {/* JCM - 03/26/2025 Added an activity indicator for button feedback */}
+//               <View style={styles.buttonContainer}>
+//                 <TouchableOpacity
+//                   style={styles.delete}
+//                   onPress={handleAddMorePictures}
+//                   disabled= {takeMorePictureIsLoading}
+//                 >
+//                   {takeMorePictureIsLoading ? (
+//                     <ActivityIndicator size="small" color="#375894" />
+//                   ) : (
+//                     <Text style={styles.deletebuttonText}>
+//                     Take more pictures
+//                   </Text>
+//                   )}
+//                 </TouchableOpacity>
+
+
+//                 {/* JCM - 03/26/2025 Added an activity indicator for button feedback */}
+//                 {/*<TouchableOpacity
+//                   style={styles.save}
+//                   onPress={navigateToEditPicture}
+//                   disabled= {isLoading}
+//                 >
+//                   {isLoading ? (
+//                     <ActivityIndicator size="small" color="#FFFFFF" />
+//                   ) : (
+//                     <View style={styles.buttonTextWrapper}>
+//                     <Text style={styles.buttonText}>
+//                       Done with this procedure
+//                     </Text>
+//                     </View>
+//                   )}
+//                 </TouchableOpacity>*/}
+//                 <TouchableOpacity
+//   style={styles.save}
+//   onPress={navigateToEditPicture}
+//   disabled={isLoading}
+// >
+//   {isLoading ? (
+//     <ActivityIndicator size="small" color="#FFFFFF" />
+//   ) : (
+//     <View style={styles.buttonTextWrapper}>
+//       <Text
+//         style={styles.buttonText}
+//         numberOfLines={2}
+//       >
+//         Done with this procedure
+//       </Text>
+//     </View>
+//   )}
+// </TouchableOpacity>
+
+//               </View>
+//             </View>
+//           </ScrollView>
+//         </KeyboardAvoidingView>
+//       </SafeAreaView>
+//     </TouchableWithoutFeedback>
+//   );
+return (
+  <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.container}>
+            <TouchableOpacity
+              style={styles.backButtonContainer}
+              onPress={() => router.back()}
+            >
+              <Text style={styles.backText}>← Back</Text>
+            </TouchableOpacity>
+            <Text style={styles.header}>Image for: {procedureName}</Text>
+
+            {/* RHCM 5/09/2025- Image preview with zoom support */}
+            {photoUriState ? (
+              <TouchableOpacity onPress={handleImageClick}>
+                <Image source={{ uri: photoUriState }} style={styles.image} />
               </TouchableOpacity>
+            ) : (
+              <Text style={{ textAlign: "center", marginVertical: 20 }}>
+                No image available
+              </Text>
+            )}
 
-              <View style={styles.centerBox}>
-                <Text style={styles.description}>Photo title</Text>
-                <TextInput
-                  style={styles.contentsInput}
-                  value={descriptionText}
-                  onChangeText={setDescriptionText}
-                  placeholder="Enter description"
-                  multiline
-                />
-
-                <Text style={styles.notes}>Notes</Text>
-                <TextInput
-                  style={styles.bulletTextInput}
-                  value={notesText}
-                  onChangeText={setNotesText}
-                  placeholder="Enter notes"
-                  multiline
-                />
-              </View>
-
-              {/* JCM - 03/26/2025 Added an activity indicator for button feedback */}
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  style={styles.delete}
-                  onPress={handleAddMorePictures}
-                  disabled= {takeMorePictureIsLoading}
+            {/* RHCM 5/09/2025- Full screen modal with pinch zoom support */}
+            {/* {isPreview && (
+              <Modal visible={isPreview} transparent={true} animationType="fade">
+                <View
+                  style={{
+                    flex: 1,
+                    backgroundColor: "rgba(0,0,0,0.85)",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
                 >
-                  {takeMorePictureIsLoading ? (
-                    <ActivityIndicator size="small" color="#375894" />
-                  ) : (
-                    <Text style={styles.deletebuttonText}>
-                    Take more pictures
-                  </Text>
-                  )}
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleClosePreview}
+                    style={{ position: "absolute", top: 40, right: 20, zIndex: 1 }}
+                  >
+                    <Text style={{ color: "#fff", fontSize: 18 }}>Close ✕</Text>
+                  </TouchableOpacity>
+                  <ImageViewer
+                    // imageUrls={[{ url: photoUriState }]}
+                    // imageUrls={[{ url: photoUriState || "" }]}
+                    imageUrls={photoUriState ? [{ url: photoUriState }] : []}
+                    enableSwipeDown={true}
+                    onSwipeDown={handleClosePreview}
+                    enableImageZoom={true}
+                    renderIndicator={() => <></>} // This removes the 1/1 indicator
+                  />
+                </View>
+              </Modal>
+            )} */}
+            {isPreview && (
+                    <Modal visible={isPreview} transparent={true} animationType="fade">
+                      <View style={{ flex: 1, backgroundColor: "rgba(41, 41, 41, 0.8)", justifyContent: "center", alignItems: "center" }}>
+                        <TouchableOpacity onPress={handleClosePreview} style={styles.closeButton}>
+                          <Text style={styles.closeButtonText}>X</Text>
+                        </TouchableOpacity>
+                        <ImageViewer
+              imageUrls={photoUriState ? [{ url: photoUriState }] : []}
+              enableSwipeDown={true}
+              onSwipeDown={handleClosePreview}
+              enableImageZoom={true}
+              style={styles.fullImage}
+              renderIndicator={() => <></>} // This removes the 1/1 indicator
+            />
+                      </View>
+                    </Modal>
+            )}
 
+            {/* JCM - 03/26/2025 Added an activity indicator for button feedback */}
+            <TouchableOpacity
+              style={styles.retakePicture}
+              onPress={navigateToCamera}
+              disabled={retakePictureIsLoading}
+            >
+              {retakePictureIsLoading ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Text style={styles.retakePictureText}>Retake pic</Text>
+              )}
+            </TouchableOpacity>
 
-                {/* JCM - 03/26/2025 Added an activity indicator for button feedback */}
-                <TouchableOpacity
-                  style={styles.save}
-                  onPress={navigateToEditPicture}
-                  disabled= {isLoading}
-                >
-                  {isLoading ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" />
-                  ) : (
-                    <View style={styles.buttonTextWrapper}>
-                    <Text style={styles.buttonText}>
-                      Done with this procedure
-                    </Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              </View>
+            <View style={styles.centerBox}>
+              <Text style={styles.description}>Photo title</Text>
+              <TextInput
+                style={styles.contentsInput}
+                value={descriptionText}
+                onChangeText={setDescriptionText}
+                placeholder="Enter description"
+                multiline
+              />
+
+              <Text style={styles.notes}>Notes</Text>
+              <TextInput
+                style={styles.bulletTextInput}
+                value={notesText}
+                onChangeText={setNotesText}
+                placeholder="Enter notes"
+                multiline
+              />
             </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
-  );
+
+            {/* JCM - 03/26/2025 Added an activity indicator for button feedback */}
+            <View style={styles.buttonContainer}>
+  <TouchableOpacity
+    style={styles.delete}
+    onPress={handleAddMorePictures}
+    disabled={takeMorePictureIsLoading}
+  >
+    {takeMorePictureIsLoading ? (
+      <ActivityIndicator size="small" color="#375894" />
+    ) : (
+      <Text style={styles.deletebuttonText}>
+        Take more pictures
+      </Text>
+    )}
+  </TouchableOpacity>
+
+  <TouchableOpacity
+    style={styles.delete} // same style as the outlined button
+    onPress={navigateToEditPicture}
+    disabled={isLoading}
+  >
+    {isLoading ? (
+      <ActivityIndicator size="small" color="#375894" />
+    ) : (
+      <Text style={styles.deletebuttonText}>
+        Done with this procedure
+      </Text>
+    )}
+  </TouchableOpacity>
+</View>
+
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  </TouchableWithoutFeedback>
+);
+
 }
 
+const  {width, height} = Dimensions.get("window");
 const styles = StyleSheet.create({
   //=================================================================
   // ADDED: JM 03-21-2025
@@ -548,12 +733,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  // buttonTextWrapper: {
+  //   flexShrink: 1,
+  //   flexWrap: "wrap",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   width: "100%",
+  // },
   buttonTextWrapper: {
-    flexShrink: 1,
-    flexWrap: "wrap",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   safeArea: {
     flex: 1,
@@ -569,6 +759,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F5F8FF",
     padding: 15,
+  },
+  fullImage: {
+    width: width * 1.1, // takes account the screen width
+    height: height * 1, // takes account the screen height
+    objectFit: "contain",
+  },
+  closeButtonText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  closeButton: {
+    alignSelf: "flex-end",/// this will put the x button above the image 
+    //position: "absolute", this will put the x button inside the image
+    top: 140,
+    right: 20,
+    backgroundColor: "rgb(255, 255, 255)",
+    borderRadius: 30,
+    padding: 8,
+    zIndex: 1001,
+    justifyContent: "center",
+    alignItems: "center",
   },
   backButtonContainer: {
     position: "absolute",
@@ -599,18 +811,25 @@ const styles = StyleSheet.create({
     gap: 10, // ADDED: JM 03-21=2025
   },
 
+  // save: {
+  //   backgroundColor: "#375894",
+  //   padding: 16,
+  //   borderRadius: 31,
+  //   alignItems: "center",
+  //   justifyContent: "center", // ADDED: JM 03-21-2025
+  //   // marginLeft: 20,
+  //   width: "48%",
+  //   height: 66, // ADDED: JM 03-21-2025
+  //   // right: 11,
+  // },
   save: {
-    backgroundColor: "#375894",
-    padding: 16,
-    borderRadius: 31,
-    alignItems: "center",
-    justifyContent: "center", // ADDED: JM 03-21-2025
-    // marginLeft: 20,
-    width: "48%",
-    height: 66, // ADDED: JM 03-21-2025
-    // right: 11,
+    backgroundColor: '#007AFF',
+    height: 50,           // Fixed height
+    width: 250,           // Fixed width
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-
   delete: {
     backgroundColor: "#FFFFFF",
     borderRadius: 31,
@@ -631,17 +850,9 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    color: "#FFFFFF",
+    color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: "600",
-    textAlign: "center",
-    minWidth: 200, // Set a larger min width
-    maxWidth: 250, // Avoids excessive shrinking
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 1,
-    flexWrap: "wrap",
-    flexGrow: 1, // Expands button as needed
+    textAlign: 'center',
   },
   // buttonText: {
   //   color: "#FFFFFF",
