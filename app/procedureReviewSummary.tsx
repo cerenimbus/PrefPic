@@ -24,7 +24,7 @@ export default function ProcedureReviewSummary() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const { serial } = params;
-  const [imageDetails, setImageDetails] = useState<{ pictureName: string; pictureNote: string }[]>([]);
+  const [imageDetails, setImageDetails] = useState<{ pictureName: string; pictureNote: string; pictureSerial?: string }[]>([]);
 
   const [procedureDetails, setProcedureDetails] = useState({
     alwaysDo: '',
@@ -110,7 +110,7 @@ const getProcedureList = async () => {
             const proceduresArray = Array.isArray(procedureList) ? procedureList : [procedureList];
 
             const extractedImages: string[] = [];
-            const extractedImageDetails: { pictureName: string; pictureNote: string }[] = [];
+            const extractedImageDetails: { pictureName: string; pictureNote: string; pictureSerial?: string }[] = [];
 
             proceduresArray.forEach(proc => {
                 const pictures = proc?.Pictures?.Picture;
@@ -123,6 +123,7 @@ const getProcedureList = async () => {
                     extractedImageDetails.push({
                         pictureName: picture.PictureName || '',
                         pictureNote: picture.PictureNote || '',
+                        pictureSerial: picture.PictureSerial || '',
                     });
                 });
             });
@@ -179,6 +180,13 @@ useEffect(() => {
 
  const handleImagePress = async (index: number) => {
     if (images[index]) {
+      const pictureSerial = imageDetails[index]?.pictureSerial || '';
+      try {
+      await AsyncStorage.setItem('selectedPictureSerial', String(pictureSerial));
+      console.log('Stored pictureSerial:', pictureSerial);
+    } catch (error) {
+      console.error('Failed to store pictureSerial:', error);
+    }
       setIsNavigating(true); 
       setNavigateIndex(index); 
     } else {
