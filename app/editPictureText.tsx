@@ -192,7 +192,7 @@ export default function EditPictureText() {
         }
 
         setPhotoUriState(null); // Clear the photo URI state
-        router.push("viewEditPicture"); // Navigate back to the previous screen
+        
       } else {
         const errorMessage =
           data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Delete failed.";

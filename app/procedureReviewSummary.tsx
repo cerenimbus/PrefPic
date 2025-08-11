@@ -24,7 +24,7 @@ export default function ProcedureReviewSummary() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const { serial } = params;
-  const [imageDetails, setImageDetails] = useState<{ pictureName: string; pictureNote: string; pictureSerial?: string }[]>([]);
+  const [imageDetails, setImageDetails] = useState<{ pictureName: string; pictureNote: string; pictureSerial?: string; displayOrder: string }[]>([]);
 
   const [procedureDetails, setProcedureDetails] = useState({
     alwaysDo: '',
@@ -99,6 +99,7 @@ const getProcedureList = async () => {
         const procedureList = result?.ResultInfo?.Selections?.Procedure;
         const procedureName = result?.resultInfo?.Selections?.Name;
         const procedureSerial = result?.resultInfo?.Selections?.Serial;
+        const procedureDisplayOrder = result?.resultInfo?.Selections?.DisplayOrder;
 
 
         if (procedureList) {
@@ -110,7 +111,7 @@ const getProcedureList = async () => {
             const proceduresArray = Array.isArray(procedureList) ? procedureList : [procedureList];
 
             const extractedImages: string[] = [];
-            const extractedImageDetails: { pictureName: string; pictureNote: string; pictureSerial?: string }[] = [];
+            const extractedImageDetails: { pictureName: string; pictureNote: string; pictureSerial?: string; displayOrder: string }[] = [];
 
             proceduresArray.forEach(proc => {
                 const pictures = proc?.Pictures?.Picture;
@@ -124,6 +125,7 @@ const getProcedureList = async () => {
                         pictureName: picture.PictureName || '',
                         pictureNote: picture.PictureNote || '',
                         pictureSerial: picture.PictureSerial || '',
+                        displayOrder: picture.DisplayOrder || '',
                     });
                 });
             });
@@ -181,9 +183,12 @@ useEffect(() => {
  const handleImagePress = async (index: number) => {
     if (images[index]) {
       const pictureSerial = imageDetails[index]?.pictureSerial || '';
+      const displayOrder = imageDetails[index]?.displayOrder || '';
       try {
       await AsyncStorage.setItem('selectedPictureSerial', String(pictureSerial));
       console.log('Stored pictureSerial:', pictureSerial);
+      await AsyncStorage.setItem('selectedDisplayOrder', String(displayOrder));
+      console.log('Stored displayOrder:', displayOrder);
     } catch (error) {
       console.error('Failed to store pictureSerial:', error);
     }

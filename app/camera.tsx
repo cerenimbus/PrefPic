@@ -86,7 +86,7 @@ export default function CameraScreen() {
     <GestureHandlerRootView style={styles.safeArea}>
       <SafeAreaView style={styles.container}>
         {/* Back Button */}
-        <TouchableOpacity style={styles.backButtonContainer} onPress={navigateToAddProcedure}>
+        <TouchableOpacity style={styles.backButtonContainer} onPress={() => router.back()}>
           <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
 
@@ -176,14 +176,14 @@ const styles = StyleSheet.create({
   },
   camera: {
     width: 355,
-    height: 500,
+    height: 350,
     borderRadius: 15,
     overflow: "hidden",
     alignItems: "center",
   },
   cameraBorder: {
     width: 360,
-    height: 500,
+    height: 350,
     borderWidth: 2,
     borderColor: "transparent",
     borderRadius: 18,
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderColor: "#375894",
     top: 15,
-    marginTop: 9,
+    marginTop: 4,
     marginBottom: 22,
     borderWidth: 2,
     minWidth: 350,
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     alignSelf: "center",
-    marginTop: 10,
+    marginTop: 5,
   },
   toggleButtonText: {
     color: "white",
@@ -265,11 +265,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     alignSelf: "center",
-    marginTop: 10,
+    marginTop: 5,
   },
   zoomSlider: {
     width: 300,
     alignSelf: "center",
-    marginTop: 10,
+    marginTop: 5,
   },
 });

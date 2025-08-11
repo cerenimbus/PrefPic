@@ -233,6 +233,11 @@ const navigateToCamera = () => {
         }
         console.log("🔹 Authorization Code:", authorizationCode);
 
+        //RHCM 8/7/2025
+        // Retrieve selectedDisplayOrder from AsyncStorage
+        const displayOrder = await AsyncStorage.getItem("selectedDisplayOrder") || "0"; // Default to "0" if not found
+        console.log("🔹 Display Order:", displayOrder);
+
         // Generate formatted date and key
         const currentDate = new Date();
         const formattedDate = `${String(currentDate.getMonth() + 1).padStart(2, "0")}/${String(
@@ -260,6 +265,7 @@ const navigateToCamera = () => {
             type: fileType,
             name: `upload.${fileType.split("/")[1] || "jpg"}`,
         } as any);
+        formData.append("DisplayOrder", displayOrder);
 
         // Make the API call
         const url = "https://prefpic.com/dev/PPService/CreatePicture.php";
@@ -323,6 +329,11 @@ const navigateToCamera = () => {
     } catch (error) {
       console.error("API call error:", error);
 
+     //RHCM 8/7/2025
+     // Clear the selectedPictureSerial and selectedDisplayOrder from AsyncStorage 
+    await AsyncStorage.removeItem("selectedDisplayOrder");
+    console.log("🔹 Cleared selectedDisplayOrder from AsyncStorage");
+
     // Check if the error is a network error
     if (error instanceof TypeError && error.message === "Network request failed") {
       Alert.alert("Internet Connection Lost", "Reconnecting... This may take a moment.");
@@ -340,6 +351,7 @@ const navigateToCamera = () => {
       }
     }
 };
+
 
 useEffect(() => {
   if (isLoading) {
