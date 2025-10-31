@@ -350,9 +350,12 @@ export default function () {
   const router = useRouter();
   const params = useLocalSearchParams();
   const { serial } = params;
-  const [imageDetails, setImageDetails] = useState<
-    { pictureName: string; pictureNote: string }[]
-  >([]);
+  // const [imageDetails, setImageDetails] = useState<
+  //   { pictureName: string; pictureNote: string }[]
+  // >([]);
+  //RHCM 09/18/2024 modified to include pictureSerial and displayOrder
+  const [imageDetails, setImageDetails] = useState<{ pictureName: string; pictureNote: string; pictureSerial?: string; displayOrder: string }[]>([]);
+  
 
   const [procedureDetails, setProcedureDetails] = useState({
     alwaysDo: "",
@@ -393,6 +396,30 @@ export default function () {
     };
     fetchAuthorizationCode();
   }, []); // Added useEffect to fetch authorization code
+
+
+  useEffect(() => {
+  const storeProcedureSerial = async () => {
+    try {
+      // Normalize serial (in case it's an array from params)
+      const normalizedSerial = Array.isArray(serial) ? serial[0] : serial;
+
+      // Remove the old serial
+      await AsyncStorage.removeItem("currentProcedureSerial");
+
+      // Store the new serial
+      if (normalizedSerial) {
+        await AsyncStorage.setItem("currentProcedureSerial", normalizedSerial);
+        console.log("Stored new currentProcedureSerial:", normalizedSerial);
+      }
+      } catch (error) {
+        console.error("Error storing currentProcedureSerial:", error);
+      }
+    };
+
+    storeProcedureSerial();
+  }, [serial]);
+
 
   const getProcedureList = async () => {
     setIsLoading(true);
@@ -446,10 +473,14 @@ export default function () {
           : [procedureList];
 
         const extractedImages: string[] = [];
-        const extractedImageDetails: {
-          pictureName: string;
-          pictureNote: string;
-        }[] = [];
+        // const extractedImageDetails: {
+        //   pictureName: string;
+        //   pictureNote: string;
+        // }[] = [];
+
+        //RHCM 09/18/2024 modified to include pictureSerial and displayOrder
+        const extractedImageDetails: { pictureName: string; pictureNote: string; pictureSerial?: string; displayOrder: string }[] = [];
+
 
         proceduresArray.forEach((proc) => {
           const pictures = proc?.Pictures?.Picture;
@@ -459,10 +490,17 @@ export default function () {
 
           pictureArray.forEach((picture) => {
             extractedImages.push(`data:image/jpeg;base64,${picture.Media}`);
+            // extractedImageDetails.push({
+            //   pictureName: picture.PictureName || "",
+            //   pictureNote: picture.PictureNote || "",
+            // });
+            //RHCM 09/18/2024 modified to include pictureSerial and displayOrder
             extractedImageDetails.push({
-              pictureName: picture.PictureName || "",
-              pictureNote: picture.PictureNote || "",
-            });
+                        pictureName: picture.PictureName || '',
+                        pictureNote: picture.PictureNote || '',
+                        pictureSerial: picture.PictureSerial || '',
+                        displayOrder: picture.DisplayOrder || '',
+                    });
           });
         });
 
@@ -510,6 +548,16 @@ export default function () {
 
   const handleImagePress = async (index: number) => {
     if (images[index]) {
+      const pictureSerial = imageDetails[index]?.pictureSerial || '';
+      const displayOrder = imageDetails[index]?.displayOrder || '';
+      try {
+      await AsyncStorage.setItem('selectedPictureSerial', String(pictureSerial));
+      console.log('Stored pictureSerial:', pictureSerial);
+      await AsyncStorage.setItem('selectedDisplayOrder', String(displayOrder));
+      console.log('Stored displayOrder:', displayOrder);
+    } catch (error) {
+      console.error('Failed to store pictureSerial:', error);
+    }
       setIsNavigating(true); // Show loading screen
       setNavigateIndex(index); // Store index to use in effect
     } else {
@@ -518,6 +566,7 @@ export default function () {
         pathname: "camera",
         params: {
           procedureName: procedureName,
+          serial: procedureSerial,
         },
       });
     }

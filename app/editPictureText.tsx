@@ -250,15 +250,27 @@ export default function EditPictureText() {
 
       //----------------------------------------------------------------------------------------------
       //RJP <---- change to picture_serial 3/4/2025
-      const picture_serial = await AsyncStorage.getItem("picture_serial");
-      if (!picture_serial) {
-        Alert.alert("Error", "Picture_serial not found. ");
-        return;
-      }
-      console.log("🔹 Picture Serial:", picture_serial);
+      //RHCM 09/18/2024 commented out as this is useless now
+      // const picture_serial = await AsyncStorage.getItem("picture_serial");
+      // if (!picture_serial) {
+      //   Alert.alert("Error", "Picture_serial not found. ");
+      //   return;
+      // }
+      // console.log("🔹 Picture Serial:", picture_serial);
       //End RJP 3/4/2025
       //-------------------------------------------------------------------------------------------------
 
+      // Retrieve picture_serial from AsyncStorage
+      // This is the correct way to get the picture_serial for the current picture being edited
+      //----------------------------------------------------------------------------------------------
+      //RHCM 09/18/2024 modified to get selectedPictureSerial instead of picture_serial
+      const storedSerial = await AsyncStorage.getItem('selectedPictureSerial');
+      if (!storedSerial) {
+        Alert.alert("Error", "Picture_serial not found.");
+        return;
+      }
+      console.log("🔹 Selected Picture Serial from AsyncStorage:", storedSerial)
+      //-------------------------------------------------------------------------------------------------;
       if (!deviceID) {
         Alert.alert("Error", "Device ID not found.");
         return;
@@ -296,7 +308,7 @@ export default function EditPictureText() {
       formData.append("Key", key);
       formData.append("AC", authorizationCode);
       formData.append("PrefPicVersion", "1");
-      formData.append("Picture", picture_serial); //RJP 3/4/2025 <------- change picture_serial from procedureserial
+      formData.append("Picture", storedSerial); //RJP 3/4/2025 <------- change picture_serial from procedureserial
       formData.append("Name", descriptionText);
       formData.append("Note", notesText);
 
@@ -306,7 +318,7 @@ export default function EditPictureText() {
         Key: key,
         AC: authorizationCode,
         PrefPicVersion: "1",
-        Picture: picture_serial, //RJP 3/4/2025 <------- change picture_serial from procedureserial
+        Picture: storedSerial, //RJP 3/4/2025 <------- change picture_serial from procedureserial
         Name: descriptionText,
         Note: notesText,
       });
