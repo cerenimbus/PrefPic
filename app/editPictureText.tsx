@@ -28,6 +28,7 @@ export default function EditPictureText() {
   const [photoUriState, setPhotoUriState] = useState<string | null>(null);
   const [descriptionText, setDescriptionText] = useState<string>("");
   const [notesText, setNotesText] = useState<string>("");
+  const [imageCount, setImageCount] = useState(0); // RHCM 10/31/2025: Track number of images
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   // JCM - 03/26/2025: Add state variable to be used for button feedbacks.
@@ -98,6 +99,22 @@ export default function EditPictureText() {
       setNotesText(updatedNotes as string);
     }
   }, [updatedDescription, updatedNotes]);
+
+  //RHCM 10/31/2025: Added to check image count in AsyncStorage
+  // Check image count on mount and when it changes
+useEffect(() => {
+  const checkImageCount = async () => {
+    try {
+      const storedImages = await AsyncStorage.getItem("capturedImages");
+      const count = storedImages ? JSON.parse(storedImages).length : 0;
+      setImageCount(count);
+      console.log("🔹 Current image count:", count);
+    } catch (error) {
+      console.error("Error checking image count:", error);
+    }
+  };
+  checkImageCount();
+}, [photoUriState]);
 
   const deletePicture = async () => {
 
@@ -236,6 +253,20 @@ export default function EditPictureText() {
     try {
       console.log("🔹 Starting API call...");
 
+      //RHCM 10/31/2025: Added to limit the number of pictures to 5 per procedure
+      // Check image count before proceeding
+      const storedImages = await AsyncStorage.getItem("capturedImages");
+      const currentImageCount = storedImages ? JSON.parse(storedImages).length : 0;
+      
+      if (currentImageCount > 5) {
+        Alert.alert(
+          "Too Many Pictures", 
+          "You can only have up to 5 pictures per procedure. Please remove some pictures before continuing."
+        );
+        setIsLoading(false);
+        return;
+      }
+
       const procedureSerial = await AsyncStorage.getItem(
         "currentProcedureSerial"
       );
@@ -264,9 +295,25 @@ export default function EditPictureText() {
       // This is the correct way to get the picture_serial for the current picture being edited
       //----------------------------------------------------------------------------------------------
       //RHCM 09/18/2024 modified to get selectedPictureSerial instead of picture_serial
-      const storedSerial = await AsyncStorage.getItem('selectedPictureSerial');
+
+      //RHCM 10/31/2025: Commented out original code
+      
+      // const storedSerial = await AsyncStorage.getItem('selectedPictureSerial');
+      // if (!storedSerial) {
+      //   Alert.alert("Error", "Picture_serial not found.");
+      //   return;
+      // }
+      //----------------------------------------------------------------------------------------------
+      //RHCM 10/31/2025: Modified to check both selectedPictureSerial and picture_serial
+      // Check both locations: selectedPictureSerial (from review) or picture_serial (from new picture)
+      let storedSerial = await AsyncStorage.getItem('selectedPictureSerial');
+      if (!storedSerial) {
+        storedSerial = await AsyncStorage.getItem('picture_serial');
+      }
+
       if (!storedSerial) {
         Alert.alert("Error", "Picture_serial not found.");
+        setIsLoading(false);
         return;
       }
       console.log("🔹 Selected Picture Serial from AsyncStorage:", storedSerial)
@@ -368,6 +415,18 @@ export default function EditPictureText() {
 
     try {
       console.log("🔹 Starting API call before adding more pictures...");
+
+      //RHCM 10/31/2025: Added to limit the number of pictures to 5 per procedure
+      // Check image count first
+      const storedImages = await AsyncStorage.getItem("capturedImages");
+      const imageCount = storedImages ? JSON.parse(storedImages).length : 0;
+      
+      if (imageCount >= 5) {
+        Alert.alert("Picture Limit Reached", "You can only add up to 5 pictures per procedure.");
+        takeMorePictureSetIsLoading(false);
+        return;
+      }
+
 
       const procedureSerial = await AsyncStorage.getItem(
         "currentProcedureSerial"
@@ -698,11 +757,24 @@ return (
 
             {/* JCM - 03/26/2025 Added an activity indicator for button feedback */}
             <View style={styles.buttonContainer}>
-  <TouchableOpacity
+  {/* RHCM 10/31/2025: Disable Take more pictures button when image count is 5 or more */}
+  {/* Commented out original code */}
+  
+  {/* <TouchableOpacity
     style={styles.delete}
     onPress={handleAddMorePictures}
     disabled={takeMorePictureIsLoading}
-  >
+  > */}
+      <TouchableOpacity
+      style={[
+        styles.delete,
+        imageCount >= 5 && styles.disabledButton
+      ]}
+      onPress={handleAddMorePictures}
+      disabled={takeMorePictureIsLoading || imageCount >= 5}
+    >
+
+
     {takeMorePictureIsLoading ? (
       <ActivityIndicator size="small" color="#375894" />
     ) : (
@@ -938,11 +1010,11 @@ const styles = StyleSheet.create({
   },
 
   disabledButton: {
-    alignSelf: "center",
-    marginVertical: 10,
-    padding: 14,
     borderRadius: 31,
-    backgroundColor: "#375894",
+    // backgroundColor: "#375894",
+    backgroundColor: "#D3D3D3",
+    borderColor: "#A0A0A0",
+    opacity: 0.6,
   },
 
   retakePictureText: {

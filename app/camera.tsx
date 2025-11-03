@@ -23,6 +23,7 @@ import Slider from "@react-native-community/slider";
 import * as FileSystem from "expo-file-system";
 import * as ImageManipulator from "expo-image-manipulator";
 import { GestureHandlerRootView, PinchGestureHandler } from "react-native-gesture-handler";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>("back");
@@ -45,9 +46,15 @@ export default function CameraScreen() {
     );
   }
 
-  const navigateToAddProcedure = () => {
+  const navigateToAddProcedure = async () => {
     setPhoto(null);
-    router.replace("addProcedure");
+    // router.replace("addProcedure");
+    // router.back(); //RHCM 10/31/2025: Changed to router.back() to maintain navigation stack
+    const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
+    router.push({
+      pathname: "procedureReviewSummary",
+      params: { serial: procedureSerial }
+    });
   };
 
   async function takePicture() {

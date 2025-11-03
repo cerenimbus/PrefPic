@@ -131,7 +131,7 @@ const deletePicture = async () => {
       console.log("🔹 API Response Status:", response.status);
 
       if (response.ok) {
-        Alert.alert("Success!", "Picture deleted successfully.");
+        // Alert.alert("Success!", "Picture deleted successfully.");
 
         // Remove the image from AsyncStorage
         const storedImages = await AsyncStorage.getItem("capturedImages");
