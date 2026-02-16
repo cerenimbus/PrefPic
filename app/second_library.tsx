@@ -107,6 +107,9 @@ const styles = StyleSheet.create({
     procedureNameButtonText: {
         color: 'black',
         fontSize: 18,
+        flex: 1,
+        flexShrink: 1,
+        marginRight: 10,
     },
     procedureButton: {
         backgroundColor: '#ffffff', // Button background color

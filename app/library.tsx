@@ -490,6 +490,9 @@ const styles = StyleSheet.create({
     color: "gray",
     fontSize: 20, // Adjusted font size
     paddingVertical: 8, // ADDED: JM 03-21-2025
+    flex: 1,
+    flexShrink: 1,
+    marginRight: 10,
   },
   //   arrow: {
   //     color: "#4A6FA5", // Arrow color

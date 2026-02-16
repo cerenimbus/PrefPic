@@ -24,9 +24,10 @@ export default function RetakePicture() {
   const [notesText, setNotesText] = useState<string>("");
   const [deviceID, setDeviceID] = useState<{ id: string } | null>(null);
 
-  const { photoUri, procedureName, updatedDescription, updatedNotes } =
+  const { photoUri, imageIndex, procedureName, updatedDescription, updatedNotes } =
     useLocalSearchParams<{
       photoUri: string;
+      imageIndex: string;
       procedureName: string;
       updatedDescription: string;
       updatedNotes: string;
@@ -238,21 +239,30 @@ export default function RetakePicture() {
       if (response.ok) {
         // Alert.alert("Success!", "Picture deleted successfully.");
 
-        // Remove the image from AsyncStorage
+        // Remove the image from AsyncStorage by index
         const storedImages = await AsyncStorage.getItem("capturedImages");
         if (storedImages) {
           const images = JSON.parse(storedImages);
+          const indexToRemove = parseInt(imageIndex || "0", 10);
+          console.log("🔹 Image index to remove:", indexToRemove);
+          console.log("🔹 Original image count:", images.length);
+          console.log("🔹 Image to delete:", images[indexToRemove]);
+          
           const updatedImages = images.filter(
-            (img: string) => img !== photoUriState
+            (_: string, i: number) => i !== indexToRemove
           );
+          console.log("🔹 Updated image count:", updatedImages.length);
           await AsyncStorage.setItem(
             "capturedImages",
             JSON.stringify(updatedImages)
           );
+          
+          // Add a small delay to ensure AsyncStorage write completes
+          await new Promise(resolve => setTimeout(resolve, 100));
         }
 
         setPhotoUriState(null); // Clear the photo URI state
-        router.push("viewEditPicture"); // Navigate back to the previous screen
+        router.back(); // Navigate back to the previous screen
       } else {
         const errorMessage =
           data.match(/<Message>(.*?)<\/Message>/)?.[1] || "Delete failed.";

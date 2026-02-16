@@ -3,7 +3,7 @@
     "name": "PrefPic",
     "slug": "PrefPic",
 
-    "version": "1.0.33",
+    "version": "1.1.1",
 
     "orientation": "portrait",
     "icon": "./assets/prefpicAppLogo.png",

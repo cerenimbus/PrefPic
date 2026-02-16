@@ -1,7 +1,8 @@
 import { router, useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import { getDeviceID } from '../components/deviceInfo';
 import CryptoJS from "crypto-js";
 
@@ -161,6 +162,31 @@ export default function ViewEditPicture() {
     };
     fetchDeviceID();
   }, []);
+
+  // Reload images when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      const loadImages = async () => {
+        // Add a small delay to ensure AsyncStorage writes are complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        try {
+          const storedImages = await AsyncStorage.getItem("capturedImages");
+          if (storedImages) {
+            const parsedImages = JSON.parse(storedImages);
+            console.log("🔹 Images loaded on focus, count:", parsedImages.length);
+            setImages(parsedImages);
+          } else {
+            console.log("🔹 No images found in storage");
+            setImages([]);
+          }
+        } catch (error) {
+          console.error("Error loading images:", error);
+        }
+      };
+      loadImages();
+    }, [])
+  );
 
   useEffect(() => {
     if (params.photoUri) {
@@ -390,6 +416,7 @@ export default function ViewEditPicture() {
         <TouchableOpacity
           style={styles.addPicture}
           onPress={async () => {
+            console.log("🔹 Add more pictures clicked. Current image count:", images.length);
             if (images.length < 5) {
               await handleAddMorePictures();
               navigateToRetakePicture(images.length);

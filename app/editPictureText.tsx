@@ -1,6 +1,7 @@
 import { useRouter, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import { getDeviceID } from "../components/deviceInfo";
 import CryptoJS from "crypto-js";
 import {
@@ -45,9 +46,10 @@ export default function EditPictureText() {
     setIsPreview(false);
   };
 
-  const { photoUri, procedureName, updatedDescription, updatedNotes } =
+  const { photoUri, imageIndex, procedureName, updatedDescription, updatedNotes } =
     useLocalSearchParams<{
       photoUri: string;
+      imageIndex: string;
       procedureName: string;
       updatedDescription: string;
       updatedNotes: string;
@@ -99,6 +101,26 @@ export default function EditPictureText() {
       setNotesText(updatedNotes as string);
     }
   }, [updatedDescription, updatedNotes]);
+
+  // Reload image count when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      const checkImageCount = async () => {
+        // Add a small delay to ensure AsyncStorage writes are complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        try {
+          const storedImages = await AsyncStorage.getItem("capturedImages");
+          const count = storedImages ? JSON.parse(storedImages).length : 0;
+          setImageCount(count);
+          console.log("🔹 Images reloaded on focus, count:", count);
+        } catch (error) {
+          console.error("Error checking image count:", error);
+        }
+      };
+      checkImageCount();
+    }, [])
+  );
 
   //RHCM 10/31/2025: Added to check image count in AsyncStorage
   // Check image count on mount and when it changes
@@ -195,17 +217,26 @@ useEffect(() => {
       if (response.ok) {
         Alert.alert("Success!", "Picture deleted successfully.");
 
-        // Remove the image from AsyncStorage
+        // Remove the image from AsyncStorage by index
         const storedImages = await AsyncStorage.getItem("capturedImages");
         if (storedImages) {
           const images = JSON.parse(storedImages);
+          const indexToRemove = parseInt(imageIndex || "0", 10);
+          console.log("🔹 Image index to remove:", indexToRemove);
+          console.log("🔹 Original image count:", images.length);
+          console.log("🔹 Image to delete:", images[indexToRemove]);
+          
           const updatedImages = images.filter(
-            (img: string) => img !== photoUriState
+            (_: string, i: number) => i !== indexToRemove
           );
+          console.log("🔹 Updated image count:", updatedImages.length);
           await AsyncStorage.setItem(
             "capturedImages",
             JSON.stringify(updatedImages)
           );
+          
+          // Add a small delay to ensure AsyncStorage write completes
+          await new Promise(resolve => setTimeout(resolve, 100));
         }
 
         setPhotoUriState(null); // Clear the photo URI state
