@@ -509,6 +509,12 @@ export default function () {
         setProcedureDetails({ alwaysDo, watchFor, neverDo });
         setImages(extractedImages);
         setImageDetails(extractedImageDetails); // Store image details separately
+
+        // Sync capturedImages in AsyncStorage with the actual procedure images
+        // so that editPictureText has the correct image count for the "Take more pictures" button.
+        // Use lightweight placeholder strings instead of full base64 data URIs to avoid storage limits.
+        const imagePlaceholders = extractedImages.map((_, i) => `server-image-${i}`);
+        await AsyncStorage.setItem("capturedImages", JSON.stringify(imagePlaceholders));
       }
     } catch (error) {
       console.error("Error fetching procedure list:", error);

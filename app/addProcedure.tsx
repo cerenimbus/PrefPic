@@ -124,6 +124,8 @@ const AddProcedure: React.FC = () => {
 
         if (resultCode === "Success") {
           await AsyncStorage.setItem("currentProcedureSerial", procedureSerial);
+          // Clear capturedImages from previous procedure so the count starts fresh
+          await AsyncStorage.removeItem("capturedImages");
           //Alert.alert('Success', message || 'Procedure created successfully');
           return true;
         } else {

@@ -194,7 +194,11 @@ useEffect(() => {
       formData.append("PrefPicVersion", "1");
 
       // Retrieve picture_serial from AsyncStorage
-      const storedSerial = await AsyncStorage.getItem('selectedPictureSerial');
+      // Check both locations: selectedPictureSerial (from viewing existing) or picture_serial (from new picture)
+      let storedSerial = await AsyncStorage.getItem('selectedPictureSerial');
+      if (!storedSerial) {
+        storedSerial = await AsyncStorage.getItem('picture_serial');
+      }
       if (!storedSerial) {
         Alert.alert("Error", "Picture_serial not found.");
         return;
@@ -253,26 +257,22 @@ useEffect(() => {
   };
 
 
-  const navigateToCamera = () => {
+  const navigateToCamera = async () => {
     //----------------------------------------------------------------------------------------------
     //JCM 03/27/2025: Set setIsLoading state variable to "true" to disable the Retake pic button
     retakePictureSetIsLoading(true);
     //----------------------------------------------------------------------------------------------
-    deletePicture();
-    //----------------------------------------------------------------------------------------------
-    //JCM 03/27/2025: Added a delay navigation until the state update completes.
-    setTimeout(() => {
-      setPhotoUriState(null);
-      router.push({
-        pathname: "camera",
-        params: { procedureName, notesText },
-      });
-    //----------------------------------------------------------------------------------------------
+    // Await deletePicture so the image is actually deleted before navigating to camera
+    await deletePicture();
 
-      //JCM 03/27/2025: Set setIsLoading state variable to "false" to enable the Retake pic button
-      retakePictureSetIsLoading(false);
-      //----------------------------------------------------------------------------------------------
-    }, 3000); 
+    setPhotoUriState(null);
+    router.push({
+      pathname: "camera",
+      params: { procedureName, notesText },
+    });
+
+    //JCM 03/27/2025: Set setIsLoading state variable to "false" to enable the Retake pic button
+    retakePictureSetIsLoading(false);
 };
 
 
