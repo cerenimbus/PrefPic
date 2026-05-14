@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet, ImageBackground } from "react-native";
+import { useRouter } from "expo-router";
 import LoadingAnimation from "../components/LoadingAnimation"; // Updated path to match repo
 
 
 export default function LoadingScreen() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/");
+  }, []);
+
   return (
     <ImageBackground  source={require("../assets/splash-icon.png")} style={styles.background}>
       <View style={styles.overlay}>

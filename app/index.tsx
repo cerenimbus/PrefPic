@@ -3,7 +3,7 @@ import { ImageBackground, Image,StyleSheet,TouchableOpacity,View,Text, SafeAreaV
 import { useRouter } from "expo-router";
 import { useContext,useState,useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "../context/AuthContext";
 import { useFocusEffect } from "@react-navigation/native";
 
 

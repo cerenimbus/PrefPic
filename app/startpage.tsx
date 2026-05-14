@@ -4,7 +4,7 @@ import CheckBox from "expo-checkbox";
 import { Image, ImageBackground, View, Text, StyleSheet, TouchableOpacity, Linking, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as CryptoJS from "crypto-js"; // SHA-1 hashing
-import { AuthContext } from "./AuthContext"; // Import AuthContext
+import { AuthContext } from "../context/AuthContext"; // Import AuthContext
 import { XMLParser } from "fast-xml-parser";
 import { getDeviceID } from "../components/deviceInfo"; // Import getDeviceID function
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";

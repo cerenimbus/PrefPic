@@ -4,7 +4,7 @@ import CheckBox from "expo-checkbox";
 import { useRouter } from "expo-router";
 import CryptoJS from "crypto-js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "../context/AuthContext";
 import constants from "expo-constants";
 import { getDeviceID } from "../components/deviceInfo";
 import { XMLParser } from "fast-xml-parser";
