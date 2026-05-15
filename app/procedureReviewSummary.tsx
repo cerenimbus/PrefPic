@@ -47,6 +47,27 @@ export default function ProcedureReviewSummary() {
     }
   }, [deviceID]);
 
+  // RHCM 5/15/2026: Sync currentProcedureSerial to the procedure being viewed.
+  // Without this, opening a procedure from the library kept the stale serial from
+  // whatever procedure was last created/viewed, so subsequent saves (UpdatePictureText
+  // etc.) targeted the wrong procedure and surfaced "Procedure not found" errors.
+  // Mirrors the pattern in viewProcedure.tsx.
+  useEffect(() => {
+    const storeProcedureSerial = async () => {
+      try {
+        const normalizedSerial = Array.isArray(serial) ? serial[0] : serial;
+        await AsyncStorage.removeItem('currentProcedureSerial');
+        if (normalizedSerial) {
+          await AsyncStorage.setItem('currentProcedureSerial', normalizedSerial);
+          console.log('Stored new currentProcedureSerial:', normalizedSerial);
+        }
+      } catch (error) {
+        console.error('Error storing currentProcedureSerial:', error);
+      }
+    };
+    storeProcedureSerial();
+  }, [serial]);
+
    // Fetch authorization code from AsyncStorage when the component mounts
    useEffect(() => {
     const fetchAuthorizationCode = async () => {
@@ -110,8 +131,30 @@ const getProcedureList = async () => {
 
             const proceduresArray = Array.isArray(procedureList) ? procedureList : [procedureList];
 
-            const extractedImages: string[] = [];
-            const extractedImageDetails: { pictureName: string; pictureNote: string; pictureSerial?: string; displayOrder: string }[] = [];
+            // RHCM 5/15/2026: Replaced parallel arrays with paired rows + sort by DisplayOrder
+            // so images[i] and imageDetails[i] stay aligned regardless of XML order.
+            // Without the sort, retakes (which can change insert order) caused descriptions
+            // to show up on the wrong slot.
+            // const extractedImages: string[] = [];
+            // const extractedImageDetails: { pictureName: string; pictureNote: string; pictureSerial?: string; displayOrder: string }[] = [];
+            //
+            // proceduresArray.forEach(proc => {
+            //     const pictures = proc?.Pictures?.Picture;
+            //     if (!pictures) return;
+            //
+            //     const pictureArray = Array.isArray(pictures) ? pictures : [pictures];
+            //
+            //     pictureArray.forEach(picture => {
+            //         extractedImages.push(`data:image/jpeg;base64,${picture.Media}`);
+            //         extractedImageDetails.push({
+            //             pictureName: picture.PictureName || '',
+            //             pictureNote: picture.PictureNote || '',
+            //             pictureSerial: picture.PictureSerial || '',
+            //             displayOrder: picture.DisplayOrder || '',
+            //         });
+            //     });
+            // });
+            const rows: { image: string; pictureName: string; pictureNote: string; pictureSerial?: string; displayOrder: string }[] = [];
 
             proceduresArray.forEach(proc => {
                 const pictures = proc?.Pictures?.Picture;
@@ -120,8 +163,8 @@ const getProcedureList = async () => {
                 const pictureArray = Array.isArray(pictures) ? pictures : [pictures];
 
                 pictureArray.forEach(picture => {
-                    extractedImages.push(`data:image/jpeg;base64,${picture.Media}`);
-                    extractedImageDetails.push({
+                    rows.push({
+                        image: `data:image/jpeg;base64,${picture.Media}`,
                         pictureName: picture.PictureName || '',
                         pictureNote: picture.PictureNote || '',
                         pictureSerial: picture.PictureSerial || '',
@@ -130,11 +173,31 @@ const getProcedureList = async () => {
                 });
             });
 
+            rows.sort((a, b) => {
+                const ao = parseInt(a.displayOrder, 10);
+                const bo = parseInt(b.displayOrder, 10);
+                if (isNaN(ao) && isNaN(bo)) return 0;
+                if (isNaN(ao)) return 1;
+                if (isNaN(bo)) return -1;
+                return ao - bo;
+            });
+
+            const extractedImages: string[] = rows.map(r => r.image);
+            const extractedImageDetails = rows.map(({ image, ...rest }) => rest);
+
             setProcedureName(procedureName);
             setProcedureSerial(procedureSerial);
             setProcedureDetails({ alwaysDo, watchFor, neverDo });
             setImages(extractedImages);
             setImageDetails(extractedImageDetails); // Store image details separately
+
+            // RHCM 5/15/2026: Reset capturedImages to placeholders matching THIS procedure's
+            // existing pic count. Previously, switching procedures inherited whatever was
+            // left in AsyncStorage from the last viewed procedure (e.g., 5 placeholders from
+            // viewProcedure.tsx:516-517), so the new procedure immediately hit the 5-pic limit.
+            // Mirrors the placeholder approach in viewProcedure.tsx.
+            const imagePlaceholders = extractedImages.map((_, i) => `server-image-${i}`);
+            await AsyncStorage.setItem('capturedImages', JSON.stringify(imagePlaceholders));
         }
     } catch (error) {
         console.error("Error fetching procedure list:", error);
@@ -192,11 +255,35 @@ useEffect(() => {
     } catch (error) {
       console.error('Failed to store pictureSerial:', error);
     }
-      setIsNavigating(true); 
-      setNavigateIndex(index); 
+      setIsNavigating(true);
+      setNavigateIndex(index);
     } else {
-      // Navigate to camera
-        
+      // RHCM 5/15/2026: Empty "+" slot is a brand-new pic. Two fixes:
+      //   1. Clear selectedPictureSerial so saves don't bleed onto the last existing pic
+      //      the user viewed.
+      //   2. Seed selectedDisplayOrder = max+1 so the new pic sorts after existing ones.
+      //      Previously this was unset and reviewImage fell back to "0", placing the new
+      //      pic ahead of pic 1 and mixing descriptions.
+      // Original code (just navigated, no state prep):
+      // // Navigate to camera
+      //
+      // router.push({
+      //   pathname: "camera",
+      //   params: {
+      //       procedureName: procedureName
+      //   },
+      // });
+      try {
+        await AsyncStorage.removeItem('selectedPictureSerial');
+        const maxOrder = imageDetails.reduce((m, d) => {
+          const v = parseInt(d.displayOrder, 10);
+          return isNaN(v) ? m : Math.max(m, v);
+        }, 0);
+        await AsyncStorage.setItem('selectedDisplayOrder', String(maxOrder + 1));
+      } catch (error) {
+        console.error('Failed to prepare new-picture state:', error);
+      }
+
       router.push({
         pathname: "camera",
         params: {

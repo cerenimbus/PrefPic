@@ -472,7 +472,16 @@ useEffect(() => {
 
       //-------------------------------------------------------------------------------
       //RJP 3/4/2025<-- change to picture serial
-      const picture_serial = await AsyncStorage.getItem("picture_serial");
+      // RHCM 5/15/2026: "Take more pictures" was only reading picture_serial, which is
+      // the LAST brand-new pic's serial. When the user was editing an existing pic
+      // (selectedPictureSerial set), this saved the description to the wrong row.
+      // Now matches navigateToEditPicture (Done): prefer selectedPictureSerial, then
+      // fall back to picture_serial.
+      // const picture_serial = await AsyncStorage.getItem("picture_serial");
+      let picture_serial = await AsyncStorage.getItem("selectedPictureSerial");
+      if (!picture_serial) {
+        picture_serial = await AsyncStorage.getItem("picture_serial");
+      }
       if (!picture_serial) {
         Alert.alert("Error", "Picture not found.");
         return;
@@ -899,7 +908,10 @@ const styles = StyleSheet.create({
   },
   backButtonContainer: {
     position: "absolute",
-    top: 10, // Adjust this value to lower the button
+    // RHCM 5/15/2026: Bumped top from 10 to 50 so the button clears the device
+    // status bar (status bars can be 24-44px tall depending on the device).
+    // top: 10, // Adjust this value to lower the button
+    top: 50,
     left: 5,
     zIndex: 1,
   },

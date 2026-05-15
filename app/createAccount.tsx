@@ -735,7 +735,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     position: "absolute",
-    top: 20,
+    // RHCM 5/15/2026: Bumped top from 20 to 50 so the button clears the device
+    // status bar (status bars can be 24-44px tall depending on the device).
+    // top: 20,
+    top: 50,
     // left: 10,
     zIndex: 50,
   },

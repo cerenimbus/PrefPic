@@ -61,7 +61,15 @@ export default function RetakePicture() {
 
   const navigateToCamera = () => {
     setPhotoUriState(null);
-    router.replace({
+    // RHCM 5/15/2026: Changed router.replace -> router.push so this retake path
+    // matches the other retake paths (reviewImage, editPictureText). Mixing replace
+    // and push was leaving an inconsistent back stack and could land on a popped
+    // screen when the user pressed Back from the camera.
+    // router.replace({
+    //   pathname: "camera",
+    //   params: { procedureName, notesText },
+    // });
+    router.push({
       pathname: "camera",
       params: { procedureName, notesText },
     });

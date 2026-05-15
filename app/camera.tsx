@@ -20,7 +20,11 @@ import {
   Image,
 } from "react-native";
 import Slider from "@react-native-community/slider";
-import * as FileSystem from "expo-file-system";
+// RHCM 5/15/2026: Import from /legacy. SDK 54 deprecated the old top-level API
+// (getInfoAsync, copyAsync, documentDirectory) in favor of new File/Directory
+// classes. The legacy entry point keeps the existing call sites working unchanged.
+// import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import * as ImageManipulator from "expo-image-manipulator";
 import { GestureHandlerRootView, PinchGestureHandler } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -50,11 +54,17 @@ export default function CameraScreen() {
     setPhoto(null);
     // router.replace("addProcedure");
     // router.back(); //RHCM 10/31/2025: Changed to router.back() to maintain navigation stack
-    const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
-    router.push({
-      pathname: "procedureReviewSummary",
-      params: { serial: procedureSerial }
-    });
+    // RHCM 5/15/2026: Reverted to router.back(). The push approach was creating a brand-new
+    // procedureReviewSummary instance that re-fetched from the server. After a take-photo →
+    // Back → Cancel sequence, the re-fetch sometimes landed before authorizationCode/deviceID
+    // state was ready (race in procedureReviewSummary's effects), so the screen rendered
+    // empty. Using back() pops to the existing screen with its data already loaded.
+    // const procedureSerial = await AsyncStorage.getItem("currentProcedureSerial");
+    // router.push({
+    //   pathname: "procedureReviewSummary",
+    //   params: { serial: procedureSerial }
+    // });
+    router.back();
   };
 
   async function takePicture() {
@@ -66,7 +76,11 @@ export default function CameraScreen() {
       if (!photoData?.uri) throw new Error("Failed to capture photo");
 
       const compressedPhoto = await compressImage(photoData.uri);
-      const newUri = FileSystem.documentDirectory + "tempImage.jpg";
+      // RHCM 5/15/2026: Use a unique filename per shot so retakes don't overwrite a URI still
+      // referenced by other screens in the navigation stack (was causing image-load crashes
+      // on Back after the SDK 54 / RN 0.81 upgrade).
+      // const newUri = FileSystem.documentDirectory + "tempImage.jpg";
+      const newUri = FileSystem.documentDirectory + `tempImage_${Date.now()}.jpg`;
       await FileSystem.copyAsync({ from: compressedPhoto.uri, to: newUri });
 
       setPhoto(newUri);
@@ -247,7 +261,10 @@ const styles = StyleSheet.create({
   },
   backButtonContainer: {
     position: "absolute",
-    top: 20,
+    // RHCM 5/15/2026: Bumped top from 20 to 50 so the button clears the device
+    // status bar (status bars can be 24-44px tall depending on the device).
+    // top: 20,
+    top: 50,
     left: 5,
     zIndex: 1,
   },

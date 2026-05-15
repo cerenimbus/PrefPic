@@ -115,7 +115,21 @@ const deletePicture = async () => {
       formData.append("Key", key);
       formData.append("AC", authorizationCode);
       formData.append("PrefPicVersion", "1");
-      formData.append("Picture", procedureSerial);
+
+      // RHCM 5/15/2026: Original line sent the procedure serial as the Picture field —
+      // DeletePicture.php expects a picture serial, so the delete silently matched 0 rows
+      // and left ghost pictures on the server. Now resolves the same way editPictureText
+      // does: prefer selectedPictureSerial (existing-pic edit) then picture_serial (new pic).
+      // formData.append("Picture", procedureSerial);
+      let storedSerial = await AsyncStorage.getItem("selectedPictureSerial");
+      if (!storedSerial) {
+        storedSerial = await AsyncStorage.getItem("picture_serial");
+      }
+      if (!storedSerial) {
+        Alert.alert("Error", "Picture serial not found.");
+        return;
+      }
+      formData.append("Picture", storedSerial);
 
       const response = await fetch(url, {
         method: "POST",
@@ -146,6 +160,10 @@ const deletePicture = async () => {
           );
         }
 
+        // RHCM 5/15/2026: Picture is gone — drop the stale serial so the next save
+        // (Done / Take more) doesn't target a deleted picture.
+        await AsyncStorage.removeItem("picture_serial");
+
         setPhotoUriState(null); // Clear the photo URI state
       } else {
         const errorMessage =
@@ -164,31 +182,50 @@ const deletePicture = async () => {
 
 //Alberto -> 2/11/2025
 //API CALL  -> 2/13/2025
-const navigateToCamera = () => {
-    //----------------------------------------------------------------------------------------------
-    //JCM 03/27/2025: Set setIsLoading state variable to "true" to disable the Retake pic button
+// RHCM 5/15/2026: Replaced the original fire-and-forget delete + 3-second setTimeout
+// with an awaited delete. The old version could navigate before DeletePicture.php
+// returned, and when Back was pressed mid-flight the app crashed. Also dropped the
+// timeout so retakes don't block the UI for 3 seconds.
+// const navigateToCamera = () => {
+//     //----------------------------------------------------------------------------------------------
+//     //JCM 03/27/2025: Set setIsLoading state variable to "true" to disable the Retake pic button
+//     retakePictureSetIsLoading(true);
+//     //----------------------------------------------------------------------------------------------
+//
+//     //RHCM 5/16/2025
+//     //--------------------------Start----------------------------------------
+//     deletePicture();
+//     //--------------------------End------------------------------------------
+//
+//     //----------------------------------------------------------------------------------------------
+//     //JCM 03/27/2025: Added a delay navigation until the state update completes.
+//     setTimeout(() => {
+//       setPhotoUriState(null);
+//       router.push({
+//         pathname: "camera",
+//         params: { procedureName },
+//       });
+//     //----------------------------------------------------------------------------------------------
+//
+//       //JCM 03/27/2025: Set setIsLoading state variable to "false" to enable the Retake pic button
+//       retakePictureSetIsLoading(false);
+//       //----------------------------------------------------------------------------------------------
+//     }, 3000);
+// };
+const navigateToCamera = async () => {
     retakePictureSetIsLoading(true);
-    //----------------------------------------------------------------------------------------------
 
-    //RHCM 5/16/2025
-    //--------------------------Start----------------------------------------
-    deletePicture();
-    //--------------------------End------------------------------------------
+    // Await the delete so the picture is actually gone before we navigate
+    // (the old setTimeout was racing the API call and leaving ghosts)
+    await deletePicture();
 
-    //----------------------------------------------------------------------------------------------
-    //JCM 03/27/2025: Added a delay navigation until the state update completes.
-    setTimeout(() => {
-      setPhotoUriState(null);
-      router.push({
-        pathname: "camera",
-        params: { procedureName },
-      });
-    //----------------------------------------------------------------------------------------------
+    setPhotoUriState(null);
+    router.push({
+      pathname: "camera",
+      params: { procedureName },
+    });
 
-      //JCM 03/27/2025: Set setIsLoading state variable to "false" to enable the Retake pic button
-      retakePictureSetIsLoading(false);
-      //----------------------------------------------------------------------------------------------
-    }, 3000); 
+    retakePictureSetIsLoading(false);
 };
   //open bleed view
   const handleImageClick = () => {
@@ -296,6 +333,12 @@ const navigateToCamera = () => {
         //  Store PictureSerial in AsyncStorage
             await AsyncStorage.setItem("picture_serial", pictureSerial);
             console.log(" Picture Serial Stored:", pictureSerial);
+
+        // RHCM 5/15/2026: This is a brand-new picture — clear any leftover existing-pic
+        // selection so subsequent saves (Done / Take more) target this pic, not a stale
+        // selectedPictureSerial left over from viewing an existing procedure earlier.
+            await AsyncStorage.removeItem("selectedPictureSerial");
+            await AsyncStorage.removeItem("selectedDisplayOrder");
         } else {
             console.log(" No Picture Serial found in API response.");
         }
@@ -483,7 +526,10 @@ const styles = StyleSheet.create({
   },
   backButtonContainer: {
     position: 'absolute',
-    top: 10, // Adjust this value to lower the button
+    // RHCM 5/15/2026: Bumped top from 10 to 50 so the button clears the device
+    // status bar (status bars can be 24-44px tall depending on the device).
+    // top: 10, // Adjust this value to lower the button
+    top: 50,
     left: 5,
     zIndex: 1,
   },

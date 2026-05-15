@@ -288,9 +288,12 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     width: 262,
   },
-  backButton: { 
+  backButton: {
     position: "absolute",
-    top: 5,
+    // RHCM 5/15/2026: Bumped top from 5 to 50 so the button clears the device
+    // status bar (status bars can be 24-44px tall depending on the device).
+    // top: 5,
+    top: 50,
     left: 5,
     padding: 10,
     borderRadius: 5,
